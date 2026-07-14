@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank You for Your Gift | The Right Thing in Recovery</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#16294A; --navy-deep:#0B1730; --navy-soft:#1E3560;
+    --gold:#C4972F; --gold-lt:#E6C97A;
+    --lav:#B9A9D6; --lav-lt:#D8CDEC;
+    --ivory:#F3ECDD;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Raleway',sans-serif;
+    color:var(--ivory);
+    background:
+      radial-gradient(60% 55% at 50% 22%, rgba(185,169,214,.16), transparent 70%),
+      radial-gradient(50% 45% at 50% 92%, rgba(196,151,47,.14), transparent 70%),
+      linear-gradient(180deg,#0A1428 0%, var(--navy) 55%, #0C1B36 100%);
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:40px 18px;
+    position:relative;overflow-x:hidden;
+  }
+  .starfish{
+    position:fixed;inset:0;margin:auto;width:min(78vw,560px);height:auto;
+    opacity:.06;z-index:0;pointer-events:none;
+    filter:drop-shadow(0 0 40px rgba(185,169,214,.4));
+  }
+  .card{
+    position:relative;z-index:1;width:100%;max-width:640px;
+    background:linear-gradient(180deg, rgba(30,53,96,.55), rgba(11,23,48,.6));
+    border:1px solid rgba(196,151,47,.45);
+    border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    padding:48px 44px 40px;
+  }
+  .eyebrow{
+    text-align:center;font-size:13px;letter-spacing:4px;font-weight:600;
+    text-transform:uppercase;color:var(--gold-lt);opacity:.95;
+  }
+  .sub{
+    text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;
+    font-size:20px;color:var(--lav-lt);margin-top:4px;
+  }
+  h1{
+    text-align:center;font-family:'Cormorant Garamond',serif;font-weight:600;
+    font-size:46px;line-height:1.1;color:var(--ivory);margin:18px 0 6px;
+  }
+  .lead{
+    text-align:center;font-size:16.5px;line-height:1.6;color:#E9E2D4;
+    max-width:500px;margin:14px auto 0;font-weight:400;
+  }
+  .amount{
+    text-align:center;margin:22px auto 4px;font-family:'Cormorant Garamond',serif;
+    font-size:34px;color:var(--gold-lt);font-weight:600;
+  }
+  .amount .funds{display:block;font-family:'Raleway';font-size:14px;letter-spacing:.5px;
+    color:var(--lav-lt);font-weight:400;margin-top:2px}
+  .rule{display:flex;align-items:center;justify-content:center;gap:12px;margin:26px 0}
+  .rule::before,.rule::after{content:"";height:1px;width:90px;
+    background:linear-gradient(90deg,transparent,rgba(196,151,47,.7))}
+  .rule::after{background:linear-gradient(90deg,rgba(196,151,47,.7),transparent)}
+  .rule span{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .receipt{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(216,205,236,.22);
+    border-radius:14px;padding:24px 26px;margin-top:6px;
+  }
+  .receipt h2{
+    font-family:'Raleway';font-size:12px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--gold-lt);font-weight:600;text-align:center;margin-bottom:16px;
+  }
+  .receipt dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:14.5px}
+  .receipt dt{color:var(--lav);font-weight:500}
+  .receipt dd{color:var(--ivory);text-align:right}
+  .receipt .statement{
+    margin-top:16px;padding-top:14px;border-top:1px solid rgba(216,205,236,.18);
+    font-size:13.5px;line-height:1.55;color:#DCD5E6;
+  }
+  .sign{margin-top:26px;text-align:center}
+  .sign .grat{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:var(--ivory)}
+  .sign .name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--gold-lt);margin-top:4px}
+  .sign .title{font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--lav);margin-top:2px}
+  .actions{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+  .btn{
+    font-family:'Raleway';font-size:14px;font-weight:600;letter-spacing:1px;
+    padding:13px 26px;border-radius:40px;cursor:pointer;text-decoration:none;
+    border:1px solid var(--gold);color:var(--navy-deep);
+    background:linear-gradient(180deg,var(--gold-lt),var(--gold));
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn.ghost{background:transparent;color:var(--gold-lt);border-color:rgba(196,151,47,.55)}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(196,151,47,.25)}
+  .foot{text-align:center;font-size:12.5px;color:var(--lav);opacity:.85;margin-top:24px;line-height:1.6}
+  .foot a{color:var(--gold-lt);text-decoration:none}
+  @media (max-width:520px){
+    .card{padding:36px 24px 30px}
+    h1{font-size:38px}
+    .receipt dl{grid-template-columns:1fr;gap:2px 0}
+    .receipt dd{text-align:left;margin-bottom:8px}
+  }
+  @media print{
+    body{background:#fff;color:#111;padding:0}
+    .starfish,.actions{display:none!important}
+    .card{box-shadow:none;border:1px solid #bbb;backdrop-filter:none;background:#fff;max-width:100%;color:#111}
+    .eyebrow,.receipt h2,.sign .name,.amount{color:#8a6a12}
+    h1,.receipt dd,.sign .grat{color:#111}
+    .sub,.receipt dt,.sign .title,.foot{color:#444}
+    .lead,.receipt .statement{color:#222}
+    .receipt{background:#faf7f0;border-color:#ddd}
+  }
+</style>
+</head>
+<body>
+  <svg class="starfish" viewBox="0 0 200 200" aria-hidden="true">
+    <path fill="#B9A9D6" d="M100 6
+      C108 40 118 56 150 60 C120 72 112 88 118 122
+      C100 100 90 100 72 122 C78 88 70 72 40 60
+      C72 56 82 40 100 6 Z"/>
+  </svg>
+
+  <main class="card" role="main">
+    <div class="eyebrow">The Right Thing in Recovery</div>
+    <div class="sub">A Peer Connection Clubhouse</div>
+
+    <h1>Thank You for Your Gift</h1>
+    <p class="lead">Your generosity keeps the doors of the Peer Connection Clubhouse open: a safe, welcoming place where people in recovery find community, build real life skills, and stay connected to support that lasts. You just met someone where they are.</p>
+
+    <div class="amount" id="amountBlock" style="display:none">
+      <span id="amountValue"></span>
+      <span class="funds" id="amountFunds"></span>
+    </div>
+
+    <div class="rule"><span></span></div>
+
+    <section class="receipt" aria-label="Donation receipt">
+      <h2>Your Donation Receipt</h2>
+      <dl>
+        <dt>Organization</dt><dd>The Right Thing in Recovery</dd>
+        <dt>Tax status</dt><dd>501(c)(3) nonprofit</dd>
+        <dt>EIN</dt><dd>93-4316358</dd>
+        <dt>Date</dt><dd id="rDate"></dd>
+        <dd id="rAmountRow" style="display:none;grid-column:1/-1"></dd>
+      </dl>
+      <p class="statement">No goods or services were provided in exchange for this contribution. Your gift is tax-deductible to the extent allowed by law. Please retain this acknowledgment for your tax records.</p>
+    </section>
+
+    <div class="sign">
+      <div class="grat">With gratitude,</div>
+      <div class="name">Ryan Anderson</div>
+      <div class="title">In-Kind Donations Manager</div>
+      <div class="title" style="margin-top:2px;opacity:.78">The Right Thing in Recovery</div>
+    </div>
+
+    <div class="actions">
+      <a class="btn" href="#" onclick="window.print();return false;">Print or Save Receipt</a>
+      <a class="btn ghost" href="https://nextrighthing.com">Return to Website</a>
+    </div>
+
+    <p class="foot">
+      A copy of your payment receipt has also been emailed to you by Square.<br>
+      Questions about your gift? Email <a href="mailto:info@nextrighthing.com">info@nextrighthing.com</a>.
+    </p>
+  </main>
+
+<script>
+  (function(){
+    var p = new URLSearchParams(window.location.search);
+    // date
+    var d = new Date();
+    document.getElementById('rDate').textContent =
+      d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+    // amount + tier personalization
+    var amount = p.get('amount');
+    var freq = (p.get('freq')||'').toLowerCase();
+    var tier = (p.get('tier')||'').toLowerCase();
+
+    var fundsByAmount = {
+      '25':'a week of Clubhouse access for someone in early recovery',
+      '50':'a life skills session: budgeting, job prep, or credit repair',
+      '100':'a one hour case management session',
+      '250':'a full month of Clubhouse programming for one person',
+      '500':'two full months of Clubhouse programming for someone in recovery'
+    };
+    var fundsByTier = {
+      'clubhouse-week':fundsByAmount['25'],
+      'life-skills':fundsByAmount['50'],
+      'case-management':fundsByAmount['100'],
+      'month-programming':fundsByAmount['250'],
+      'two-months':fundsByAmount['500']
+    };
+
+    if(amount){
+      var clean = amount.replace(/[^0-9.]/g,'');
+      var isMonthly = freq === 'monthly' || freq === 'recurring';
+      var label = '$'+clean+(isMonthly?' / month':'');
+      var funds = fundsByTier[tier] || fundsByAmount[clean] || 'the Peer Connection Clubhouse and its community';
+
+      var ab = document.getElementById('amountBlock');
+      ab.style.display='block';
+      document.getElementById('amountValue').textContent =
+        (isMonthly?'Your monthly gift of ':'Your gift of ')+label;
+      document.getElementById('amountFunds').textContent = 'Provides '+funds+'.';
+
+      var row = document.getElementById('rAmountRow');
+      row.style.display='block';
+      row.innerHTML = '<span style="color:var(--lav);font-weight:500">Gift amount &nbsp;</span>'+label+(isMonthly?' (recurring)':'');
+    }
+  })();
+</script>
+</body>
+</html>

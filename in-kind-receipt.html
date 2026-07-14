@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>In-Kind Donation Receipt | The Right Thing in Recovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#16294A;--navy-deep:#0B1730;--gold:#C4972F;--gold-lt:#E6C97A;--lav:#B9A9D6;--lav-lt:#D8CDEC;--ivory:#F3ECDD}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Raleway',sans-serif;color:var(--ivory);min-height:100vh;padding:40px 18px;
+    background:radial-gradient(55% 50% at 50% 16%,rgba(185,169,214,.14),transparent 70%),
+      radial-gradient(50% 45% at 50% 95%,rgba(196,151,47,.12),transparent 70%),
+      linear-gradient(180deg,#0A1428 0%,var(--navy) 60%,#0C1B36 100%)}
+  .wrap{max-width:640px;margin:0 auto}
+  .card{background:linear-gradient(180deg,rgba(30,53,96,.55),rgba(11,23,48,.6));
+    border:1px solid rgba(196,151,47,.42);border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:44px 40px 36px}
+  .eyebrow{text-align:center;font-size:12px;letter-spacing:4px;font-weight:600;text-transform:uppercase;color:var(--gold-lt)}
+  .sub{text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--lav-lt);margin-top:3px}
+  h1{text-align:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:40px;color:var(--ivory);margin:16px 0 6px}
+  .hint{text-align:center;font-size:14.5px;line-height:1.6;color:#E9E2D4;max-width:480px;margin:12px auto 0}
+  label{display:block;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--lav-lt);margin:22px 0 8px;font-weight:600;text-align:center}
+  #code{width:100%;font-family:'Raleway';font-size:20px;letter-spacing:3px;text-align:center;text-transform:uppercase;color:var(--ivory);
+    background:rgba(255,255,255,.06);border:1px solid rgba(216,205,236,.3);border-radius:12px;padding:16px 14px;outline:none}
+  #code:focus{border-color:var(--gold);background:rgba(255,255,255,.09)}
+  .err{color:#F1A7A7;font-size:14px;margin-top:14px;min-height:18px;text-align:center}
+  .actions{display:flex;gap:12px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+  .btn{font-family:'Raleway';font-size:14px;font-weight:600;letter-spacing:1px;padding:14px 30px;border-radius:40px;cursor:pointer;border:1px solid var(--gold);color:var(--navy-deep);background:linear-gradient(180deg,var(--gold-lt),var(--gold));transition:transform .15s,box-shadow .15s}
+  .btn.ghost{background:transparent;color:var(--gold-lt);border-color:rgba(196,151,47,.55)}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(196,151,47,.22)}
+  .btn[disabled]{opacity:.5;cursor:wait}
+  #receipt{display:none}
+  .rule{display:flex;align-items:center;justify-content:center;gap:12px;margin:22px 0}
+  .rule::before,.rule::after{content:"";height:1px;width:80px;background:linear-gradient(90deg,transparent,rgba(196,151,47,.7))}
+  .rule::after{background:linear-gradient(90deg,rgba(196,151,47,.7),transparent)}
+  .rule span{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .serial{text-align:center;font-size:12px;letter-spacing:2px;color:var(--lav);margin-top:2px}
+  .rtitle{text-align:center;font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--ivory);margin-top:6px}
+  dl.block{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;font-size:14.5px;margin-top:10px}
+  dl.block dt{color:var(--lav);font-weight:500}dl.block dd{color:var(--ivory);text-align:right}
+  .desc{background:rgba(255,255,255,.05);border:1px solid rgba(216,205,236,.2);border-radius:12px;padding:16px 18px;margin-top:16px;font-size:15px;line-height:1.55;color:var(--ivory)}
+  .desc .lbl{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-lt);margin-bottom:6px}
+  .statement{margin-top:16px;font-size:12.5px;line-height:1.55;color:#DCD5E6;border-top:1px solid rgba(216,205,236,.18);padding-top:14px}
+  .sign{margin-top:24px;text-align:center}
+  .sign .grat{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--ivory)}
+  .sign .name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold-lt);margin-top:3px}
+  .sign .title{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--lav);margin-top:2px}
+  .foot{text-align:center;font-size:12.5px;color:var(--lav);opacity:.85;margin-top:22px;line-height:1.6}
+  .foot a{color:var(--gold-lt);text-decoration:none}
+  @media (max-width:520px){.card{padding:34px 22px}h1{font-size:34px}dl.block{grid-template-columns:1fr}dl.block dd{text-align:left}}
+  @media print{body{background:#fff;color:#111;padding:0}#entry,.actions,.foot{display:none!important}
+    .card{box-shadow:none;border:1px solid #bbb;backdrop-filter:none;background:#fff;color:#111}
+    .eyebrow,.serial,.rtitle,.desc .lbl,.sign .name{color:#8a6a12}
+    h1,dl.block dd,.sign .grat,.desc{color:#111}.sub,dl.block dt,.sign .title,.statement{color:#333}
+    .desc{background:#faf7f0;border-color:#ddd}}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+
+  <div id="entry">
+    <div class="eyebrow">The Right Thing in Recovery</div>
+    <div class="sub">A Peer Connection Clubhouse</div>
+    <h1>In-Kind Donation Receipt</h1>
+    <p class="hint">Thank you for your in-kind gift. Enter the confirmation code provided by our In-Kind Donations Manager to generate your official receipt.</p>
+    <label for="code">Confirmation code</label>
+    <input id="code" placeholder="RTIK-XXXX-XXXX" autocomplete="off" spellcheck="false">
+    <div class="err" id="err"></div>
+    <div class="actions">
+      <button class="btn" id="go" onclick="redeem()">Generate My Receipt</button>
+    </div>
+  </div>
+
+  <div id="receipt">
+    <div class="eyebrow">The Right Thing in Recovery</div>
+    <div class="sub">A Peer Connection Clubhouse</div>
+    <div class="rule"><span></span></div>
+    <div class="serial" id="rSerial"></div>
+    <div class="rtitle">In-Kind Donation Receipt</div>
+    <dl class="block">
+      <dt>Received from</dt><dd id="rDonor"></dd>
+      <dt>Date of donation</dt><dd id="rDdate"></dd>
+      <dt>Date issued</dt><dd id="rIssued"></dd>
+      <dt>Organization</dt><dd>The Right Thing in Recovery</dd>
+      <dt>Tax status</dt><dd>501(c)(3) &middot; EIN 93-4316358</dd>
+    </dl>
+    <div class="desc">
+      <span class="lbl">Description of Contribution</span>
+      <span id="rDesc"></span>
+      <div id="rValueWrap" style="display:none;margin-top:10px;font-size:13px;color:var(--lav)">
+        Fair market value as stated by donor: <span id="rValue" style="color:var(--ivory)"></span>
+      </div>
+    </div>
+    <p class="statement">
+      No goods or services were provided by The Right Thing in Recovery in exchange for this contribution.
+      The Right Thing in Recovery does not assign or confirm the value of donated goods or services; determining and substantiating fair market value is the responsibility of the donor.
+      The deductibility of donated services may be limited or not allowed; please consult your tax advisor.
+      Please retain this receipt for your tax records.
+    </p>
+    <div class="sign">
+      <div class="grat">With gratitude,</div>
+      <div class="name">Ryan Anderson</div>
+      <div class="title">In-Kind Donations Manager</div>
+      <div class="title" style="opacity:.78">The Right Thing in Recovery &middot; Ryan@nextrighthing.com</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="window.print()">Print or Save PDF</button>
+      <button class="btn ghost" onclick="location.reload()">Done</button>
+    </div>
+    <p class="foot">Verify this receipt anytime at <a href="/verify.html">nextrighthing.com/verify</a> using the receipt number above.</p>
+  </div>
+
+</div></div>
+
+<script>
+  // ===== CONFIG: paste your Supabase project values =====
+  const SUPABASE_URL = 'https://uhnytejrlfummcrwdeij.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_0x4W8Ja8S_PrwAQ6egq0-Q_D4XH8PFY';
+  // The anon key is safe to expose: RLS + SECURITY DEFINER functions
+  // mean it can only call redeem/verify, never read the code tables.
+  // ======================================================
+
+  function fmt(d){ if(!d) return '\u2014'; return new Date(d+'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}); }
+  function fmtTs(t){ if(!t) return '\u2014'; return new Date(t).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}); }
+
+  async function redeem(){
+    const err=document.getElementById('err');
+    const btn=document.getElementById('go');
+    const code=document.getElementById('code').value.trim();
+    err.textContent='';
+    if(!code){ err.textContent='Please enter your confirmation code.'; return; }
+    btn.disabled=true; btn.textContent='Verifying...';
+    try{
+      const res=await fetch(SUPABASE_URL+'/rest/v1/rpc/redeem_authorization',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY},
+        body:JSON.stringify({p_code:code})
+      });
+      const data=await res.json();
+      if(!res.ok){
+        const m=(data && data.message)||'';
+        if(m.indexOf('INVALID_CODE')>-1) throw 'That code was not recognized. Please check it with our In-Kind Donations Manager.';
+        if(m.indexOf('VOID_CODE')>-1)    throw 'That code is no longer valid. Please contact Ryan@nextrighthing.com.';
+        throw 'Something went wrong. Please try again or email Ryan@nextrighthing.com.';
+      }
+      const r=Array.isArray(data)?data[0]:data;
+      if(!r){ throw 'That code was not recognized.'; }
+
+      document.getElementById('rSerial').textContent='Receipt No. '+r.serial;
+      document.getElementById('rDonor').textContent=r.donor_name;
+      document.getElementById('rDdate').textContent=fmt(r.date_of_donation);
+      document.getElementById('rIssued').textContent=fmtTs(r.issued_at);
+      document.getElementById('rDesc').textContent=r.description;
+      if(r.donor_value!=null && r.donor_value!==''){
+        document.getElementById('rValueWrap').style.display='block';
+        document.getElementById('rValue').textContent='$'+Number(r.donor_value).toLocaleString('en-US');
+      }
+      document.getElementById('entry').style.display='none';
+      document.getElementById('receipt').style.display='block';
+      window.scrollTo(0,0);
+    }catch(e){
+      err.textContent=(typeof e==='string')?e:'Unable to reach the server. Please try again.';
+      btn.disabled=false; btn.textContent='Generate My Receipt';
+    }
+  }
+  document.getElementById('code').addEventListener('keydown',function(e){ if(e.key==='Enter') redeem(); });
+</script>
+</body>
+</html>

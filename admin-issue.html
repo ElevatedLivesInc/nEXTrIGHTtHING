@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Issue In-Kind Code | The Right Thing in Recovery</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#16294A;--navy-deep:#0B1730;--gold:#C4972F;--gold-lt:#E6C97A;--lav:#B9A9D6;--lav-lt:#D8CDEC;--ivory:#F3ECDD}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Raleway',sans-serif;color:var(--ivory);min-height:100vh;padding:36px 18px;
+    background:radial-gradient(55% 50% at 50% 16%,rgba(185,169,214,.12),transparent 70%),linear-gradient(180deg,#0A1428,#16294A 60%,#0C1B36)}
+  .wrap{max-width:600px;margin:0 auto}
+  .banner{text-align:center;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-lt);border:1px dashed rgba(196,151,47,.5);border-radius:10px;padding:9px 12px;margin-bottom:22px;background:rgba(196,151,47,.06)}
+  .card{background:linear-gradient(180deg,rgba(30,53,96,.55),rgba(11,23,48,.6));border:1px solid rgba(196,151,47,.42);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:38px 38px 32px}
+  .eyebrow{text-align:center;font-size:12px;letter-spacing:4px;font-weight:600;text-transform:uppercase;color:var(--gold-lt)}
+  h1{text-align:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;color:var(--ivory);margin:10px 0 4px}
+  .hint{text-align:center;font-size:13.5px;color:var(--lav);margin-bottom:20px}
+  label{display:block;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--lav-lt);margin:16px 0 6px;font-weight:600}
+  .opt{text-transform:none;letter-spacing:0;font-weight:400;opacity:.75;font-size:11px}
+  input,textarea{width:100%;font-family:'Raleway';font-size:15px;color:var(--ivory);background:rgba(255,255,255,.06);border:1px solid rgba(216,205,236,.28);border-radius:10px;padding:12px 14px;outline:none}
+  input:focus,textarea:focus{border-color:var(--gold);background:rgba(255,255,255,.09)}
+  textarea{min-height:80px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .err{color:#F1A7A7;font-size:13px;margin-top:12px;min-height:16px;text-align:center}
+  .actions{display:flex;justify-content:center;margin-top:22px}
+  .btn{font-family:'Raleway';font-size:14px;font-weight:600;letter-spacing:1px;padding:13px 28px;border-radius:40px;cursor:pointer;border:1px solid var(--gold);color:var(--navy-deep);background:linear-gradient(180deg,var(--gold-lt),var(--gold))}
+  .btn.ghost{background:transparent;color:var(--gold-lt);border-color:rgba(196,151,47,.55)}
+  .btn[disabled]{opacity:.5;cursor:wait}
+  #out{display:none;text-align:center;margin-top:8px}
+  .codebox{font-family:'Raleway';font-weight:600;font-size:30px;letter-spacing:4px;color:var(--gold-lt);background:rgba(196,151,47,.08);border:1px solid rgba(196,151,47,.5);border-radius:14px;padding:20px;margin:14px 0}
+  .script{font-size:14px;line-height:1.6;color:#E9E2D4;background:rgba(255,255,255,.05);border:1px solid rgba(216,205,236,.2);border-radius:12px;padding:16px 18px;text-align:left}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="banner">Staff only &middot; protected by Cloudflare Access</div>
+  <div class="card">
+    <div id="form">
+      <div class="eyebrow">The Right Thing in Recovery</div>
+      <h1>Issue an In-Kind Code</h1>
+      <p class="hint">Lock the agreed donation to a one-time code. Give the code to the donor; they redeem it on the site.</p>
+
+      <label>Donor organization or individual</label>
+      <input id="donor_name" placeholder="e.g., Salt Lake Bees">
+
+      <div class="row">
+        <div><label>Contact name <span class="opt">(optional)</span></label><input id="donor_contact" placeholder="e.g., Jordan Smith"></div>
+        <div><label>Date of donation <span class="opt">(optional)</span></label><input id="date_of_donation" type="date"></div>
+      </div>
+
+      <label>Description of donated goods</label>
+      <textarea id="description" placeholder="e.g., One hundred (100) tickets to a Salt Lake Bees home game, general admission"></textarea>
+
+      <label>Donor&rsquo;s stated value <span class="opt">(optional, provided by donor only)</span></label>
+      <input id="donor_value" placeholder="e.g., 1000">
+
+      <div class="err" id="err"></div>
+      <div class="actions"><button class="btn" id="go" onclick="issue()">Generate Code</button></div>
+    </div>
+
+    <div id="out">
+      <div class="eyebrow">Give this code to the donor</div>
+      <div class="codebox" id="code"></div>
+      <div class="script" id="script"></div>
+      <div class="actions" style="gap:12px">
+        <button class="btn" onclick="copyCode()">Copy Code</button>
+        <button class="btn ghost" onclick="location.reload()">Issue Another</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function issue(){
+    const err=document.getElementById('err'), btn=document.getElementById('go');
+    const donor_name=document.getElementById('donor_name').value.trim();
+    const description=document.getElementById('description').value.trim();
+    err.textContent='';
+    if(!donor_name || !description){ err.textContent='Donor and description are required.'; return; }
+    btn.disabled=true; btn.textContent='Working...';
+    try{
+      const res=await fetch('/api/issue-code',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          donor_name,
+          donor_contact:document.getElementById('donor_contact').value.trim(),
+          description,
+          donor_value:document.getElementById('donor_value').value.trim(),
+          date_of_donation:document.getElementById('date_of_donation').value
+        })
+      });
+      const data=await res.json();
+      if(!res.ok) throw (data.error||'Could not create code.');
+      document.getElementById('code').textContent=data.code;
+      document.getElementById('script').innerHTML=
+        'Thank you so much for your donation to The Right Thing in Recovery. '
+        +'To get your tax receipt, go to <b>nextrighthing.com/in-kind-receipt</b> and enter this code: <b>'+data.code+'</b>. '
+        +'Your official receipt will generate instantly.';
+      document.getElementById('form').style.display='none';
+      document.getElementById('out').style.display='block';
+    }catch(e){
+      err.textContent=(typeof e==='string')?e:'Something went wrong.';
+      btn.disabled=false; btn.textContent='Generate Code';
+    }
+  }
+  function copyCode(){ navigator.clipboard.writeText(document.getElementById('code').textContent); }
+</script>
+</body>
+</html>

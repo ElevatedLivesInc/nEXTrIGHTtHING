@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify a Receipt | The Right Thing in Recovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#16294A;--navy-deep:#0B1730;--gold:#C4972F;--gold-lt:#E6C97A;--lav:#B9A9D6;--lav-lt:#D8CDEC;--ivory:#F3ECDD;--green:#7FD1A8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Raleway',sans-serif;color:var(--ivory);min-height:100vh;padding:40px 18px;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(55% 50% at 50% 16%,rgba(185,169,214,.14),transparent 70%),
+      radial-gradient(50% 45% at 50% 95%,rgba(196,151,47,.12),transparent 70%),
+      linear-gradient(180deg,#0A1428 0%,var(--navy) 60%,#0C1B36 100%)}
+  .card{width:100%;max-width:560px;background:linear-gradient(180deg,rgba(30,53,96,.55),rgba(11,23,48,.6));
+    border:1px solid rgba(196,151,47,.42);border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:44px 40px 38px}
+  .eyebrow{text-align:center;font-size:12px;letter-spacing:4px;font-weight:600;text-transform:uppercase;color:var(--gold-lt)}
+  h1{text-align:center;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:38px;color:var(--ivory);margin:12px 0 6px}
+  .hint{text-align:center;font-size:14px;color:#E9E2D4;max-width:420px;margin:8px auto 0;line-height:1.55}
+  label{display:block;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--lav-lt);margin:24px 0 8px;font-weight:600;text-align:center}
+  #serial{width:100%;font-family:'Raleway';font-size:18px;letter-spacing:2px;text-align:center;text-transform:uppercase;color:var(--ivory);
+    background:rgba(255,255,255,.06);border:1px solid rgba(216,205,236,.3);border-radius:12px;padding:15px 14px;outline:none}
+  #serial:focus{border-color:var(--gold);background:rgba(255,255,255,.09)}
+  .actions{display:flex;justify-content:center;margin-top:22px}
+  .btn{font-family:'Raleway';font-size:14px;font-weight:600;letter-spacing:1px;padding:14px 30px;border-radius:40px;cursor:pointer;border:1px solid var(--gold);color:var(--navy-deep);background:linear-gradient(180deg,var(--gold-lt),var(--gold))}
+  .btn[disabled]{opacity:.5;cursor:wait}
+  #result{margin-top:24px;display:none}
+  .badge{display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:26px}
+  .ok{color:var(--green)}.no{color:#F1A7A7}
+  dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:14px;margin-top:18px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(216,205,236,.2);border-radius:12px;padding:16px 18px}
+  dt{color:var(--lav);font-weight:500}dd{color:var(--ivory);text-align:right}
+  .msg{text-align:center;color:#E9E2D4;font-size:14px;margin-top:12px;line-height:1.55}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="eyebrow">The Right Thing in Recovery</div>
+    <h1>Verify a Receipt</h1>
+    <p class="hint">Enter a receipt number to confirm it was issued by The Right Thing in Recovery, a 501(c)(3) nonprofit, EIN 93-4316358.</p>
+    <label for="serial">Receipt number</label>
+    <input id="serial" placeholder="RT-IK-XXXXXXXX-XXXX" autocomplete="off" spellcheck="false">
+    <div class="actions"><button class="btn" id="go" onclick="check()">Verify</button></div>
+    <div id="result"></div>
+  </div>
+
+<script>
+  const SUPABASE_URL='https://uhnytejrlfummcrwdeij.supabase.co';
+  const SUPABASE_ANON_KEY='sb_publishable_0x4W8Ja8S_PrwAQ6egq0-Q_D4XH8PFY';
+
+  function fmt(d){ if(!d) return '\u2014'; return new Date(d+'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}); }
+  function fmtTs(t){ if(!t) return '\u2014'; return new Date(t).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}); }
+
+  async function check(){
+    const btn=document.getElementById('go');
+    const out=document.getElementById('result');
+    const serial=document.getElementById('serial').value.trim();
+    if(!serial){ return; }
+    btn.disabled=true; btn.textContent='Checking...'; out.style.display='none';
+    try{
+      const res=await fetch(SUPABASE_URL+'/rest/v1/rpc/verify_receipt',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY},
+        body:JSON.stringify({p_serial:serial})
+      });
+      const data=await res.json();
+      const r=Array.isArray(data)?data[0]:null;
+      if(r){
+        out.innerHTML='<div class="badge ok">&#10003; Genuine receipt</div>'
+          +'<dl><dt>Receipt No.</dt><dd>'+r.serial+'</dd>'
+          +'<dt>Donor</dt><dd>'+r.donor_name+'</dd>'
+          +'<dt>Contribution</dt><dd>'+r.description+'</dd>'
+          +'<dt>Date of donation</dt><dd>'+fmt(r.date_of_donation)+'</dd>'
+          +'<dt>Issued</dt><dd>'+fmtTs(r.issued_at)+'</dd></dl>';
+      }else{
+        out.innerHTML='<div class="badge no">&#10007; Not found</div>'
+          +'<p class="msg">No receipt matches that number in our records. Please recheck the number, or contact Ryan@nextrighthing.com.</p>';
+      }
+      out.style.display='block';
+    }catch(e){
+      out.innerHTML='<p class="msg">Unable to reach the server. Please try again.</p>';
+      out.style.display='block';
+    }
+    btn.disabled=false; btn.textContent='Verify';
+  }
+  document.getElementById('serial').addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+</script>
+</body>
+</html>
