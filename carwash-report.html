@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Wash — Live Scoreboard (Staff)</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--blue:#1b64e3;--navy:#04173f;--sky:#eaf4ff;--ice:#cfe6ff;--green:#12b76a;--sun:#f0a500;--ink:#07172e}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Archivo',sans-serif;background:#dce8f7;color:var(--ink);padding:22px 16px;line-height:1.5}
+  .wrap{max-width:920px;margin:0 auto}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;border-bottom:2px solid var(--ice);padding-bottom:16px}
+  .top h1{font-family:'Archivo Black',sans-serif;font-size:30px;color:var(--navy);letter-spacing:-.5px}
+  .top .sub{font-size:13px;color:#5a6b85;margin-top:2px}
+  .staff{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:var(--blue);padding:6px 12px;border-radius:20px}
+  .live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff5a5a;margin-right:6px;animation:p 1.6s infinite}
+  @keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+  .stat{background:#fff;border:1px solid var(--ice);border-radius:16px;padding:18px;text-align:center;box-shadow:0 5px 16px rgba(27,100,227,.07)}
+  .stat .n{font-family:'Archivo Black',sans-serif;font-size:38px;color:var(--blue);line-height:.9}
+  .stat.g .n{color:var(--green)}
+  .stat .l{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#6a7c96;margin-top:5px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+  .panel{background:#fff;border:1px solid var(--ice);border-radius:16px;padding:18px;box-shadow:0 5px 16px rgba(27,100,227,.07)}
+  .panel h2{font-family:'Archivo Black',sans-serif;font-size:17px;color:var(--navy);margin-bottom:12px}
+  .slotbar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .slotbar .tm{font-weight:800;font-size:13px;width:52px;flex:0 0 auto}
+  .slotbar .track{flex:1;height:20px;background:var(--sky);border-radius:10px;overflow:hidden;position:relative}
+  .slotbar .fill{height:100%;background:linear-gradient(90deg,#3f8bff,var(--blue));border-radius:10px;min-width:2px;transition:width .4s}
+  .slotbar .fill.hot{background:linear-gradient(90deg,#ffb020,var(--sun))}
+  .slotbar .ct{font-weight:800;font-size:12px;width:60px;text-align:right;flex:0 0 auto}
+  .slotbar .ct.hot{color:var(--sun)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th{text-align:left;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#6a7c96;padding:8px;border-bottom:1px solid var(--ice)}
+  td{padding:9px 8px;border-bottom:1px solid #eef4fb}
+  td.nm{font-weight:700}
+  .tag{font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px}
+  .tag.r{background:#e5efff;color:var(--blue)}
+  .tag.v{background:#e3f9ee;color:var(--green)}
+  .controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .btn{font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;padding:10px 18px;border-radius:24px;border:0;cursor:pointer}
+  .btn.b{background:var(--blue);color:#fff}
+  .btn.g{background:#fff;border:1.5px solid var(--ice);color:#5a6b85}
+  .empty{text-align:center;color:#8090a8;padding:30px;font-size:14px}
+  @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+  @media print{body{background:#fff}.staff,.controls,.live{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Car Wash — Live Scoreboard</h1>
+      <div class="sub"><span class="live"></span>Auto-refreshing · July 17 &amp; 18 · The proof for Cate</div>
+    </div>
+    <div class="staff">Staff only</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n" id="sCars">—</div><div class="l">Cars reserved</div></div>
+    <div class="stat g"><div class="n" id="sVol">—</div><div class="l">Volunteers</div></div>
+    <div class="stat"><div class="n" id="sFri">—</div><div class="l">Friday</div></div>
+    <div class="stat"><div class="n" id="sSat">—</div><div class="l">Saturday</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>Friday · Jul 17 — by time</h2>
+      <div id="friSlots"><div class="empty">No reservations yet</div></div>
+    </div>
+    <div class="panel">
+      <h2>Saturday · Jul 18 — by time</h2>
+      <div id="satSlots"><div class="empty">No reservations yet</div></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:16px">
+    <h2>Everyone who signed up</h2>
+    <div id="listArea"><div class="empty">Loading…</div></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn b" onclick="load()">Refresh now</button>
+    <button class="btn g" onclick="window.print()">Print for Cate</button>
+  </div>
+</div>
+
+<script>
+  var SLOT_CAP=8;
+  var TIMES=['10:00','10:30','11:00','11:30','12:00','12:30','1:00','1:30','2:00','2:30','3:00','3:30'];
+  function esc(s){return (s||'').toString().replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];});}
+  function fmt(s){if(!s)return '';var d=new Date(s);return isNaN(d)?'':d.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}
+
+  function renderSlots(rows, day, elId){
+    var counts={}; TIMES.forEach(function(t){counts[t]=0;});
+    rows.forEach(function(r){ if(r.signup_type==='rsvp' && r.day===day && r.slot){ if(counts[r.slot]!==undefined) counts[r.slot]++; }});
+    var any=Object.keys(counts).some(function(t){return counts[t]>0;});
+    var el=document.getElementById(elId);
+    if(!any){ el.innerHTML='<div class="empty">No reservations yet</div>'; return; }
+    var html='';
+    TIMES.forEach(function(t){
+      var c=counts[t]; if(c===0 && !any) return;
+      var pct=Math.min(100,(c/SLOT_CAP)*100);
+      var hot=c>=SLOT_CAP;
+      html+='<div class="slotbar"><div class="tm">'+t+'</div>'
+        +'<div class="track"><div class="fill'+(hot?' hot':'')+'" style="width:'+pct+'%"></div></div>'
+        +'<div class="ct'+(hot?' hot':'')+'">'+(hot?'FULL':c)+'</div></div>';
+    });
+    el.innerHTML=html;
+  }
+
+  function load(){
+    fetch('/api/carwash-report').then(function(r){return r.json();}).then(function(d){
+      if(d.error){ document.getElementById('listArea').innerHTML='<div class="empty">Could not load. Refresh, or contact Gabriel.</div>'; return; }
+      var rows=d.signups||[];
+      var cars=rows.filter(function(r){return r.signup_type==='rsvp';});
+      var vols=rows.filter(function(r){return r.signup_type==='volunteer';});
+      document.getElementById('sCars').textContent=cars.length;
+      document.getElementById('sVol').textContent=vols.length;
+      document.getElementById('sFri').textContent=cars.filter(function(r){return r.day==='Fri Jul 17';}).length;
+      document.getElementById('sSat').textContent=cars.filter(function(r){return r.day==='Sat Jul 18';}).length;
+      renderSlots(rows,'Fri Jul 17','friSlots');
+      renderSlots(rows,'Sat Jul 18','satSlots');
+      var la=document.getElementById('listArea');
+      if(rows.length===0){ la.innerHTML='<div class="empty">No signups yet — share the link!</div>'; return; }
+      var h='<table><thead><tr><th>Name</th><th>Type</th><th>Day</th><th>Time</th><th>Contact</th><th>When</th></tr></thead><tbody>';
+      rows.forEach(function(r){
+        h+='<tr><td class="nm">'+esc(r.name)+'</td>'
+          +'<td><span class="tag '+(r.signup_type==='rsvp'?'r':'v')+'">'+(r.signup_type==='rsvp'?'Car':'Volunteer')+'</span></td>'
+          +'<td>'+esc(r.day)+'</td><td>'+esc(r.slot)+'</td><td>'+esc(r.contact)+'</td><td>'+fmt(r.created_at)+'</td></tr>';
+      });
+      h+='</tbody></table>'; la.innerHTML=h;
+    }).catch(function(){ document.getElementById('listArea').innerHTML='<div class="empty">Could not load. Refresh, or contact Gabriel.</div>'; });
+  }
+  load();
+  setInterval(load, 15000);
+</script>
+</body>
+</html>

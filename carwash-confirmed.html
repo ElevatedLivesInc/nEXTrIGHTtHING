@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're all set! | Car Wash for Recovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--blue:#1b64e3;--navy:#03112f;--sun:#ffc021;--ice:#cfe6ff;--green:#12b76a}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Archivo',sans-serif;background:radial-gradient(130% 90% at 50% -5%,#56a0ff,#1b64e3 45%,#052569 100%);color:#fff;min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}
+  .card{max-width:440px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:26px;padding:40px 30px;backdrop-filter:blur(10px)}
+  .check{width:84px;height:84px;border-radius:50%;background:var(--green);display:grid;place-items:center;margin:0 auto 18px;font-size:44px;box-shadow:0 10px 30px rgba(18,183,106,.5)}
+  h1{font-family:'Archivo Black',sans-serif;font-size:34px;line-height:1;letter-spacing:-.5px}
+  .when{font-family:'Archivo Black',sans-serif;font-size:22px;color:var(--sun);margin-top:14px}
+  p{font-size:15px;color:#dbe8ff;margin-top:14px;line-height:1.55}
+  p b{color:#fff}
+  .show{background:var(--sun);color:var(--navy);border-radius:14px;padding:16px;margin-top:22px;font-weight:900;font-size:15px}
+  .where{margin-top:20px;font-size:13px;color:#bcd8ff;line-height:1.7}
+  .where b{color:#fff}
+  .btns{margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  a.b{text-decoration:none;font-weight:800;font-size:13px;padding:11px 20px;border-radius:24px;background:rgba(255,255,255,.14);color:#fff}
+  a.b:hover{background:rgba(255,255,255,.25)}
+  .org{margin-top:26px;padding-top:18px;border-top:1px solid rgba(255,255,255,.15);font-size:11px;color:#9fbce8;line-height:1.6}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="check">&#10003;</div>
+    <h1 id="head">You're all set!</h1>
+    <div class="when" id="when"></div>
+    <p id="body">Thank you for supporting recovery and community.</p>
+    <div class="show" id="showline">&#128241; Show this screen at the wash</div>
+    <div class="where">
+      <b>Fellowship Hall</b><br>2060 S Windsor St, Salt Lake City<br>July 17 &amp; 18 &middot; from 10AM
+    </div>
+    <div class="btns">
+      <a class="b" href="https://nextrighthing.com/carwash">Back to car wash</a>
+      <a class="b" href="https://www.instagram.com/thenextrightthinginrecovery/" target="_blank" rel="noopener">Follow us</a>
+    </div>
+    <div class="org" id="org"></div>
+  </div>
+<script>
+  var p=new URLSearchParams(location.search);
+  var day=p.get('day'), type=p.get('type');
+  var head=document.getElementById('head'), when=document.getElementById('when'),
+      body=document.getElementById('body'), showline=document.getElementById('showline'),
+      org=document.getElementById('org');
+  if(type==='gift'){
+    head.textContent='Thank you! \ud83d\udc9b';
+    when.textContent='Your gift is received';
+    body.innerHTML='Your <b>tax-deductible donation</b> to The Right Thing in Recovery helps fund a sober celebration for people in recovery. A receipt will follow by email.';
+    showline.style.display='none';
+    org.innerHTML='The Right Thing in Recovery &middot; 501(c)(3) &middot; EIN 93-4316358<br>No goods or services were provided in exchange for this gift.';
+  } else {
+    var dayLabel = day==='sat' ? 'Saturday, July 18' : (day==='fri' ? 'Friday, July 17' : 'July 17 or 18');
+    head.textContent="You're reserved!";
+    when.textContent=dayLabel;
+    body.innerHTML='Your <b>$6 wash is paid</b>. Come by Fellowship Hall on your day &mdash; we\u2019ll take great care of your car.';
+    org.innerHTML='Car wash hosted by The Next Right Thing in Recovery community.';
+  }
+</script>
+</body>
+</html>
