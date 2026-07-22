@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Intake Queue — Staff Only</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.4rem 1.5rem;}
+  .top-inner{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.7rem;}
+  h1 em{color:var(--sand-light);font-style:italic;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);}
+  .wrap{max-width:1080px;margin:0 auto;padding:1.5rem;}
+  .bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.4rem;align-items:center;}
+  .fbtn{padding:.45rem 1.1rem;border-radius:50px;border:1px solid rgba(201,169,110,.35);background:transparent;color:rgba(255,255,255,.7);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Raleway',sans-serif;}
+  .fbtn.active{background:rgba(201,169,110,.2);color:var(--sand-light);border-color:rgba(201,169,110,.6);}
+  .count{margin-left:auto;font-size:.72rem;color:rgba(255,255,255,.45);}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;}
+  .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:1.2rem 1.3rem;display:flex;flex-direction:column;gap:.7rem;}
+  .card.priority{border-color:rgba(224,120,120,.55);box-shadow:0 0 22px rgba(224,120,120,.1);}
+  .chead{display:flex;justify-content:space-between;gap:.75rem;align-items:baseline;}
+  .cname{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--sand-light);}
+  .cwhen{font-size:.66rem;color:rgba(255,255,255,.4);white-space:nowrap;}
+  .flags{display:flex;flex-wrap:wrap;gap:.4rem;}
+  .flag{font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.22rem .6rem;border-radius:4px;font-weight:600;}
+  .flag.hot{background:rgba(224,120,120,.18);color:#f0b6b6;border:1px solid rgba(224,120,120,.4);}
+  .flag.warm{background:rgba(201,169,110,.15);color:var(--sand-light);border:1px solid rgba(201,169,110,.4);}
+  .flag.info{background:rgba(124,92,191,.18);color:var(--lav);border:1px solid rgba(124,92,191,.4);}
+  .rows{font-size:.8rem;color:rgba(255,255,255,.78);line-height:1.55;font-weight:300;}
+  .rows b{color:#fff;font-weight:600;}
+  .rows a{color:var(--sand-light);text-decoration:none;}
+  .msg{font-size:.78rem;color:rgba(255,255,255,.6);font-style:italic;border-left:2px solid rgba(201,169,110,.35);padding-left:.7rem;}
+  .status-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:auto;padding-top:.5rem;}
+  .sbtn{flex:1;min-width:70px;padding:.4rem .3rem;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;border-radius:5px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.55);cursor:pointer;font-family:'Raleway',sans-serif;}
+  .sbtn.on{background:rgba(201,169,110,.25);color:var(--sand-light);border-color:rgba(201,169,110,.6);font-weight:700;}
+  .note{max-width:640px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  .note code{background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:4px;font-size:.8rem;}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <h1>Pre-Intake <em>Queue</em></h1>
+  <div class="viewer" id="viewer"></div>
+</div></div>
+
+<div class="wrap">
+  <div class="bar" id="filters" style="display:none">
+    <button class="fbtn active" data-f="open">Open</button>
+    <button class="fbtn" data-f="new">New</button>
+    <button class="fbtn" data-f="contacted">Contacted</button>
+    <button class="fbtn" data-f="scheduled">Scheduled</button>
+    <button class="fbtn" data-f="closed">Closed</button>
+    <button class="fbtn" data-f="all">All</button>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="note" id="note">Loading…</div>
+</div>
+
+<script>
+let DATA=[], FILTER='open';
+const STATUSES=['new','contacted','scheduled','closed'];
+
+function esc(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
+function fmtWhen(iso){
+  try{const d=new Date(iso);
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  }catch(_){return '';}
+}
+
+/* Rule-based triage — flags for Bailey, no AI, human makes every call */
+function triage(r){
+  const f=[];
+  const lu=(r.last_use||'').toLowerCase();
+  if(lu==='today'||lu==='this week') f.push({c:'hot',t:'Reach out within 24h — recent use'});
+  if((r.needs_housing||'').toLowerCase()==='yes') f.push({c:'warm',t:'Housing needed'});
+  if((r.probation_parole||'').toLowerCase()==='yes') f.push({c:'warm',t:'Probation / parole'});
+  const ins=(r.insurance||'').toLowerCase();
+  if(ins==='no insurance') f.push({c:'info',t:'Uninsured — funding convo'});
+  else if(ins==='not sure') f.push({c:'info',t:'Insurance unverified'});
+  if(r.reaching_as==='family') f.push({c:'info',t:'Family reaching out'});
+  const missing=[];
+  if(!r.insurance) missing.push('insurance');
+  if(!r.phone) missing.push('phone');
+  if(!r.last_use) missing.push('last use');
+  if(missing.length) f.push({c:'info',t:'Missing: '+missing.join(', ')});
+  return f;
+}
+
+function render(){
+  const grid=document.getElementById('grid');
+  const note=document.getElementById('note');
+  let rows=DATA;
+  if(FILTER==='open') rows=DATA.filter(r=>(r.status||'new')!=='closed');
+  else if(FILTER!=='all') rows=DATA.filter(r=>(r.status||'new')===FILTER);
+  document.getElementById('count').textContent=rows.length+' of '+DATA.length;
+  if(!rows.length){grid.innerHTML='';note.style.display='block';note.textContent='Nothing here — the queue is clear.';return;}
+  note.style.display='none';
+  grid.innerHTML=rows.map(r=>{
+    const flags=triage(r);
+    const hot=flags.some(x=>x.c==='hot');
+    const line=(l,v)=>v?('<div><b>'+l+':</b> '+esc(v)+'</div>'):'';
+    return '<div class="card'+(hot?' priority':'')+'">'
+      +'<div class="chead"><div class="cname">'+esc(((r.first_name||'')+' '+(r.last_name||'')).trim()||'(no name)')+'</div>'
+      +'<div class="cwhen">'+fmtWhen(r.created_at)+'</div></div>'
+      +(flags.length?'<div class="flags">'+flags.map(x=>'<span class="flag '+x.c+'">'+esc(x.t)+'</span>').join('')+'</div>':'')
+      +'<div class="rows">'
+      +line('Phone', r.phone?null:null)
+      +(r.phone?('<div><b>Phone:</b> <a href="tel:'+esc(r.phone.replace(/[^0-9+]/g,''))+'">'+esc(r.phone)+'</a></div>'):'')
+      +(r.email?('<div><b>Email:</b> <a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a></div>'):'')
+      +line('Reaching out as', r.reaching_as==='family'?'Family member':'Self')
+      +line('Insurance', [r.insurance,r.insurance_company].filter(Boolean).join(' — '))
+      +line('Housing needed', r.needs_housing)
+      +line('Probation / parole', r.probation_parole)
+      +line('Primary substance', r.primary_substance)
+      +line('Last use', r.last_use)
+      +line('Best time to call', r.best_time)
+      +line('Motivation', r.motivation)
+      +'</div>'
+      +(r.message?('<div class="msg">&ldquo;'+esc(r.message)+'&rdquo;</div>'):'')
+      +'<div class="status-row">'+STATUSES.map(st=>
+        '<button class="sbtn'+((r.status||'new')===st?' on':'')+'" onclick="setStatus(\''+r.id+'\',\''+st+'\',this)">'+st+'</button>'
+      ).join('')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+async function setStatus(id,status,btn){
+  btn.textContent='…';
+  try{
+    const res=await fetch('/api/intake-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})});
+    if(res.ok){const row=DATA.find(r=>r.id===id);if(row)row.status=status;render();}
+    else{btn.textContent='retry';}
+  }catch(_){btn.textContent='retry';}
+}
+
+document.getElementById('filters').addEventListener('click',e=>{
+  const b=e.target.closest('.fbtn');if(!b)return;
+  FILTER=b.dataset.f;
+  document.querySelectorAll('.fbtn').forEach(x=>x.classList.toggle('active',x===b));
+  render();
+});
+
+(async function(){
+  const note=document.getElementById('note');
+  try{
+    const res=await fetch('/api/intake-list');
+    if(res.status===401){
+      note.innerHTML='This page must be protected by <b>Cloudflare Access</b> before it will load data.<br><br>In Cloudflare: Zero Trust &rarr; Access &rarr; Applications &rarr; Add application (self-hosted) &rarr; paths <code>/intake-queue</code> and <code>/api/intake-list</code> and <code>/api/intake-update</code> &rarr; policy allowing the intake team\'s emails. Then reload and log in.';
+      return;
+    }
+    const data=await res.json();
+    if(data.error){note.textContent='Error: '+data.error;return;}
+    DATA=data.requests||[];
+    document.getElementById('viewer').textContent='Signed in as '+(data.viewer||'');
+    document.getElementById('filters').style.display='flex';
+    render();
+  }catch(_){note.textContent='Could not load the queue. Check your connection and reload.';}
+})();
+</script>
+</body>
+</html>
