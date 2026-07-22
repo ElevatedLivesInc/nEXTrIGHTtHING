@@ -1584,6 +1584,22 @@ nav.scrolled{background:rgba(6,14,24,.94);backdrop-filter:blur(14px);}
           <div class="fg full"><label>Email</label><input type="email" name="email" required placeholder="your@email.com" onchange="document.getElementById('replyToField').value=this.value"></div>
           <div class="fg full"><label>Phone</label><input type="tel" name="phone" placeholder="(801) 555-0000"></div>
           <div class="fg full"><label>I am reaching out as</label><select name="reaching_as" id="reachingAsSelect"><option value="self">Myself — seeking help</option><option value="family">A family member seeking help for a loved one</option><option value="pro">A professional / referral source</option><option value="partner">A community partner or sponsor</option><option value="donate">Interested in donating or volunteering</option><option value="other">Other</option></select></div>
+          <div id="preIntake" class="fg full" style="display:none">
+            <div style="border:1px solid rgba(201,169,110,.35);border-radius:8px;padding:1.1rem 1.2rem;background:rgba(201,169,110,.05)">
+              <div style="font-size:.78rem;color:var(--sand-light);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.35rem;font-weight:600">A few quick questions</div>
+              <div style="font-size:.78rem;color:rgba(255,255,255,.55);font-weight:300;margin-bottom:1rem;line-height:1.6">All optional &mdash; but every answer helps our intake coordinator get things moving before we even call you.</div>
+              <div class="form-grid">
+                <div class="fg"><label>Insurance</label><select name="insurance"><option value="">Select…</option><option>Medicaid</option><option>Medicare</option><option>Private insurance</option><option>No insurance</option><option>Not sure</option></select></div>
+                <div class="fg"><label>Insurance company (if known)</label><input type="text" name="insurance_company" placeholder="e.g. Utah Medicaid, SelectHealth"></div>
+                <div class="fg"><label>Is housing needed?</label><select name="needs_housing"><option value="">Select…</option><option>Yes</option><option>No</option><option>Not sure</option></select></div>
+                <div class="fg"><label>On probation or parole?</label><select name="probation_parole"><option value="">Select…</option><option>Yes</option><option>No</option><option>Prefer not to say</option></select></div>
+                <div class="fg"><label>Primary substance</label><input type="text" name="primary_substance" placeholder="What are we working with?"></div>
+                <div class="fg"><label>Last use</label><select name="last_use"><option value="">Select…</option><option>Today</option><option>This week</option><option>This month</option><option>Over a month ago</option><option>Prefer not to say</option></select></div>
+                <div class="fg full"><label>What's motivating this step right now?</label><input type="text" name="motivation" placeholder="In your own words &mdash; short is fine"></div>
+                <div class="fg full"><label>Best time to reach you</label><select name="best_time"><option value="">Any time</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+              </div>
+            </div>
+          </div>
           <div class="fg full"><label>Message</label><textarea name="message" placeholder="Tell us how we can help…"></textarea></div>
           <div class="fg full" style="margin-top:.5rem"><button type="submit" class="cta-btn" style="width:100%;text-align:center;padding:.95rem">Send Message</button></div>
         </div>
@@ -2031,13 +2047,41 @@ window.addEventListener('scroll',()=>{const btn=document.getElementById('backToT
 const obs = new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');obs.unobserve(x.target);}});},{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
+const FORMSPREE_GENERAL='https://formspree.io/f/mlgydqlb';
+const FORMSPREE_INTAKE='https://formspree.io/f/xeeyllga'; /* pre-intake requests -> bailey@nextrighthing.com */
+function isIntakeSelection(){const v=document.getElementById('reachingAsSelect').value;return v==='self'||v==='family';}
+function togglePreIntake(){
+  const show=isIntakeSelection();
+  const box=document.getElementById('preIntake');
+  if(!box)return;
+  box.style.display=show?'block':'none';
+  box.querySelectorAll('input,select').forEach(el=>{el.disabled=!show;});
+}
+document.getElementById('reachingAsSelect').addEventListener('change',togglePreIntake);
+togglePreIntake();
+
 async function handleContact(e){
   e.preventDefault();
   const form=document.getElementById('contactForm');
   const btn=form.querySelector('button[type="submit"]');
   btn.textContent='Sending...';btn.disabled=true;
+  const intake=isIntakeSelection();
+  const fd=new FormData(form);
+  if(intake){
+    const g=n=>((fd.get(n)||'')+'').trim();
+    fd.set('_subject','Pre-Intake Request — '+g('first_name')+' '+g('last_name')
+      +(g('insurance')?' — '+g('insurance'):'')
+      +(g('last_use')?' — Last use: '+g('last_use'):''));
+    /* save a copy to Supabase (never blocks the email) */
+    try{
+      const payload={};
+      ['first_name','last_name','email','phone','reaching_as','insurance','insurance_company','needs_housing','probation_parole','primary_substance','last_use','motivation','best_time','message'].forEach(k=>payload[k]=(fd.get(k)||'')+'');
+      fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    }catch(_){}
+  }
   try{
-    const res=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});
+    const endpoint=intake?FORMSPREE_INTAKE:FORMSPREE_GENERAL;
+    const res=await fetch(endpoint,{method:'POST',body:fd,headers:{'Accept':'application/json'}});
     if(res.ok){
       form.style.display='none';
       const selected=document.getElementById('reachingAsSelect').value;
