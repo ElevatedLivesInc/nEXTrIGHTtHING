@@ -133,7 +133,7 @@ function render(){
 async function setStatus(id,status,btn){
   btn.textContent='…';
   try{
-    const res=await fetch('/api/intake-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})});
+    const res=await fetch('/intake-queue/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})});
     if(res.ok){const row=DATA.find(r=>r.id===id);if(row)row.status=status;render();}
     else{btn.textContent='retry';}
   }catch(_){btn.textContent='retry';}
@@ -149,9 +149,9 @@ document.getElementById('filters').addEventListener('click',e=>{
 (async function(){
   const note=document.getElementById('note');
   try{
-    const res=await fetch('/api/intake-list');
+    const res=await fetch('/intake-queue/list');
     if(res.status===401){
-      note.innerHTML='This page must be protected by <b>Cloudflare Access</b> before it will load data.<br><br>In Cloudflare: Zero Trust &rarr; Access &rarr; Applications &rarr; Add application (self-hosted) &rarr; paths <code>/intake-queue</code> and <code>/api/intake-list</code> and <code>/api/intake-update</code> &rarr; policy allowing the intake team\'s emails. Then reload and log in.';
+      note.innerHTML='This page must be protected by <b>Cloudflare Access</b> before it will load data.<br><br>In Cloudflare: Zero Trust &rarr; Access &rarr; Applications &rarr; Add application (self-hosted) &rarr; path <code>/intake-queue</code> &rarr; policy allowing the intake team\'s emails. Then reload and log in.';
       return;
     }
     const data=await res.json();

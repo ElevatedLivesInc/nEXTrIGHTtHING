@@ -108,9 +108,9 @@ document.getElementById('search').addEventListener('input',e=>{Q=e.target.value.
 (async function(){
   const note=document.getElementById('note');
   try{
-    const res=await fetch('/api/inkind-list');
+    const res=await fetch('/in-kind-report/list');
     if(res.status===401){
-      note.innerHTML='This page must be protected by <b>Cloudflare Access</b> before it will load data.<br><br>Add paths <code>/in-kind-report</code> and <code>/api/inkind-list</code> to the Access application, then reload and log in.';
+      note.innerHTML='This page must be protected by <b>Cloudflare Access</b> before it will load data.<br><br>Add path <code>/in-kind-report</code> to the Access application, then reload and log in.';
       return;
     }
     const data=await res.json();
