@@ -56,6 +56,8 @@
     <button class="fbtn active" data-f="all">All</button>
     <button class="fbtn" data-f="issued">Issued</button>
     <button class="fbtn" data-f="redeemed">Redeemed</button>
+    <button class="fbtn" id="groupBtn" onclick="GROUP=!GROUP;this.classList.toggle('active',GROUP);render()">Monthly</button>
+    <button class="fbtn" onclick="exportCSV()">Download CSV</button>
     <input id="search" placeholder="Search donor or code…">
   </div>
   <div class="tblwrap" id="tblwrap" style="display:none">
@@ -75,12 +77,51 @@ function money(v){return (v==null||v==='')?'—':('$'+Number(v).toLocaleString('
 function fmtD(d){if(!d)return '—';try{return new Date((d+'').indexOf('T')>-1?d:(d+'T00:00:00')).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(_){return d;}}
 function statusOf(r){return (r.status||'issued').toLowerCase();}
 
-function render(){
+let GROUP=false;
+function filteredRows(){
   let rows=DATA;
   if(FILTER!=='all') rows=rows.filter(r=>statusOf(r)===FILTER);
   if(Q){const q=Q.toLowerCase();rows=rows.filter(r=>((r.donor_name||'')+' '+(r.code||'')+' '+(r.serial||'')).toLowerCase().indexOf(q)>-1);}
+  return rows;
+}
+function monthOf(r){
+  const d=r.date_of_donation||r.created_at||r.issued_at;
+  if(!d) return 'Undated';
+  try{return new Date((d+'').indexOf('T')>-1?d:(d+'T00:00:00')).toLocaleDateString('en-US',{month:'long',year:'numeric'});}catch(_){return 'Undated';}
+}
+function exportCSV(){
+  const rows=filteredRows();
+  const cols=['status','code','donor_name','donor_contact','description','donor_value','date_of_donation','serial','created_by'];
+  const csvEsc=v=>{v=(v==null?'':v)+'';return '"'+v.replace(/"/g,'""')+'"';};
+  const csv=[cols.join(',')].concat(rows.map(r=>cols.map(c=>csvEsc(r[c])).join(','))).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='in-kind-donations-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+function render(){
+  let rows=filteredRows();
   const tb=document.getElementById('tbody');
-  tb.innerHTML=rows.map(r=>{
+  if(GROUP){
+    const groups={};
+    rows.forEach(r=>{const k=monthOf(r);(groups[k]=groups[k]||[]).push(r);});
+    tb.innerHTML=Object.keys(groups).map(k=>{
+      const g=groups[k];
+      const val=g.reduce((t,r)=>t+(Number(r.donor_value)||0),0);
+      const red=g.filter(r=>statusOf(r)==='redeemed').length;
+      return '<tr><td colspan="8" style="background:rgba(201,169,110,.12);color:var(--sand-light);font-weight:600;font-size:.82rem;letter-spacing:.04em">'
+        +esc(k)+' &mdash; '+g.length+' donation'+(g.length===1?'':'s')+' &middot; '+red+' receipted &middot; $'+val.toLocaleString('en-US')+' declared value</td></tr>'
+        +g.map(rowHtml).join('');
+    }).join('');
+    document.getElementById('note').style.display=rows.length?'none':'block';
+    if(!rows.length)document.getElementById('note').textContent='No records match.';
+    return;
+  }
+  tb.innerHTML=rows.map(rowHtml).join('');
+  document.getElementById('note').style.display=rows.length?'none':'block';
+  if(!rows.length)document.getElementById('note').textContent='No records match.';
+}
+function rowHtml(r){
     const st=statusOf(r);
     return '<tr>'
       +'<td><span class="pill '+esc(st)+'">'+esc(st)+'</span></td>'
@@ -92,9 +133,6 @@ function render(){
       +'<td>'+esc(r.serial||'—')+'</td>'
       +'<td>'+esc(r.created_by||'—')+'</td>'
       +'</tr>';
-  }).join('');
-  document.getElementById('note').style.display=rows.length?'none':'block';
-  if(!rows.length)document.getElementById('note').textContent='No records match.';
 }
 
 document.getElementById('filters').addEventListener('click',e=>{

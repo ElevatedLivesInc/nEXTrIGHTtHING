@@ -40,6 +40,12 @@
   .sbtn.on{background:rgba(201,169,110,.25);color:var(--sand-light);border-color:rgba(201,169,110,.6);font-weight:700;}
   .note{max-width:640px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
   .note code{background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:4px;font-size:.8rem;}
+  .cklist{display:flex;flex-wrap:wrap;gap:.35rem .9rem;padding:.5rem .7rem;background:rgba(201,169,110,.06);border:1px solid rgba(201,169,110,.2);border-radius:6px;}
+  .cklist label{display:flex;align-items:center;gap:.35rem;font-size:.72rem;color:rgba(255,255,255,.75);cursor:pointer;}
+  .cklist input{accent-color:#c9a96e;}
+  .notesbox{width:100%;min-height:52px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.76rem;padding:.5rem .7rem;resize:vertical;}
+  .notesave{font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(201,169,110,.4);background:transparent;color:var(--sand-light);cursor:pointer;font-family:'Raleway',sans-serif;}
+  .delbtn{margin-left:auto;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(224,120,120,.35);background:transparent;color:#f0b6b6;cursor:pointer;font-family:'Raleway',sans-serif;}
 </style>
 </head>
 <body>
@@ -65,6 +71,33 @@
 <script>
 let DATA=[], FILTER='open';
 const STATUSES=['new','contacted','scheduled','closed'];
+const CHECKS=['Insurance verified','Callback made','Assessment scheduled','ROI signed','Docs collected'];
+
+async function toggleCheck(id,c,el){
+  const row=DATA.find(r=>r.id===id); if(!row) return;
+  let list=(row.checks||'').split('|').filter(Boolean);
+  if(el.checked){ if(list.indexOf(c)<0) list.push(c); } else { list=list.filter(x=>x!==c); }
+  row.checks=list.join('|');
+  try{ await fetch('/intake-queue/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,checks:row.checks})}); }catch(_){ el.checked=!el.checked; }
+}
+async function saveNotes(id,btn){
+  const val=document.getElementById('notes-'+id).value;
+  btn.textContent='Saving…';
+  try{
+    const res=await fetch('/intake-queue/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,notes:val})});
+    const row=DATA.find(r=>r.id===id); if(row) row.notes=val;
+    btn.textContent=res.ok?'Saved ✓':'Retry';
+  }catch(_){ btn.textContent='Retry'; }
+  setTimeout(()=>{btn.textContent='Save note';},2000);
+}
+async function delRow(id,btn){
+  if(!confirm('Delete this intake request permanently? This cannot be undone.')) return;
+  btn.textContent='…';
+  try{
+    const res=await fetch('/intake-queue/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,del:true})});
+    if(res.ok){ DATA=DATA.filter(r=>r.id!==id); render(); } else { btn.textContent='Retry'; }
+  }catch(_){ btn.textContent='Retry'; }
+}
 
 function esc(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
 function fmtWhen(iso){
@@ -123,6 +156,15 @@ function render(){
       +line('Motivation', r.motivation)
       +'</div>'
       +(r.message?('<div class="msg">&ldquo;'+esc(r.message)+'&rdquo;</div>'):'')
+      +'<div class="cklist">'+CHECKS.map(c=>{
+        const on=(r.checks||'').split('|').indexOf(c)>-1;
+        return '<label><input type="checkbox" '+(on?'checked ':'')+'onchange="toggleCheck(\''+r.id+'\',\''+c+'\',this)">'+c+'</label>';
+      }).join('')+'</div>'
+      +'<textarea class="notesbox" id="notes-'+r.id+'" placeholder="Notes for this intake…">'+esc(r.notes||'')+'</textarea>'
+      +'<div style="display:flex;gap:.4rem;align-items:center">'
+      +'<button class="notesave" onclick="saveNotes(\''+r.id+'\',this)">Save note</button>'
+      +'<button class="delbtn" onclick="delRow(\''+r.id+'\',this)">Delete</button>'
+      +'</div>'
       +'<div class="status-row">'+STATUSES.map(st=>
         '<button class="sbtn'+((r.status||'new')===st?' on':'')+'" onclick="setStatus(\''+r.id+'\',\''+st+'\',this)">'+st+'</button>'
       ).join('')+'</div>'

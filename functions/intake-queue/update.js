@@ -16,20 +16,34 @@ export async function onRequestPost(context) {
   try { body = await request.json(); } catch { return json({ ok: false, error: 'bad request' }, 400); }
 
   const id = (body.id || '').toString().trim();
-  const status = (body.status || '').toString().trim();
-  const allowed = ['new', 'contacted', 'scheduled', 'closed'];
-  if (!id || !allowed.includes(status)) return json({ ok: false, error: 'invalid id or status' }, 400);
+  if (!id) return json({ ok: false, error: 'invalid id' }, 400);
 
-  const res = await fetch(env.SUPABASE_URL + '/rest/v1/intake_requests?id=eq.' + encodeURIComponent(id), {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': env.SUPABASE_SERVICE_ROLE_KEY,
-      'Authorization': 'Bearer ' + env.SUPABASE_SERVICE_ROLE_KEY,
-      'Prefer': 'return=minimal'
-    },
-    body: JSON.stringify({ status })
-  });
+  const sbHeaders = {
+    'Content-Type': 'application/json',
+    'apikey': env.SUPABASE_SERVICE_ROLE_KEY,
+    'Authorization': 'Bearer ' + env.SUPABASE_SERVICE_ROLE_KEY,
+    'Prefer': 'return=minimal'
+  };
+  const url = env.SUPABASE_URL + '/rest/v1/intake_requests?id=eq.' + encodeURIComponent(id);
+
+  if (body.del === true) {
+    const dres = await fetch(url, { method: 'DELETE', headers: sbHeaders });
+    if (!dres.ok) { const detail = await dres.text(); return json({ ok: false, error: 'delete failed', detail }, 500); }
+    return json({ ok: true, deleted: true });
+  }
+
+  const patch = {};
+  if (body.status !== undefined) {
+    const status = (body.status || '').toString().trim();
+    const allowedStatuses = ['new', 'contacted', 'scheduled', 'closed'];
+    if (!allowedStatuses.includes(status)) return json({ ok: false, error: 'invalid status' }, 400);
+    patch.status = status;
+  }
+  if (body.checks !== undefined) patch.checks = (body.checks || '').toString().slice(0, 500);
+  if (body.notes !== undefined) patch.notes = (body.notes || '').toString().slice(0, 4000);
+  if (!Object.keys(patch).length) return json({ ok: false, error: 'nothing to update' }, 400);
+
+  const res = await fetch(url, { method: 'PATCH', headers: sbHeaders, body: JSON.stringify(patch) });
   if (!res.ok) { const detail = await res.text(); return json({ ok: false, error: 'update failed', detail }, 500); }
   return json({ ok: true });
 }
