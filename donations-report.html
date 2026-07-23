@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Cash Donations Report — Staff Only</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.4rem 1.5rem;}
+  .top-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.7rem;}
+  h1 em{color:var(--sand-light);font-style:italic;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);}
+  .wrap{max-width:1100px;margin:0 auto;padding:1.5rem;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.9rem;margin-bottom:1.4rem;}
+  .stat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:1rem 1.2rem;text-align:center;}
+  .stat .n{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--sand-light);}
+  .stat .l{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.3rem;}
+  .bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;align-items:center;}
+  .fbtn{padding:.45rem 1.1rem;border-radius:50px;border:1px solid rgba(201,169,110,.35);background:transparent;color:rgba(255,255,255,.7);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Raleway',sans-serif;}
+  .fbtn.active{background:rgba(201,169,110,.2);color:var(--sand-light);border-color:rgba(201,169,110,.6);}
+  #search{margin-left:auto;padding:.45rem .9rem;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;min-width:200px;}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  th{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:left;padding:.6rem .7rem;border-bottom:1px solid rgba(201,169,110,.3);}
+  td{padding:.65rem .7rem;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.82);font-weight:300;vertical-align:top;}
+  td b{color:#fff;font-weight:600;}
+  td a{color:var(--sand-light);text-decoration:none;}
+  .tblwrap{overflow-x:auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;}
+  .note{max-width:640px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  @media print{.bar,.top .viewer{display:none!important;}body{background:#fff;color:#000;}td,th{color:#000!important;border-color:#ccc!important;}.top{background:#fff;color:#000;border-color:#999;}h1,h1 em{color:#000;}.tblwrap{border:none;background:#fff;}.stat .n,.stat .l{color:#000;}.stats .stat{background:#fff;border-color:#999;}}
+  @media(max-width:700px){td,th{padding:.5rem .4rem;}}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <h1>Cash Donations <em>Report</em></h1>
+  <div class="viewer" id="viewer"></div>
+</div></div>
+
+<div class="wrap">
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat"><div class="n" id="sCount">0</div><div class="l">Donations (13 mo)</div></div>
+    <div class="stat"><div class="n" id="sTotal">$0</div><div class="l">Total Received</div></div>
+    <div class="stat"><div class="n" id="sAvg">$0</div><div class="l">Average Gift</div></div>
+    <div class="stat"><div class="n" id="sMonth">$0</div><div class="l">This Month</div></div>
+  </div>
+  <div class="bar" id="filters" style="display:none">
+    <button class="fbtn" id="groupBtn" onclick="GROUP=!GROUP;this.classList.toggle('active',GROUP);render()">Monthly</button>
+    <button class="fbtn" onclick="exportCSV()">Download CSV</button>
+    <button class="fbtn" onclick="window.print()">Print Report</button>
+    <input id="search" placeholder="Search email or note…">
+  </div>
+  <div class="tblwrap" id="tblwrap" style="display:none">
+    <table>
+      <thead><tr><th>Date</th><th>Amount</th><th>Donor Email</th><th>Note</th><th>Source</th><th>Receipt</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="note" id="note">Loading…</div>
+</div>
+
+<script>
+let DATA=[], Q='', GROUP=false;
+function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
+function money(v){return '$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtD(d){try{return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(_){return d;}}
+function monthOf(r){try{return new Date(r.created_at).toLocaleDateString('en-US',{month:'long',year:'numeric'});}catch(_){return 'Undated';}}
+function filteredRows(){
+  let rows=DATA;
+  if(Q){const q=Q.toLowerCase();rows=rows.filter(r=>((r.buyer_email||'')+' '+(r.note||'')).toLowerCase().indexOf(q)>-1);}
+  return rows;
+}
+function rowHtml(r){
+  return '<tr>'
+    +'<td>'+fmtD(r.created_at)+'</td>'
+    +'<td><b>'+money(r.amount)+'</b></td>'
+    +'<td>'+(r.buyer_email?('<a href="mailto:'+esc(r.buyer_email)+'">'+esc(r.buyer_email)+'</a>'):'&mdash;')+'</td>'
+    +'<td>'+esc(r.note||'—')+'</td>'
+    +'<td>'+esc(r.source||'')+(r.card_last4?(' &middot;&middot;'+esc(r.card_last4)):'')+'</td>'
+    +'<td>'+(r.receipt_url?('<a href="'+esc(r.receipt_url)+'" target="_blank">view</a>'):'&mdash;')+'</td>'
+    +'</tr>';
+}
+function render(){
+  const rows=filteredRows();
+  const tb=document.getElementById('tbody');
+  if(GROUP){
+    const groups={};
+    rows.forEach(r=>{const k=monthOf(r);(groups[k]=groups[k]||[]).push(r);});
+    tb.innerHTML=Object.keys(groups).map(k=>{
+      const g=groups[k];
+      const val=g.reduce((t,r)=>t+(Number(r.amount)||0),0);
+      return '<tr><td colspan="6" style="background:rgba(201,169,110,.12);color:var(--sand-light);font-weight:600;font-size:.82rem">'
+        +esc(k)+' &mdash; '+g.length+' gift'+(g.length===1?'':'s')+' &middot; '+money(val)+'</td></tr>'
+        +g.map(rowHtml).join('');
+    }).join('');
+  } else {
+    tb.innerHTML=rows.map(rowHtml).join('');
+  }
+  document.getElementById('note').style.display=rows.length?'none':'block';
+  if(!rows.length)document.getElementById('note').textContent='No donations match.';
+}
+function exportCSV(){
+  const rows=filteredRows();
+  const cols=['created_at','amount','buyer_email','note','source','receipt_url'];
+  const csvEsc=v=>{v=(v==null?'':v)+'';return '"'+v.replace(/"/g,'""')+'"';};
+  const csv=[cols.join(',')].concat(rows.map(r=>cols.map(c=>csvEsc(r[c])).join(','))).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='cash-donations-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+document.getElementById('search').addEventListener('input',e=>{Q=e.target.value.trim();render();});
+
+(async function(){
+  const note=document.getElementById('note');
+  try{
+    const res=await fetch('/donations-report/list');
+    const data=await res.json();
+    if(res.status===401){note.textContent=data.error||'Not signed in — open /in-kind-report first to log in, then reload this page.';return;}
+    if(data.error){note.textContent='Error: '+data.error;return;}
+    DATA=data.payments||[];
+    document.getElementById('viewer').textContent='Signed in as '+(data.viewer||'');
+    const total=DATA.reduce((t,r)=>t+(Number(r.amount)||0),0);
+    const now=new Date();const mKey=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    const mTotal=DATA.filter(r=>monthOf(r)===mKey).reduce((t,r)=>t+(Number(r.amount)||0),0);
+    document.getElementById('sCount').textContent=DATA.length;
+    document.getElementById('sTotal').textContent=money(total);
+    document.getElementById('sAvg').textContent=DATA.length?money(total/DATA.length):'$0';
+    document.getElementById('sMonth').textContent=money(mTotal);
+    document.getElementById('stats').style.display='grid';
+    document.getElementById('filters').style.display='flex';
+    document.getElementById('tblwrap').style.display='';
+    render();
+  }catch(_){note.textContent='Could not load donations. Check your connection and reload.';}
+})();
+</script>
+</body>
+</html>
