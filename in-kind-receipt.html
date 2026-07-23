@@ -130,7 +130,7 @@
   async function redeem(){
     const err=document.getElementById('err');
     const btn=document.getElementById('go');
-    const code=document.getElementById('code').value.trim();
+    const code=document.getElementById('code').value.trim().toUpperCase().replace(/\s+/g,'');
     err.textContent='';
     if(!code){ err.textContent='Please enter your confirmation code.'; return; }
     btn.disabled=true; btn.textContent='Verifying...';

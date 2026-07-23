@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>In-Kind Donations Report — Staff Only</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.4rem 1.5rem;}
+  .top-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.7rem;}
+  h1 em{color:var(--sand-light);font-style:italic;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);}
+  .wrap{max-width:1100px;margin:0 auto;padding:1.5rem;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.9rem;margin-bottom:1.4rem;}
+  .stat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:1rem 1.2rem;text-align:center;}
+  .stat .n{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--sand-light);}
+  .stat .l{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.3rem;}
+  .bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;align-items:center;}
+  .fbtn{padding:.45rem 1.1rem;border-radius:50px;border:1px solid rgba(201,169,110,.35);background:transparent;color:rgba(255,255,255,.7);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Raleway',sans-serif;}
+  .fbtn.active{background:rgba(201,169,110,.2);color:var(--sand-light);border-color:rgba(201,169,110,.6);}
+  #search{margin-left:auto;padding:.45rem .9rem;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;min-width:200px;}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  th{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:left;padding:.6rem .7rem;border-bottom:1px solid rgba(201,169,110,.3);}
+  td{padding:.65rem .7rem;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.82);font-weight:300;vertical-align:top;}
+  td b{color:#fff;font-weight:600;}
+  .code{font-family:monospace;color:var(--sand-light);white-space:nowrap;}
+  .pill{display:inline-block;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .6rem;border-radius:4px;font-weight:600;}
+  .pill.issued{background:rgba(201,169,110,.15);color:var(--sand-light);border:1px solid rgba(201,169,110,.4);}
+  .pill.redeemed{background:rgba(120,200,150,.15);color:#a9e5c3;border:1px solid rgba(120,200,150,.4);}
+  .pill.void{background:rgba(224,120,120,.15);color:#f0b6b6;border:1px solid rgba(224,120,120,.4);}
+  .note{max-width:640px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  .note code{background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:4px;font-size:.8rem;}
+  .tblwrap{overflow-x:auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;}
+  @media(max-width:700px){td,th{padding:.5rem .4rem;}}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <h1>In-Kind Donations <em>Report</em></h1>
+  <div class="viewer" id="viewer"></div>
+</div></div>
+
+<div class="wrap">
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat"><div class="n" id="sTotal">0</div><div class="l">Codes Issued</div></div>
+    <div class="stat"><div class="n" id="sRedeemed">0</div><div class="l">Receipts Generated</div></div>
+    <div class="stat"><div class="n" id="sPending">0</div><div class="l">Awaiting Redemption</div></div>
+    <div class="stat"><div class="n" id="sValue">$0</div><div class="l">Total Declared Value</div></div>
+  </div>
+  <div class="bar" id="filters" style="display:none">
+    <button class="fbtn active" data-f="all">All</button>
+    <button class="fbtn" data-f="issued">Issued</button>
+    <button class="fbtn" data-f="redeemed">Redeemed</button>
+    <input id="search" placeholder="Search donor or code…">
+  </div>
+  <div class="tblwrap" id="tblwrap" style="display:none">
+    <table>
+      <thead><tr><th>Status</th><th>Code</th><th>Donor</th><th>Contribution</th><th>Value</th><th>Donation Date</th><th>Receipt No.</th><th>Issued By</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="note" id="note">Loading…</div>
+</div>
+
+<script>
+let DATA=[], FILTER='all', Q='';
+
+function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
+function money(v){return (v==null||v==='')?'—':('$'+Number(v).toLocaleString('en-US'));}
+function fmtD(d){if(!d)return '—';try{return new Date((d+'').indexOf('T')>-1?d:(d+'T00:00:00')).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(_){return d;}}
+function statusOf(r){return (r.status||'issued').toLowerCase();}
+
+function render(){
+  let rows=DATA;
+  if(FILTER!=='all') rows=rows.filter(r=>statusOf(r)===FILTER);
+  if(Q){const q=Q.toLowerCase();rows=rows.filter(r=>((r.donor_name||'')+' '+(r.code||'')+' '+(r.serial||'')).toLowerCase().indexOf(q)>-1);}
+  const tb=document.getElementById('tbody');
+  tb.innerHTML=rows.map(r=>{
+    const st=statusOf(r);
+    return '<tr>'
+      +'<td><span class="pill '+esc(st)+'">'+esc(st)+'</span></td>'
+      +'<td class="code">'+esc(r.code)+'</td>'
+      +'<td><b>'+esc(r.donor_name)+'</b>'+(r.donor_contact?('<br>'+esc(r.donor_contact)):'')+'</td>'
+      +'<td>'+esc(r.description)+'</td>'
+      +'<td>'+money(r.donor_value)+'</td>'
+      +'<td>'+fmtD(r.date_of_donation)+'</td>'
+      +'<td>'+esc(r.serial||'—')+'</td>'
+      +'<td>'+esc(r.created_by||'—')+'</td>'
+      +'</tr>';
+  }).join('');
+  document.getElementById('note').style.display=rows.length?'none':'block';
+  if(!rows.length)document.getElementById('note').textContent='No records match.';
+}
+
+document.getElementById('filters').addEventListener('click',e=>{
+  const b=e.target.closest('.fbtn');if(!b)return;
+  FILTER=b.dataset.f;
+  document.querySelectorAll('.fbtn').forEach(x=>x.classList.toggle('active',x===b));
+  render();
+});
+document.getElementById('search').addEventListener('input',e=>{Q=e.target.value.trim();render();});
+
+(async function(){
+  const note=document.getElementById('note');
+  try{
+    const res=await fetch('/api/inkind-list');
+    if(res.status===401){
+      note.innerHTML='This page must be protected by <b>Cloudflare Access</b> before it will load data.<br><br>Add paths <code>/in-kind-report</code> and <code>/api/inkind-list</code> to the Access application, then reload and log in.';
+      return;
+    }
+    const data=await res.json();
+    if(data.error){note.textContent='Error: '+data.error;return;}
+    DATA=(data.records||[]).sort((a,b)=>((b.created_at||b.issued_at||''))<((a.created_at||a.issued_at||''))?-1:1);
+    document.getElementById('viewer').textContent='Signed in as '+(data.viewer||'');
+    const redeemed=DATA.filter(r=>statusOf(r)==='redeemed').length;
+    const val=DATA.reduce((s,r)=>s+(Number(r.donor_value)||0),0);
+    document.getElementById('sTotal').textContent=DATA.length;
+    document.getElementById('sRedeemed').textContent=redeemed;
+    document.getElementById('sPending').textContent=DATA.filter(r=>statusOf(r)==='issued').length;
+    document.getElementById('sValue').textContent='$'+val.toLocaleString('en-US');
+    ['stats','filters','tblwrap'].forEach(id=>document.getElementById(id).style.display='');
+    document.getElementById('stats').style.display='grid';
+    document.getElementById('filters').style.display='flex';
+    render();
+  }catch(_){note.textContent='Could not load the report. Check your connection and reload.';}
+})();
+</script>
+</body>
+</html>

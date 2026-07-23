@@ -78,7 +78,8 @@
           +'<dt>Issued</dt><dd>'+fmtTs(r.issued_at)+'</dd></dl>';
       }else{
         out.innerHTML='<div class="badge no">&#10007; Not found</div>'
-          +'<p class="msg">No receipt matches that number in our records. Please recheck the number, or contact Ryan@nextrighthing.com.</p>';
+          +'<p class="msg">No receipt matches that number in our records. Please recheck the number, or contact Ryan@nextrighthing.com.</p>'
+          +'<p class="msg"><b>Have a confirmation code (RTIK-&hellip;)?</b> That code generates your receipt first &mdash; enter it at <a href="/in-kind-receipt" style="color:inherit">nextrighthing.com/in-kind-receipt</a>, then verify the Receipt No. it gives you here.</p>';
       }
       out.style.display='block';
     }catch(e){
