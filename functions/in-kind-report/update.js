@@ -1,22 +1,20 @@
-// POST /api/intake-update { id, status } -> updates a request's workflow status.
-// Allowed statuses: new, contacted, scheduled, closed.
-// FAIL-CLOSED behind Cloudflare Access, same as intake-list.
+// POST /in-kind-report/update { id, action: 'void' | 'unvoid' | 'delete' }
+// void = keeps the record but kills the code (audit-friendly); delete = removes entirely (test junk).
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json' } });
 
-  const ALLOWED = ['gabe@nextrighthing.com','bailey@nextrighthing.com','cateo@nextrighthing.com'];
+  const ALLOWED = ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com'];
   const who = await getAuthedEmail(request);
-  const authorized = who && ALLOWED.includes(who);
-  if (!authorized) return json({ ok: false, error: 'unauthorized' }, 401);
+  if (!who || !ALLOWED.includes(who)) return json({ ok: false, error: 'unauthorized' }, 401);
 
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ ok: false, error: 'not configured' }, 500);
 
   let body;
   try { body = await request.json(); } catch { return json({ ok: false, error: 'bad request' }, 400); }
-
   const id = (body.id || '').toString().trim();
-  if (!id) return json({ ok: false, error: 'invalid id' }, 400);
+  const action = (body.action || '').toString().trim();
+  if (!id || !['void', 'unvoid', 'delete'].includes(action)) return json({ ok: false, error: 'invalid id or action' }, 400);
 
   const sbHeaders = {
     'Content-Type': 'application/json',
@@ -24,26 +22,14 @@ export async function onRequestPost(context) {
     'Authorization': 'Bearer ' + env.SUPABASE_SERVICE_ROLE_KEY,
     'Prefer': 'return=minimal'
   };
-  const url = env.SUPABASE_URL + '/rest/v1/intake_requests?id=eq.' + encodeURIComponent(id);
+  const url = env.SUPABASE_URL + '/rest/v1/authorizations?id=eq.' + encodeURIComponent(id);
 
-  if (body.del === true) {
-    const dres = await fetch(url, { method: 'DELETE', headers: sbHeaders });
-    if (!dres.ok) { const detail = await dres.text(); return json({ ok: false, error: 'delete failed', detail }, 500); }
-    return json({ ok: true, deleted: true });
+  if (action === 'delete') {
+    const res = await fetch(url, { method: 'DELETE', headers: sbHeaders });
+    if (!res.ok) { const detail = await res.text(); return json({ ok: false, error: 'delete failed', detail }, 500); }
+    return json({ ok: true });
   }
-
-  const patch = {};
-  if (body.status !== undefined) {
-    const status = (body.status || '').toString().trim();
-    const allowedStatuses = ['new', 'contacted', 'scheduled', 'intaked', 'closed'];
-    if (!allowedStatuses.includes(status)) return json({ ok: false, error: 'invalid status' }, 400);
-    patch.status = status;
-  }
-  if (body.checks !== undefined) patch.checks = (body.checks || '').toString().slice(0, 500);
-  if (body.notes !== undefined) patch.notes = (body.notes || '').toString().slice(0, 4000);
-  if (!Object.keys(patch).length) return json({ ok: false, error: 'nothing to update' }, 400);
-
-  const res = await fetch(url, { method: 'PATCH', headers: sbHeaders, body: JSON.stringify(patch) });
+  const res = await fetch(url, { method: 'PATCH', headers: sbHeaders, body: JSON.stringify({ status: action === 'void' ? 'void' : 'issued' }) });
   if (!res.ok) { const detail = await res.text(); return json({ ok: false, error: 'update failed', detail }, 500); }
   return json({ ok: true });
 }

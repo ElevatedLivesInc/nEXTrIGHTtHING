@@ -45,6 +45,13 @@
   .cklist input{accent-color:#c9a96e;}
   .notesbox{width:100%;min-height:52px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.76rem;padding:.5rem .7rem;resize:vertical;}
   .notesave{font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(201,169,110,.4);background:transparent;color:var(--sand-light);cursor:pointer;font-family:'Raleway',sans-serif;}
+  .pbar{height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
+  .pbar i{display:block;height:100%;background:linear-gradient(90deg,#c9a96e,#e8d5b0);border-radius:4px;transition:width .3s;}
+  .ready{background:rgba(120,200,150,.18)!important;color:#a9e5c3!important;border:1px solid rgba(120,200,150,.5)!important;}
+  .qstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.8rem;margin-bottom:1.3rem;}
+  .qstat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:.8rem 1rem;text-align:center;}
+  .qstat .n{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--sand-light);}
+  .qstat .l{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.2rem;}
   .delbtn{margin-left:auto;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(224,120,120,.35);background:transparent;color:#f0b6b6;cursor:pointer;font-family:'Raleway',sans-serif;}
 </style>
 </head>
@@ -55,11 +62,18 @@
 </div></div>
 
 <div class="wrap">
+  <div class="qstats" id="qstats" style="display:none">
+    <div class="qstat"><div class="n" id="qNew">0</div><div class="l">New</div></div>
+    <div class="qstat"><div class="n" id="qHot">0</div><div class="l">Reach Out 24h</div></div>
+    <div class="qstat"><div class="n" id="qReady">0</div><div class="l">Ready For Intake</div></div>
+    <div class="qstat"><div class="n" id="qIntaked">0</div><div class="l">Intaked</div></div>
+  </div>
   <div class="bar" id="filters" style="display:none">
     <button class="fbtn active" data-f="open">Open</button>
     <button class="fbtn" data-f="new">New</button>
     <button class="fbtn" data-f="contacted">Contacted</button>
     <button class="fbtn" data-f="scheduled">Scheduled</button>
+    <button class="fbtn" data-f="intaked">Intaked</button>
     <button class="fbtn" data-f="closed">Closed</button>
     <button class="fbtn" data-f="all">All</button>
     <span class="count" id="count"></span>
@@ -70,7 +84,7 @@
 
 <script>
 let DATA=[], FILTER='open';
-const STATUSES=['new','contacted','scheduled','closed'];
+const STATUSES=['new','contacted','scheduled','intaked','closed'];
 const CHECKS=['Insurance verified','Callback made','Assessment scheduled','ROI signed','Docs collected'];
 
 async function toggleCheck(id,c,el){
@@ -99,6 +113,38 @@ async function delRow(id,btn){
   }catch(_){ btn.textContent='Retry'; }
 }
 
+function isReady(r){
+  const c=(r.checks||'');
+  return c.indexOf('Insurance verified')>-1 && c.indexOf('Assessment scheduled')>-1;
+}
+function updateStats(){
+  const open=DATA.filter(r=>(r.status||'new')!=='closed');
+  document.getElementById('qNew').textContent=DATA.filter(r=>(r.status||'new')==='new').length;
+  document.getElementById('qHot').textContent=open.filter(r=>triage(r).some(x=>x.c==='hot')).length;
+  document.getElementById('qReady').textContent=open.filter(r=>isReady(r)&&(r.status||'new')!=='intaked').length;
+  document.getElementById('qIntaked').textContent=DATA.filter(r=>(r.status||'new')==='intaked').length;
+  document.getElementById('qstats').style.display='grid';
+}
+function copySummary(id,btn){
+  const r=DATA.find(x=>x.id===id); if(!r) return;
+  const L=[];
+  L.push('PRE-INTAKE SUMMARY — '+((r.first_name||'')+' '+(r.last_name||'')).trim());
+  if(r.phone)L.push('Phone: '+r.phone);
+  if(r.email)L.push('Email: '+r.email);
+  L.push('Reaching out as: '+(r.reaching_as==='family'?'Family member':'Self'));
+  if(r.insurance)L.push('Insurance: '+r.insurance+(r.insurance_company?(' — '+r.insurance_company):''));
+  if(r.needs_housing)L.push('Housing needed: '+r.needs_housing);
+  if(r.probation_parole)L.push('Probation/parole: '+r.probation_parole);
+  if(r.primary_substance)L.push('Primary substance: '+r.primary_substance);
+  if(r.last_use)L.push('Last use: '+r.last_use);
+  if(r.best_time)L.push('Best time: '+r.best_time);
+  if(r.motivation)L.push('Motivation: '+r.motivation);
+  if(r.message)L.push('Message: '+r.message);
+  if(r.checks)L.push('Completed: '+r.checks.split('|').join(', '));
+  if(r.notes)L.push('Notes: '+r.notes);
+  L.push('Status: '+(r.status||'new'));
+  navigator.clipboard.writeText(L.join('\n')).then(()=>{btn.textContent='Copied ✓';setTimeout(()=>{btn.textContent='Copy summary';},2000);});
+}
 function esc(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
 function fmtWhen(iso){
   try{const d=new Date(iso);
@@ -126,6 +172,7 @@ function triage(r){
 }
 
 function render(){
+  try{updateStats();}catch(_){}
   const grid=document.getElementById('grid');
   const note=document.getElementById('note');
   let rows=DATA;
@@ -138,9 +185,14 @@ function render(){
     const flags=triage(r);
     const hot=flags.some(x=>x.c==='hot');
     const line=(l,v)=>v?('<div><b>'+l+':</b> '+esc(v)+'</div>'):'';
+    const done=(r.checks||'').split('|').filter(Boolean).length;
+    const pct=Math.round(done/CHECKS.length*100);
+    const ready=isReady(r);
     return '<div class="card'+(hot?' priority':'')+'">'
       +'<div class="chead"><div class="cname">'+esc(((r.first_name||'')+' '+(r.last_name||'')).trim()||'(no name)')+'</div>'
       +'<div class="cwhen">'+fmtWhen(r.created_at)+'</div></div>'
+      +'<div class="pbar" title="'+done+' of '+CHECKS.length+' steps done"><i style="width:'+pct+'%"></i></div>'
+      +((ready&&(r.status||'new')!=='intaked')?'<div class="flags"><span class="flag ready">&#10003; Ready for intake</span></div>':'')
       +(flags.length?'<div class="flags">'+flags.map(x=>'<span class="flag '+x.c+'">'+esc(x.t)+'</span>').join('')+'</div>':'')
       +'<div class="rows">'
       +line('Phone', r.phone?null:null)

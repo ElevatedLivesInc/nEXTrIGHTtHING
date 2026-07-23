@@ -37,6 +37,10 @@
   .note code{background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:4px;font-size:.8rem;}
   .tblwrap{overflow-x:auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;}
   @media(max-width:700px){td,th{padding:.5rem .4rem;}}
+  .abtn{font-size:.58rem;letter-spacing:.05em;text-transform:uppercase;padding:.25rem .55rem;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:'Raleway',sans-serif;margin:.1rem .15rem .1rem 0;white-space:nowrap;}
+  .abtn:hover{border-color:var(--sand);color:var(--sand-light);}
+  .abtn.danger{border-color:rgba(224,120,120,.35);color:#f0b6b6;}
+  @media print{.bar,.abtn,.top .viewer{display:none!important;}body{background:#fff;color:#000;}td,th{color:#000!important;border-color:#ccc!important;}.top{background:#fff;color:#000;border-color:#999;}h1,h1 em{color:#000;}.tblwrap{border:none;background:#fff;}.stat{border-color:#999;}.stat .n,.stat .l{color:#000;}.stats .stat{background:#fff;}}
 </style>
 </head>
 <body>
@@ -58,11 +62,12 @@
     <button class="fbtn" data-f="redeemed">Redeemed</button>
     <button class="fbtn" id="groupBtn" onclick="GROUP=!GROUP;this.classList.toggle('active',GROUP);render()">Monthly</button>
     <button class="fbtn" onclick="exportCSV()">Download CSV</button>
+    <button class="fbtn" onclick="window.print()">Print Report</button>
     <input id="search" placeholder="Search donor or code…">
   </div>
   <div class="tblwrap" id="tblwrap" style="display:none">
     <table>
-      <thead><tr><th>Status</th><th>Code</th><th>Donor</th><th>Contribution</th><th>Value</th><th>Donation Date</th><th>Receipt No.</th><th>Issued By</th></tr></thead>
+      <thead><tr><th>Status</th><th>Code</th><th>Donor</th><th>Contribution</th><th>Value</th><th>Donation Date</th><th>Receipt No.</th><th>Issued By</th><th>Actions</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
@@ -109,7 +114,7 @@ function render(){
       const g=groups[k];
       const val=g.reduce((t,r)=>t+(Number(r.donor_value)||0),0);
       const red=g.filter(r=>statusOf(r)==='redeemed').length;
-      return '<tr><td colspan="8" style="background:rgba(201,169,110,.12);color:var(--sand-light);font-weight:600;font-size:.82rem;letter-spacing:.04em">'
+      return '<tr><td colspan="9" style="background:rgba(201,169,110,.12);color:var(--sand-light);font-weight:600;font-size:.82rem;letter-spacing:.04em">'
         +esc(k)+' &mdash; '+g.length+' donation'+(g.length===1?'':'s')+' &middot; '+red+' receipted &middot; $'+val.toLocaleString('en-US')+' declared value</td></tr>'
         +g.map(rowHtml).join('');
     }).join('');
@@ -132,7 +137,33 @@ function rowHtml(r){
       +'<td>'+fmtD(r.date_of_donation)+'</td>'
       +'<td>'+esc(r.serial||'—')+'</td>'
       +'<td>'+esc(r.created_by||'—')+'</td>'
+      +'<td>'
+      +(hasEmail(r.donor_contact)?('<a class="abtn" style="text-decoration:none" href="'+thankMailto(r)+'">Thank</a>'):'')
+      +(st==='void'
+        ?'<button class="abtn" onclick="doAction(\''+r.id+'\',\'unvoid\',this)">Restore</button>'
+        :'<button class="abtn" onclick="doAction(\''+r.id+'\',\'void\',this)">Void</button>')
+      +'<button class="abtn danger" onclick="doAction(\''+r.id+'\',\'delete\',this)">Delete</button>'
+      +'</td>'
       +'</tr>';
+}
+function hasEmail(c){return c&&(c+'').indexOf('@')>-1;}
+function thankMailto(r){
+  const em=((r.donor_contact||'').match(/[^\s,;]+@[^\s,;]+/)||[''])[0];
+  const sub=encodeURIComponent('Thank you for your donation — The Right Thing in Recovery');
+  const bod=encodeURIComponent('Dear '+(r.donor_name||'friend')+',\n\nThank you so much for your generous in-kind donation'+(r.description?(' of '+r.description):'')+'. Your support directly helps people rebuilding their lives in recovery.\n\nYour receipt'+(r.serial?(' (No. '+r.serial+')'):'')+' is available anytime at nextrighthing.com/verify.\n\nWith gratitude,\nThe Right Thing in Recovery');
+  return 'mailto:'+em+'?subject='+sub+'&body='+bod;
+}
+async function doAction(id,action,btn){
+  if(action==='delete'&&!confirm('Permanently delete this record? Use Void instead if it was a real donation.'))return;
+  btn.textContent='…';
+  try{
+    const res=await fetch('/in-kind-report/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,action})});
+    if(res.ok){
+      if(action==='delete'){DATA=DATA.filter(r=>r.id!==id);}
+      else{const row=DATA.find(r=>r.id===id);if(row)row.status=(action==='void'?'void':'issued');}
+      render();
+    } else {btn.textContent='retry';}
+  }catch(_){btn.textContent='retry';}
 }
 
 document.getElementById('filters').addEventListener('click',e=>{
