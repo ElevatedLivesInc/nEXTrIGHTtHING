@@ -4,10 +4,15 @@
 //   2) A cron service calls /patrol/run?key=YOUR_PATROL_KEY  -> sends automatically
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, PATROL_KEY (optional), RESEND_FROM (optional)
 
+const GABE = 'gabe@nextrighthing.com';
+// Gabe is on every brief on purpose - he sees exactly what each person sees,
+// so nobody has to describe a problem he can already read.
 const TEAM = {
-  intake:  ['bailey@nextrighthing.com'],
-  donations:['ryan@nextrighthing.com'],
-  leadership:['gabe@nextrighthing.com','cateo@nextrighthing.com']
+  intake:   ['bailey@nextrighthing.com', GABE],
+  donations:['ryan@nextrighthing.com', GABE],
+  housing:  ['rob@nextrighthing.com', 'cateo@nextrighthing.com', GABE],
+  funding:  ['bailey@nextrighthing.com', 'cateo@nextrighthing.com', GABE],
+  leadership:[GABE,'cateo@nextrighthing.com']
 };
 
 export async function onRequest(context) {
@@ -174,14 +179,49 @@ export async function onRequest(context) {
     + '<p style="margin-top:1.4rem;font-family:Georgia,serif;font-style:italic;color:#666;font-size:.95rem;text-align:center">&ldquo;I made a difference to that one.&rdquo;</p>'
   );
 
+  // ---------- HOUSE BRIEF (Rob) ----------
+  const dayOf = d => d ? Math.floor((now-new Date(d+'T00:00:00').getTime())/DAY) : null;
+  const quietRes  = active.filter(r=>{const n=dayOf(r.last_talked); return n===null||n>14;});
+  const noUA      = active.filter(r=>{const n=dayOf(r.last_ua); return n===null||n>30;});
+  const onNotice  = active.filter(r=>r.on_notice);
+  const warned    = active.filter(r=>(Number(r.warnings)||0)>=2 && !r.on_notice);
+  const noMeetings= active.filter(r=>((Number(r.house_meetings)||0)+(Number(r.peer_meetings)||0))===0);
+  const houseWins = active.filter(r=>((Number(r.house_meetings)||0)+(Number(r.peer_meetings)||0))>=4);
+  const nm = r => (r.name||'Resident') + (r.house_name?' &middot; '+r.house_name:'');
+
+  const houseBody = wrap('House Brief',
+    (houseWins.length? '<div style="background:#eef7f1;border-left:3px solid #78c896;padding:.8rem 1rem;border-radius:0 6px 6px 0;margin-bottom:1rem">'
+      +'<div style="font-family:Georgia,serif;color:#2f6b4a;font-size:1.02rem;margin-bottom:.3rem">Doing the work</div>'
+      +'<div style="font-size:.88rem;color:#3b5c4a">'+houseWins.slice(0,6).map(r=>r.name).join(', ')
+      +' &mdash; four or more meetings this month. Worth saying out loud to them.</div></div>' : '') +
+    sec('On notice &mdash; decide today', onNotice.map(r=>li('<b>'+nm(r)+'</b>'+(r.warning_reason?' &mdash; '+r.warning_reason:'')+' &middot; '+(r.warnings||0)+' warnings'))) +
+    sec('Two or more warnings', warned.map(r=>li(nm(r)+' &mdash; '+(r.warnings||0)+' warnings'+(r.last_warning?', last on '+r.last_warning:'')))) +
+    sec('Nobody has talked to them in 2 weeks', quietRes.slice(0,12).map(r=>li(nm(r)+' &mdash; last contact '+(r.last_talked||'never recorded')))) +
+    sec('No UA on record in 30 days', noUA.slice(0,12).map(r=>li(nm(r)+(r.last_ua?' &mdash; last '+r.last_ua:' &mdash; never')))) +
+    sec('No meetings logged this month', noMeetings.slice(0,12).map(r=>li(nm(r)))) +
+    sec('Open beds', openBeds.map(r=>li('<b>'+(r.house_name||'')+'</b>'+(r.room?' &middot; room '+r.room:'')+' &mdash; $'+(Number(r.monthly_rent)||775)+'/mo sitting empty'))) +
+    sec('Funding ending within 30 days', fundingCliff.map(r=>li('<b>'+nm(r)+'</b> &mdash; '+(r.funding_source||'funding')+' ends '+r.funding_end)))
+  );
+
+  // ---------- FUNDING BRIEF (case managers) ----------
+  const fundingBody = wrap('Funding Brief',
+    sec('Coverage ending within 30 days', expiring.map(a=>li('<b>'+a.resident_name+'</b> &mdash; '+a.funder_name+' ends '+a.coverage_end+' ('+until(a.coverage_end)+' days). Apply to the next funder now, while coverage still exists.'))) +
+    sec('Applications pending 14+ days', pendingLong.map(a=>li(a.resident_name+' &mdash; '+a.funder_name+'. Call and ask where it sits.'))) +
+    sec('Residents with no funding source on record', active.filter(r=>!r.funding_source && (r.payer_type||'self')==='self' && balOf(r)>0).slice(0,12).map(r=>li(nm(r)+' &mdash; $'+Math.round(balOf(r)).toLocaleString('en-US')+' owed and no source logged. Worth one application.')))
+  );
+
   const messages = [
     { to:TEAM.intake, subject:'Intake Brief &mdash; '+urgentStale.length+' urgent, '+newOvernight.length+' new', html:intakeBody },
     { to:TEAM.donations, subject:'Donations Brief &mdash; '+unredeemed.length+' codes awaiting receipts', html:donationBody },
+    { to:TEAM.housing, subject:'House Brief &mdash; '+onNotice.length+' on notice, '+openBeds.length+' open beds', html:houseBody },
+    { to:TEAM.funding, subject:'Funding Brief &mdash; '+expiring.length+' coverage'+(expiring.length===1?'':'s')+' ending within 30 days', html:fundingBody },
     { to:TEAM.leadership, subject:'Daily Command Brief &mdash; The Next Right Thing', html:leadershipBody }
   ];
 
   const preview = url.searchParams.get('preview')==='1';
-  if (preview) return new Response(leadershipBody+'<hr>'+intakeBody+'<hr>'+donationBody,{headers:{'Content-Type':'text/html; charset=utf-8'}});
+  if (preview) return new Response(
+    messages.map(m=>'<div style="font:600 .7rem/1 Helvetica,Arial;letter-spacing:.12em;text-transform:uppercase;color:#999;max-width:640px;margin:2rem auto .4rem">Goes to: '+m.to.join(', ')+'</div>'+m.html).join('<hr style="margin:2.5rem 0;border:0;border-top:1px solid #ddd">'),
+    {headers:{'Content-Type':'text/html; charset=utf-8'}});
 
   if (!env.RESEND_API_KEY) return json({ ok:false, error:'RESEND_API_KEY not set &mdash; add it in Cloudflare Pages settings, then redeploy.' },500);
 

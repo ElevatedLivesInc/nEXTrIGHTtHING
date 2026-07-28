@@ -265,6 +265,33 @@
 </div></div>
 
 <script>
+
+/* No dead ends. If you are not signed in, you get a door - not an error. */
+function showWelcome(title, blurb, status){
+  var path = location.pathname.replace(/\/$/,'') || '/mission-control';
+  var forbidden = (status === 403);
+  var el = document.getElementById('note');
+  if(!el) return;
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div style="max-width:520px;margin:3rem auto;text-align:center">'
+    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:#e8d5b0;font-weight:300;margin-bottom:.6rem">'
+    + (forbidden ? 'This one is not yours' : 'Welcome to ' + title)
+    + '</div>'
+    + '<p style="color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.5rem">'
+    + (forbidden
+        ? 'You are signed in, but your account is not set up for this system. That is on purpose &mdash; each person sees only what they need. Text Gabe and it is a two-minute fix.'
+        : blurb)
+    + '</p>'
+    + (forbidden ? '' :
+        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
+      + '<div style="font-size:.8rem;color:rgba(255,255,255,.45);margin-top:1.3rem;line-height:1.8">'
+      + 'No password. You will get a 6-digit code by email &mdash; type it in and you are back here.<br>'
+      + 'Use your <b style="color:rgba(255,255,255,.7)">@nextrighthing.com</b> address.'
+      + '</div>')
+    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
+    + '</div>';
+}
 let HOUSES=[],RES=[],EVENTS=[],TAB='map',Q='';
 const g=id=>document.getElementById(id);
 function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
@@ -499,7 +526,7 @@ async function load(){
   try{
     const res=await fetch('/housing/list');
     const d=await res.json();
-    if(res.status===401){note.textContent=d.error||'Not signed in.';return;}
+    if(res.status===401||res.status===403){showWelcome('Housing Command', 'Six houses, every bed, every balance, and each resident&rsquo;s house record &mdash; on one screen. Sign in and it is all here.', res.status); return;}
     if(d.error){note.innerHTML='Error: '+esc(d.error)+'<br><br>If this says the table is missing, run <code>1-housing-schema.sql</code> then <code>2-housing-import.sql</code> in Supabase.';return;}
     HOUSES=d.houses||[];RES=d.residents||[];EVENTS=d.events||[];
     g('viewer').textContent='Signed in as '+(d.viewer||'');
