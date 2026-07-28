@@ -37,6 +37,20 @@
   .bed{width:30px;height:30px;border-radius:5px;font-size:.55rem;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid transparent;font-weight:700;color:#0d1424;}
   .bed.paid{background:var(--good);} .bed.part{background:var(--sand);} .bed.owe{background:var(--bad);color:#fff;}
   .bed.open{background:rgba(255,255,255,.09);color:rgba(255,255,255,.5);border-color:rgba(201,169,110,.5);}
+  .bed.notice{box-shadow:0 0 0 2px #fff, 0 0 0 3px var(--bad);}
+  .chip.warn2{background:rgba(224,150,90,.2);color:#f3c48f;border:1px solid rgba(224,150,90,.5);}
+  .chip.notice{background:rgba(224,120,120,.22);color:#f0b6b6;border:1px solid rgba(224,120,120,.55);}
+  .chip.quiet{background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.18);}
+  /* QUICK ACTIONS */
+  .qa{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem;}
+  .qabtn{font-size:.63rem;letter-spacing:.05em;text-transform:uppercase;padding:.55rem .85rem;border-radius:6px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:rgba(255,255,255,.82);cursor:pointer;font-family:'Raleway',sans-serif;font-weight:600;}
+  .qabtn:hover{border-color:var(--sand);color:var(--sand-light);}
+  .qabtn.good{border-color:rgba(120,200,150,.45);color:#a9e5c3;}
+  .qabtn.warn{border-color:rgba(224,150,90,.5);color:#f3c48f;}
+  .qabtn.bad{border-color:rgba(224,120,120,.45);color:#f0b6b6;}
+  .stamp{font-size:.7rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:.7rem;}
+  .stamp b{color:var(--sand-light);font-weight:600;}
+  .stamp .stale{color:#f3c48f;}
   .hfoot{font-size:.74rem;color:rgba(255,255,255,.7);line-height:1.6;border-top:1px solid rgba(255,255,255,.08);padding-top:.55rem;}
   .hfoot b{color:#fff;}
   .risk{color:#f3c48f;font-weight:700;}
@@ -169,7 +183,44 @@
     </div>
   </div>
 
-  <div class="grp"><h4>Success Record</h4>
+  <div class="grp"><h4>House Record &mdash; one tap, no typing</h4>
+    <div class="stamp" id="rStamp"></div>
+    <div class="qa">
+      <button class="qabtn" onclick="quick('talk',this)">Talked to</button>
+      <button class="qabtn good" onclick="quick('house_meeting',this)">House meeting</button>
+      <button class="qabtn good" onclick="quick('peer_meeting',this)">Peer meeting</button>
+      <button class="qabtn good" onclick="quick('ua_clean',this)">UA clean</button>
+      <button class="qabtn bad" onclick="quick('ua_dirty',this)">UA dirty</button>
+      <button class="qabtn warn" onclick="quick('warn',this)">Warning</button>
+      <button class="qabtn" onclick="quick('undo_warn',this)">Undo warning</button>
+      <button class="qabtn bad" id="qaNotice" onclick="quick('notice',this)">Put on notice</button>
+    </div>
+    <div class="three">
+      <div class="fld"><label>Warnings</label><input id="r_warnings"></div>
+      <div class="fld"><label>Last warning</label><input id="r_lastwarn" type="date"></div>
+      <div class="fld"><label>Reason for last warning</label><input id="r_warnreason"></div>
+    </div>
+    <div class="three">
+      <div class="fld"><label>Last talked to</label><input id="r_lasttalked" type="date"></div>
+      <div class="fld"><label>House meetings (month)</label><input id="r_hmeet"></div>
+      <div class="fld"><label>Peer meetings (month)</label><input id="r_pmeet"></div>
+    </div>
+    <div class="three">
+      <div class="fld"><label>Last UA</label><input id="r_lastua" type="date"></div>
+      <div class="fld"><label>UA result</label><select id="r_uares"><option value="">—</option><option value="clean">Clean</option><option value="dirty">Dirty</option><option value="refused">Refused</option></select></div>
+      <div class="fld"><label>&nbsp;</label>
+        <div class="checks" style="padding-top:.4rem">
+          <label><input type="checkbox" id="r_curfew"> Curfew ok</label>
+          <label><input type="checkbox" id="r_chores"> Chores ok</label>
+        </div>
+      </div>
+    </div>
+    <div class="checks" style="margin-top:.3rem">
+      <label><input type="checkbox" id="r_notice"> <b style="color:#f0b6b6">On notice</b> &mdash; final warning, at risk of discharge</label>
+    </div>
+  </div>
+
+  <div class="grp"><h4>Case Manager &mdash; not your job, here for context</h4>
     <div class="checks" style="margin-bottom:.8rem">
       <label><input type="checkbox" id="r_id_doc"> ID</label>
       <label><input type="checkbox" id="r_ss"> SS card</label>
@@ -225,6 +276,24 @@ function isOpen(r){return (r.status||'')==='open';}
 function docsDone(r){return r.has_id&&r.has_ss_card&&r.has_birth_cert;}
 function closeM(){g('mRes').classList.remove('open');}
 
+/* Some houses came over with no room numbers. Fall back to initials so every bed is identifiable. */
+function bedLabel(r){
+  if(r.room) return r.room;
+  if(isOpen(r)) return '';
+  const p=(r.name||'').trim().split(/\s+/).filter(Boolean);
+  const s=((p[0]||'')[0]||'')+((p[1]||'')[0]||'');
+  return s.toUpperCase()||'?';
+}
+function today(){return new Date().toISOString().slice(0,10);}
+function daysAgo(d){if(!d)return null;try{return Math.floor((new Date()-new Date(d+'T00:00:00'))/86400000);}catch(_){return null;}}
+function ago(d){
+  const n=daysAgo(d);
+  if(n===null)return 'never';
+  if(n<=0)return 'today';
+  if(n===1)return 'yesterday';
+  return n+' days ago';
+}
+
 function openRes(id){
   const r=RES.find(x=>x.id===id); if(!r)return;
   g('rTitle').textContent=r.name||'Resident';
@@ -242,9 +311,55 @@ function openRes(id){
   g('r_bank').checked=!!r.bank_account; g('r_emp').checked=!!r.employed;
   set('r_employer',r.employer);set('r_jobstart',r.job_start_date);set('r_savings',r.savings_balance);
   set('r_certs',r.certifications);set('r_cm',r.case_manager); g('r_tl').value=r.treatment_level||'';
+  set('r_warnings',r.warnings==null?0:r.warnings);
+  set('r_lastwarn',r.last_warning);set('r_warnreason',r.warning_reason);
+  set('r_lasttalked',r.last_talked);
+  set('r_hmeet',r.house_meetings==null?0:r.house_meetings);
+  set('r_pmeet',r.peer_meetings==null?0:r.peer_meetings);
+  set('r_lastua',r.last_ua); g('r_uares').value=r.ua_result||'';
+  g('r_curfew').checked=r.curfew_ok!==false;
+  g('r_chores').checked=r.chores_ok!==false;
+  g('r_notice').checked=!!r.on_notice;
+  g('qaNotice').textContent=r.on_notice?'Take off notice':'Put on notice';
+  g('rStamp').innerHTML=stampLine(r);
   set('r_notes',r.notes);
   g('e_amount').value=''; g('e_detail').value='';
   g('mRes').classList.add('open');
+}
+
+/* The one line Rob reads before he says anything to the guy. */
+function stampLine(r){
+  const talkN=daysAgo(r.last_talked);
+  const talkCls=(talkN===null||talkN>14)?' class="stale"':'';
+  const uaN=daysAgo(r.last_ua);
+  const uaCls=(uaN===null||uaN>30)?' class="stale"':'';
+  let s='Last talked to <b'+talkCls+'>'+ago(r.last_talked)+'</b>'
+      + ' &middot; Last UA <b'+uaCls+'>'+ago(r.last_ua)+(r.ua_result?' ('+esc(r.ua_result)+')':'')+'</b>'
+      + ' &middot; <b>'+(r.warnings||0)+'</b> warning'+((r.warnings||0)===1?'':'s')
+      + ' &middot; Meetings this month: <b>'+(r.house_meetings||0)+'</b> house, <b>'+(r.peer_meetings||0)+'</b> peer';
+  if(r.on_notice) s+='<br><span style="color:#f0b6b6;font-weight:700">ON NOTICE</span>'+(r.warning_reason?' &mdash; '+esc(r.warning_reason):'');
+  return s;
+}
+
+/* One tap. Stamps the date, bumps the count, writes the event, saves. No typing. */
+async function quick(kind,btn){
+  const id=g('r_id').value; const res=RES.find(x=>x.id===id)||{};
+  let detail='';
+  if(kind==='warn'){
+    detail=prompt('What was the warning for? (leave blank to skip)')||'';
+  }
+  const old=btn.textContent; btn.textContent='…'; btn.disabled=true;
+  const r=await fetch('/housing/update',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({quick:kind,id:id,resident_name:res.name,house_name:res.house_name,detail:detail})});
+  btn.disabled=false; btn.textContent=old;
+  if(!r.ok){alert('Did not save. Try again.');return;}
+  const d=await r.json().catch(()=>({}));
+  if(d && d.resident){
+    const i=RES.findIndex(x=>x.id===id);
+    if(i>-1) RES[i]=d.resident;
+    openRes(id);
+    render();
+  }else{ load(); }
 }
 async function saveRes(btn){
   const b={id:g('r_id').value,name:g('r_name').value,house_name:g('r_house').value,room:g('r_room').value,
@@ -256,7 +371,11 @@ async function saveRes(btn){
     has_id:g('r_id_doc').checked,has_ss_card:g('r_ss').checked,has_birth_cert:g('r_bc').checked,
     bank_account:g('r_bank').checked,employed:g('r_emp').checked,
     employer:g('r_employer').value,job_start_date:g('r_jobstart').value,savings_balance:g('r_savings').value,
-    certifications:g('r_certs').value,case_manager:g('r_cm').value,treatment_level:g('r_tl').value,notes:g('r_notes').value};
+    certifications:g('r_certs').value,case_manager:g('r_cm').value,treatment_level:g('r_tl').value,notes:g('r_notes').value,
+    warnings:g('r_warnings').value,last_warning:g('r_lastwarn').value,warning_reason:g('r_warnreason').value,
+    last_talked:g('r_lasttalked').value,house_meetings:g('r_hmeet').value,peer_meetings:g('r_pmeet').value,
+    last_ua:g('r_lastua').value,ua_result:g('r_uares').value,
+    curfew_ok:g('r_curfew').checked,chores_ok:g('r_chores').checked,on_notice:g('r_notice').checked};
   btn.textContent='Saving…';
   const r=await fetch('/housing/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
   btn.textContent='Save resident';
@@ -297,9 +416,14 @@ function render(){
       const owed=filled.reduce((t,r)=>t+Math.max(bal(r),0),0);
       const risk=open.reduce((t,r)=>t+n(r.monthly_rent||775),0);
       const cells=beds.map(r=>{
-        let cls='open',txt=r.room||'';
+        let cls='open',txt=bedLabel(r);
         if(!isOpen(r)){const b=bal(r); cls=b<=0?'paid':(n(r.amount_paid)>0?'part':'owe');}
-        return '<div class="bed '+cls+'" title="'+esc((r.name||'Open')+' · '+(r.room||'')+' · '+(isOpen(r)?'open':money(bal(r))+' owed'))+'" onclick="openRes(\''+r.id+'\')">'+esc(txt)+'</div>';
+        if(r.on_notice) cls+=' notice';
+        const tip=(r.name||'Open bed')+(r.room?' · Room '+r.room:'')+' · '
+          +(isOpen(r)?'open':money(bal(r))+' owed')
+          +(isOpen(r)?'':' · talked to '+ago(r.last_talked)+' · '+(r.warnings||0)+' warnings')
+          +(r.on_notice?' · ON NOTICE':'');
+        return '<div class="bed '+cls+'" title="'+esc(tip)+'" onclick="openRes(\''+r.id+'\')">'+esc(txt)+'</div>';
       }).join('');
       return '<div class="house"><div class="hhead"><div class="hname">'+esc(hn)+'</div>'
         +'<div class="hocc">'+filled.length+'/'+beds.length+' · '+occ+'%</div></div>'
@@ -331,6 +455,9 @@ function render(){
       +'<div class="rmeta">'+esc(r.house_name||'')+(r.room?' · '+esc(r.room):'')
       +(r.payer_type&&r.payer_type!=='self'?' <span class="chip hrss">'+esc(r.payer_type)+'</span>':'')
       +(cliff!==null&&cliff<=30&&cliff>=0?' <span class="chip cliff">funding ends '+cliff+'d</span>':'')
+      +(r.on_notice?' <span class="chip notice">on notice</span>':'')
+      +((r.warnings||0)>0?' <span class="chip warn2">'+r.warnings+' warning'+(r.warnings===1?'':'s')+'</span>':'')
+      +((daysAgo(r.last_talked)===null||daysAgo(r.last_talked)>14)?' <span class="chip quiet">talked '+ago(r.last_talked)+'</span>':'')
       +(r.notes?'<br><span style="opacity:.65;font-style:italic">'+esc(String(r.notes).slice(0,90))+'</span>':'')
       +'</div>'
       +'<div class="rbal '+(b>0?'owe':'ok')+'">'+(b>0?money(b):'current')+'</div></div>';

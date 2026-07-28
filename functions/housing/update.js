@@ -32,6 +32,66 @@ export async function onRequestPost(context) {
   if (!b.id) return json({ok:false,error:'id required'},400);
   const base=env.SUPABASE_URL+'/rest/v1/residents?id=eq.'+encodeURIComponent(b.id);
 
+  // ---- one-tap house actions. Stamps the date, bumps the count, writes the event.
+  if (b.quick) {
+    const today=new Date().toISOString().slice(0,10);
+    const month=today.slice(0,7);
+    const g=await fetch(base+'&select=*',{headers:H});
+    if(!g.ok) return json({ok:false,error:'resident not found'},404);
+    const rows=await g.json(); const cur=rows[0];
+    if(!cur) return json({ok:false,error:'resident not found'},404);
+
+    // meeting counts are per calendar month - roll them over automatically
+    let hm=Number(cur.house_meetings)||0, pm=Number(cur.peer_meetings)||0;
+    if((cur.meetings_reset||'').slice(0,7)!==month){ hm=0; pm=0; }
+
+    const patch={ meetings_reset:today, updated_by:who };
+    let kind='note', detail=S(b.detail,2000)||'';
+
+    switch(b.quick){
+      case 'talk':
+        patch.last_talked=today; kind='welfare';
+        detail=detail||'Checked in with resident'; break;
+      case 'house_meeting':
+        patch.house_meetings=hm+1; patch.last_meeting=today; patch.last_talked=today;
+        kind='meeting'; detail=detail||'Attended house meeting'; break;
+      case 'peer_meeting':
+        patch.peer_meetings=pm+1; patch.last_meeting=today;
+        kind='meeting'; detail=detail||'Attended peer support meeting'; break;
+      case 'ua_clean':
+        patch.last_ua=today; patch.ua_result='clean';
+        kind='ua'; detail=detail||'UA clean'; break;
+      case 'ua_dirty':
+        patch.last_ua=today; patch.ua_result='dirty';
+        kind='ua'; detail=detail||'UA dirty'; break;
+      case 'warn':
+        patch.warnings=(Number(cur.warnings)||0)+1;
+        patch.last_warning=today; patch.last_talked=today;
+        if(detail) patch.warning_reason=detail;
+        kind='warning'; detail=detail||'Warning issued'; break;
+      case 'undo_warn':
+        patch.warnings=Math.max(0,(Number(cur.warnings)||0)-1);
+        kind='note'; detail='Warning removed'; break;
+      case 'notice':
+        patch.on_notice=!cur.on_notice;
+        kind='notice'; detail=patch.on_notice?'Placed on notice':'Taken off notice'; break;
+      default:
+        return json({ok:false,error:'unknown action'},400);
+    }
+    if(patch.house_meetings===undefined) patch.house_meetings=hm;
+    if(patch.peer_meetings===undefined)  patch.peer_meetings=pm;
+
+    const u=await fetch(base,{method:'PATCH',headers:H,body:JSON.stringify(patch)});
+    if(!u.ok){const d=await u.text();return json({ok:false,error:'update failed',detail:d},500);}
+    // history, so a warning is never just one person's word
+    await fetch(env.SUPABASE_URL+'/rest/v1/house_events',{method:'POST',headers:H,body:JSON.stringify({
+      house_name:S(b.house_name,120)||cur.house_name, resident_name:S(b.resident_name,160)||cur.name,
+      kind, detail, logged_by:who })});
+    const g2=await fetch(base+'&select=*',{headers:H});
+    const rows2=g2.ok?await g2.json():[];
+    return json({ ok:true, resident: rows2[0]||Object.assign({},cur,patch) });
+  }
+
   if (b.action==='delete') {
     const r=await fetch(base,{method:'DELETE',headers:H});
     if(!r.ok){const d=await r.text();return json({ok:false,error:'delete failed',detail:d},500);}
@@ -54,7 +114,13 @@ export async function onRequestPost(context) {
   put('case_manager',S(b.case_manager,120)); put('treatment_level',S(b.treatment_level,40));
   put('employer',S(b.employer,160)); put('job_start_date',S(b.job_start_date,20));
   put('certifications',S(b.certifications,400)); put('notes',S(b.notes,4000));
-  ['has_id','has_ss_card','has_birth_cert','bank_account','employed'].forEach(k=>{ if(b[k]!==undefined) p[k]=B(b[k]); });
+  // House Record
+  if(b.warnings!==undefined)       put('warnings',N(b.warnings));
+  if(b.house_meetings!==undefined) put('house_meetings',N(b.house_meetings));
+  if(b.peer_meetings!==undefined)  put('peer_meetings',N(b.peer_meetings));
+  put('last_warning',S(b.last_warning,20)); put('warning_reason',S(b.warning_reason,600));
+  put('last_talked',S(b.last_talked,20)); put('last_ua',S(b.last_ua,20)); put('ua_result',S(b.ua_result,20));
+  ['has_id','has_ss_card','has_birth_cert','bank_account','employed','curfew_ok','chores_ok','on_notice'].forEach(k=>{ if(b[k]!==undefined) p[k]=B(b[k]); });
   p.updated_by=who;
   if(Object.keys(p).length<=1) return json({ok:false,error:'nothing to update'},400);
   const r=await fetch(base,{method:'PATCH',headers:H,body:JSON.stringify(p)});
