@@ -39,6 +39,11 @@
   .soon .tile{cursor:default;}
   .soon .tile:hover{border-color:rgba(255,255,255,.1);transform:none;}
   .pill{display:inline-block;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .5rem;border-radius:4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.15);}
+  .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.6rem;}
+  .links a{display:flex;flex-direction:column;gap:.2rem;padding:.8rem 1rem;border-radius:9px;text-decoration:none;background:rgba(201,169,110,.07);border:1px solid rgba(201,169,110,.28);transition:border-color .15s;}
+  .links a:hover{border-color:rgba(201,169,110,.65);}
+  .links b{color:var(--sand-light);font-weight:600;font-size:.86rem;}
+  .links span{color:rgba(255,255,255,.5);font-size:.72rem;font-weight:300;line-height:1.5;}
   .note{max-width:620px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
   .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.7;}
 </style>
@@ -126,9 +131,12 @@
     </a>
   </div>
 
-  <div class="sec">Coming Online</div>
-  <div class="tiles soon">
-
+  <div class="sec">Pages You Can Send Anyone</div>
+  <div class="links">
+    <a href="/get-help" target="_blank"><b>Get Help</b><span>Six honest doors in &mdash; each one states the real cost. Public.</span></a>
+    <a href="/payment-options" target="_blank"><b>Payment Options</b><span>For any resident who is behind. Text or hand it to them. Public.</span></a>
+    <a href="/fellowship-hall-meetings" target="_blank"><b>Fellowship Hall Meetings</b><span>The meeting schedule. Public.</span></a>
+    <a href="/" target="_blank"><b>Main Site</b><span>nextrighthing.com &mdash; the front door.</span></a>
   </div>
 
   <div class="note" id="note" style="display:none">Loading…</div>
