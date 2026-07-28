@@ -32,10 +32,15 @@
 // Reaching this page at all means Cloudflare Access already signed you in
 // and set your cookie. All that's left is to send you back where you started.
 (function(){
-  var SAFE = ['/mission-control','/housing','/funding','/intake-queue',
-              '/in-kind-report','/donations-report','/admin-issue','/carwash-report'];
+  var SAFE = ['/mission-control','/housing','/funding','/intake-queue','/in-kind-report',
+              '/donations-report','/admin-issue','/carwash-report','/patrol/run'];
   var next = new URLSearchParams(location.search).get('next') || '/mission-control';
-  if (SAFE.indexOf(next) === -1) next = '/mission-control';   // never redirect off-site
+  // Must be a same-site path (one leading slash, never "//host") on the allowed list.
+  // Query strings are kept so ?preview=1 survives the round trip.
+  var path = next.split('?')[0].replace(/\/$/,'');
+  if (next.charAt(0) !== '/' || next.charAt(1) === '/' || SAFE.indexOf(path) === -1) {
+    next = '/mission-control';
+  }
   document.getElementById('go').href = next;
   setTimeout(function(){ location.replace(next); }, 700);
 })();

@@ -22,7 +22,16 @@ export async function onRequest(context) {
 
   const keyOk = env.PATROL_KEY && url.searchParams.get('key') === env.PATROL_KEY;
   const who = keyOk ? 'cron' : await getAuthedEmail(request);
-  if (!who) return json({ error:'Not signed in, and no valid key. Log in at a staff page, or call with ?key=' },401);
+  if (!who) {
+    // A person in a browser gets sent to the door, not shown an error.
+    // A cron caller with a bad key still gets JSON.
+    const wantsHtml = (request.headers.get('Accept')||'').includes('text/html');
+    if (wantsHtml) {
+      const back = url.pathname + (url.search || '');
+      return Response.redirect(url.origin + '/signin?next=' + encodeURIComponent(back), 302);
+    }
+    return json({ error:'Not signed in, and no valid key. Open /patrol/run in a browser to sign in, or call with ?key=' },401);
+  }
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ error:'not configured' },500);
 
   const h={ 'apikey':env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY };
