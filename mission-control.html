@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Mission Control — The Next Right Thing</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.6rem 1.5rem;}
+  .top-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:2rem;line-height:1.1;}
+  h1 em{color:var(--sand-light);font-style:italic;}
+  .tag{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.35rem;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);text-align:right;}
+  .wrap{max-width:1180px;margin:0 auto;padding:1.6rem 1.5rem 3rem;}
+  .sec{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sand);margin:1.8rem 0 .9rem;}
+  .sec:first-of-type{margin-top:0;}
+  .alerts{display:flex;flex-direction:column;gap:.55rem;margin-bottom:.5rem;}
+  .alert{display:flex;align-items:center;gap:.8rem;padding:.75rem 1rem;border-radius:8px;font-size:.85rem;border:1px solid;}
+  .alert.hot{background:rgba(224,120,120,.12);border-color:rgba(224,120,120,.45);color:#f3c9c9;}
+  .alert.warm{background:rgba(224,150,90,.12);border-color:rgba(224,150,90,.45);color:#f3d3af;}
+  .alert.calm{background:rgba(120,200,150,.1);border-color:rgba(120,200,150,.35);color:#bfe8d1;}
+  .alert a{color:inherit;font-weight:700;margin-left:auto;white-space:nowrap;text-decoration:none;border-bottom:1px solid;}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1rem;}
+  .tile{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:1.3rem 1.4rem;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:.55rem;transition:border-color .15s,transform .15s;}
+  .tile:hover{border-color:rgba(201,169,110,.55);transform:translateY(-2px);}
+  .tile h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.35rem;color:var(--sand-light);}
+  .tile p{font-size:.78rem;color:rgba(255,255,255,.6);font-weight:300;line-height:1.55;}
+  .nums{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:auto;padding-top:.5rem;}
+  .num{display:flex;flex-direction:column;}
+  .num b{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;font-weight:400;}
+  .num span{font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);}
+  .num.flag b{color:#f0b6b6;}
+  .soon{opacity:.55;}
+  .soon .tile{cursor:default;}
+  .soon .tile:hover{border-color:rgba(255,255,255,.1);transform:none;}
+  .pill{display:inline-block;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .5rem;border-radius:4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.15);}
+  .note{max-width:620px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <div>
+    <h1>Mission <em>Control</em></h1>
+    <div class="tag">The Next Right Thing in Recovery</div>
+  </div>
+  <div class="viewer" id="viewer"></div>
+</div></div>
+
+<div class="wrap">
+  <div id="alertwrap" style="display:none">
+    <div class="sec">Needs Attention Today</div>
+    <div class="alerts" id="alerts"></div>
+  </div>
+
+  <div class="sec">Systems</div>
+  <div class="tiles" id="tiles">
+    <a class="tile" href="/intake-queue">
+      <h3>Pre-Intake Queue</h3>
+      <p>Everyone who reached out for help — triaged, tracked from first contact through intake.</p>
+      <div class="nums">
+        <div class="num"><b id="iNew">–</b><span>New</span></div>
+        <div class="num flag"><b id="iUrgent">–</b><span>Reach Out 24h</span></div>
+        <div class="num"><b id="iOpen">–</b><span>Open</span></div>
+        <div class="num"><b id="iDone">–</b><span>Intaked</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/funding">
+      <h3>Funding Navigator</h3>
+      <p>Scholarship funders, rules, contacts — and every client application with its coverage cliff.</p>
+      <div class="nums">
+        <div class="num"><b id="fApproved">–</b><span>Approved</span></div>
+        <div class="num"><b id="fPending">–</b><span>Pending</span></div>
+        <div class="num flag"><b id="fExpiring">–</b><span>Expiring 30d</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/in-kind-report">
+      <h3>In-Kind Donations</h3>
+      <p>Codes issued, receipts generated, monthly grant-ready totals. <span class="pill">Nonprofit</span></p>
+      <div class="nums">
+        <div class="num"><b id="kTotal">–</b><span>Issued</span></div>
+        <div class="num"><b id="kRedeemed">–</b><span>Receipted</span></div>
+        <div class="num"><b id="kValue">–</b><span>Declared Value</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/donations-report">
+      <h3>Cash Donations</h3>
+      <p>Every Square gift, monthly totals, donor emails for stewardship. <span class="pill">Nonprofit</span></p>
+      <div class="nums"><div class="num"><b>Square</b><span>Live feed</span></div></div>
+    </a>
+
+    <a class="tile" href="/admin-issue">
+      <h3>Issue In-Kind Code</h3>
+      <p>Log a donation, generate the donor's receipt code in under two minutes.</p>
+      <div class="nums"><div class="num"><b>New</b><span>Donation</span></div></div>
+    </a>
+
+    <a class="tile" href="/carwash-report">
+      <h3>Event Signups</h3>
+      <p>Fundraiser RSVPs, volunteer slots, and the live scoreboard.</p>
+      <div class="nums"><div class="num"><b>Events</b><span>Scoreboard</span></div></div>
+    </a>
+  </div>
+
+  <div class="sec">Coming Online</div>
+  <div class="tiles soon">
+    <div class="tile">
+      <h3>Housing Command</h3>
+      <p>6 houses · 68 beds · live occupancy, rent status, collection board, house-manager view — and open beds surfacing straight into the intake queue.</p>
+      <div class="nums"><div class="num"><b>Next</b><span>In Build</span></div></div>
+    </div>
+    <div class="tile">
+      <h3>Resident Success Record</h3>
+      <p>Documents, benefits, employment, savings and blueprint milestones tracked beside rent — because economic milestones are recovery milestones.</p>
+      <div class="nums"><div class="num"><b>Next</b><span>In Build</span></div></div>
+    </div>
+    <div class="tile">
+      <h3>Patrol Agent</h3>
+      <p>Runs every morning: overnight intakes, untouched urgent cards, coverage cliffs, unredeemed codes — emailed to whoever owns them.</p>
+      <div class="nums"><div class="num"><b>Needs</b><span>Resend Verified</span></div></div>
+    </div>
+  </div>
+
+  <div class="note" id="note" style="display:none">Loading…</div>
+
+  <div class="foot">
+    <b>Two entities, one command center.</b> Treatment-center operations (intake, housing, residents) and nonprofit operations (donations, scholarships, events) are tracked separately by design — The Next Right Thing in Recovery and The Right Thing in Recovery are distinct organizations and their records never blend.<br>
+    <em>"I made a difference to that one."</em>
+  </div>
+</div>
+
+<script>
+function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
+function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
+(async function(){
+  const note=document.getElementById('note');
+  try{
+    const res=await fetch('/mission-control/summary');
+    const d=await res.json();
+    if(res.status===401){note.style.display='block';note.innerHTML='Not signed in. Open any staff page (for example <b>/intake-queue</b>) to log in with your email code, then reload this page.';return;}
+    if(d.error){note.style.display='block';note.textContent='Error: '+d.error;return;}
+    document.getElementById('viewer').textContent='Signed in as '+(d.viewer||'');
+    const I=d.intake||{},K=d.inkind||{},F=d.funding||{};
+    document.getElementById('iNew').textContent=I.new??0;
+    document.getElementById('iUrgent').textContent=I.urgent??0;
+    document.getElementById('iOpen').textContent=I.open??0;
+    document.getElementById('iDone').textContent=I.intaked??0;
+    document.getElementById('kTotal').textContent=K.total??0;
+    document.getElementById('kRedeemed').textContent=K.redeemed??0;
+    document.getElementById('kValue').textContent=money(K.value);
+    document.getElementById('fApproved').textContent=F.approved??0;
+    document.getElementById('fPending').textContent=F.pending??0;
+    document.getElementById('fExpiring').textContent=F.expiringSoon??0;
+
+    const A=[];
+    if(I.urgent)A.push({c:'hot',t:I.urgent+' intake request'+(I.urgent>1?'s':'')+' flagged for contact within 24 hours',l:'/intake-queue',b:'Open queue'});
+    if(F.expiringSoon){
+      const names=(F.expiringList||[]).map(x=>x.name).filter(Boolean).slice(0,3).join(', ');
+      A.push({c:'warm',t:F.expiringSoon+' funding coverage'+(F.expiringSoon>1?'s':'')+' ending within 30 days'+(names?' — '+names:''),l:'/funding',b:'Review funding'});
+    }
+    if(K.pending)A.push({c:'warm',t:K.pending+' in-kind code'+(K.pending>1?'s':'')+' issued but no receipt generated yet',l:'/in-kind-report',b:'View donations'});
+    if(I.new)A.push({c:'calm',t:I.new+' new intake request'+(I.new>1?'s':'')+' waiting for first contact',l:'/intake-queue',b:'Open queue'});
+    if(!A.length)A.push({c:'calm',t:'Nothing urgent right now — queues are clear.',l:'/intake-queue',b:'Open queue'});
+    document.getElementById('alerts').innerHTML=A.map(a=>'<div class="alert '+a.c+'"><span>'+esc(a.t)+'</span><a href="'+a.l+'">'+esc(a.b)+' &rarr;</a></div>').join('');
+    document.getElementById('alertwrap').style.display='block';
+  }catch(_){note.style.display='block';note.textContent='Could not load the summary. Check your connection and reload.';}
+})();
+</script>
+</body>
+</html>

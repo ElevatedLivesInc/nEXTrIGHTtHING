@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Funding Navigator — Staff Only</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.3rem 1.5rem;}
+  .top-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.7rem;}
+  h1 em{color:var(--sand-light);font-style:italic;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);}
+  .viewer a{color:var(--sand-light);text-decoration:none;margin-left:1rem;}
+  .wrap{max-width:1200px;margin:0 auto;padding:1.5rem;}
+  .tabs{display:flex;gap:.5rem;margin-bottom:1.3rem;flex-wrap:wrap;}
+  .tab{padding:.5rem 1.3rem;border-radius:50px;border:1px solid rgba(201,169,110,.35);background:transparent;color:rgba(255,255,255,.7);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Raleway',sans-serif;}
+  .tab.active{background:rgba(201,169,110,.2);color:var(--sand-light);border-color:rgba(201,169,110,.6);}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.3rem;}
+  .stat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:.9rem 1rem;text-align:center;}
+  .stat .n{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--sand-light);}
+  .stat .l{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.2rem;}
+  .stat.alert{border-color:rgba(224,120,120,.5);}
+  .stat.alert .n{color:#f0b6b6;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1rem;}
+  .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.55rem;}
+  .card.inactive{opacity:.5;}
+  .card h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--sand-light);font-weight:400;}
+  .rows{font-size:.78rem;color:rgba(255,255,255,.78);line-height:1.55;font-weight:300;}
+  .rows b{color:#fff;font-weight:600;}
+  .rows a{color:var(--sand-light);}
+  .chip{display:inline-block;font-size:.57rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .55rem;border-radius:4px;font-weight:700;margin:.1rem .2rem .1rem 0;}
+  .chip.applied{background:rgba(201,169,110,.16);color:var(--sand-light);border:1px solid rgba(201,169,110,.4);}
+  .chip.approved{background:rgba(120,200,150,.16);color:#a9e5c3;border:1px solid rgba(120,200,150,.45);}
+  .chip.denied{background:rgba(224,120,120,.16);color:#f0b6b6;border:1px solid rgba(224,120,120,.4);}
+  .chip.expired{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);}
+  .chip.waitlist{background:rgba(124,92,191,.18);color:var(--lav);border:1px solid rgba(124,92,191,.4);}
+  .chip.once{background:rgba(224,120,120,.14);color:#f0b6b6;border:1px solid rgba(224,120,120,.35);}
+  .chip.expsoon{background:rgba(224,150,90,.18);color:#f3c48f;border:1px solid rgba(224,150,90,.45);}
+  .btn{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:.4rem .9rem;border-radius:5px;border:1px solid rgba(201,169,110,.45);background:transparent;color:var(--sand-light);cursor:pointer;font-family:'Raleway',sans-serif;}
+  .btn.solid{background:rgba(201,169,110,.22);font-weight:700;}
+  .btn.danger{border-color:rgba(224,120,120,.4);color:#f0b6b6;}
+  .btnrow{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:auto;padding-top:.4rem;}
+  .bar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;}
+  input,select,textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;padding:.5rem .7rem;width:100%;}
+  textarea{min-height:60px;resize:vertical;}
+  label{display:block;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.25rem;}
+  .fld{margin-bottom:.7rem;}
+  .modal{display:none;position:fixed;inset:0;background:rgba(2,4,12,.9);z-index:100;overflow-y:auto;padding:2rem 1rem;}
+  .modal.open{display:block;}
+  .sheet{max-width:620px;margin:0 auto;background:var(--navy);border:1px solid rgba(201,169,110,.4);border-radius:12px;padding:1.6rem;}
+  .sheet h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.4rem;color:var(--sand-light);margin-bottom:1rem;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+  .note{max-width:640px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  @media(max-width:600px){.two{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <h1>Funding <em>Navigator</em></h1>
+  <div class="viewer"><span id="viewer"></span><a href="/mission-control">&larr; Mission Control</a></div>
+</div></div>
+
+<div class="wrap">
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat"><div class="n" id="sFunders">0</div><div class="l">Active Funders</div></div>
+    <div class="stat"><div class="n" id="sApproved">0</div><div class="l">Approved</div></div>
+    <div class="stat"><div class="n" id="sPending">0</div><div class="l">Awaiting Decision</div></div>
+    <div class="stat alert"><div class="n" id="sExpiring">0</div><div class="l">Expiring &lt;30 Days</div></div>
+  </div>
+
+  <div class="tabs" id="tabs" style="display:none">
+    <button class="tab active" data-t="funders">Funder Directory</button>
+    <button class="tab" data-t="apps">Client Applications</button>
+    <button class="btn solid" style="margin-left:auto" onclick="openFunder()">+ Add Funder</button>
+    <button class="btn solid" onclick="openApp()">+ Log Application</button>
+  </div>
+
+  <div class="bar" id="searchbar" style="display:none"><input id="q" placeholder="Search name, resident, funder…" style="max-width:340px"></div>
+  <div class="grid" id="grid"></div>
+  <div class="note" id="note">Loading…</div>
+</div>
+
+<!-- FUNDER MODAL -->
+<div class="modal" id="mFunder"><div class="sheet">
+  <h2 id="fTitle">Add Funder</h2>
+  <input type="hidden" id="f_id">
+  <div class="fld"><label>Organization name *</label><input id="f_name" placeholder="e.g. The Sobriety Foundation"></div>
+  <div class="two">
+    <div class="fld"><label>Category</label><select id="f_category">
+      <option value="Scholarship">Scholarship</option><option value="Treatment Funder">Treatment Funder</option>
+      <option value="Housing Assistance">Housing Assistance</option><option value="Grant">Grant</option><option value="Other">Other</option>
+    </select></div>
+    <div class="fld"><label>Typical amount</label><input id="f_amount" placeholder="e.g. $1,000 or 30 days PHP"></div>
+  </div>
+  <div class="fld"><label>Website / application link</label><input id="f_website" placeholder="https://"></div>
+  <div class="two">
+    <div class="fld"><label>Contact name</label><input id="f_cname"></div>
+    <div class="fld"><label>Contact email</label><input id="f_cemail"></div>
+  </div>
+  <div class="fld"><label>Contact phone</label><input id="f_cphone"></div>
+  <div class="fld"><label>Eligibility (who qualifies)</label><textarea id="f_elig"></textarea></div>
+  <div class="fld"><label>Rules / process (deadlines, documents, how to apply)</label><textarea id="f_rules"></textarea></div>
+  <div class="fld"><label><input type="checkbox" id="f_once" style="width:auto;margin-right:.4rem">One scholarship per client (lifetime)</label></div>
+  <div class="fld"><label><input type="checkbox" id="f_active" checked style="width:auto;margin-right:.4rem">Active — currently accepting applications</label></div>
+  <div class="fld"><label>Notes</label><textarea id="f_notes"></textarea></div>
+  <div class="btnrow"><button class="btn solid" onclick="saveFunder(this)">Save</button><button class="btn" onclick="closeM('mFunder')">Cancel</button></div>
+</div></div>
+
+<!-- APPLICATION MODAL -->
+<div class="modal" id="mApp"><div class="sheet">
+  <h2 id="aTitle">Log Application</h2>
+  <input type="hidden" id="a_id">
+  <div class="two">
+    <div class="fld"><label>Resident name *</label><input id="a_res"></div>
+    <div class="fld"><label>Funder *</label><input id="a_fund" list="funderlist"><datalist id="funderlist"></datalist></div>
+  </div>
+  <div class="two">
+    <div class="fld"><label>Status</label><select id="a_status">
+      <option value="applied">Applied — awaiting decision</option><option value="approved">Approved</option>
+      <option value="denied">Denied</option><option value="waitlist">Waitlist</option><option value="expired">Expired</option>
+    </select></div>
+    <div class="fld"><label>Level of care</label><select id="a_loc">
+      <option value="">—</option><option>PHP</option><option>IOP</option><option>General Outpatient</option><option>Sober Living</option><option>Detox</option>
+    </select></div>
+  </div>
+  <div class="two">
+    <div class="fld"><label>Applied date</label><input id="a_applied" type="date"></div>
+    <div class="fld"><label>Decision date</label><input id="a_decision" type="date"></div>
+  </div>
+  <div class="two">
+    <div class="fld"><label>Coverage starts</label><input id="a_start" type="date"></div>
+    <div class="fld"><label>Coverage ends (⚠ the cliff)</label><input id="a_end" type="date"></div>
+  </div>
+  <div class="fld"><label>Amount</label><input id="a_amount" placeholder="1000"></div>
+  <div class="fld"><label>Notes (denial reason, next funder to try, contact)</label><textarea id="a_notes"></textarea></div>
+  <div class="btnrow"><button class="btn solid" onclick="saveApp(this)">Save</button><button class="btn" onclick="closeM('mApp')">Cancel</button></div>
+</div></div>
+
+<script>
+let FUNDERS=[], APPS=[], TAB='funders', Q='';
+function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
+function fmtD(d){if(!d)return '—';try{return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(_){return d;}}
+function daysUntil(d){if(!d)return null;try{return Math.ceil((new Date(d+'T00:00:00')-new Date())/86400000);}catch(_){return null;}}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+function openFunder(f){
+  f=f||{};
+  document.getElementById('fTitle').textContent=f.id?'Edit Funder':'Add Funder';
+  ['id','name','website','notes'].forEach(k=>{const el=document.getElementById('f_'+(k==='id'?'id':k));if(el)el.value=f[k]||'';});
+  document.getElementById('f_category').value=f.category||'Scholarship';
+  document.getElementById('f_amount').value=f.typical_amount||'';
+  document.getElementById('f_cname').value=f.contact_name||'';
+  document.getElementById('f_cemail').value=f.contact_email||'';
+  document.getElementById('f_cphone').value=f.contact_phone||'';
+  document.getElementById('f_elig').value=f.eligibility||'';
+  document.getElementById('f_rules').value=f.rules||'';
+  document.getElementById('f_once').checked=!!f.once_per_client;
+  document.getElementById('f_active').checked=f.active!==false;
+  document.getElementById('mFunder').classList.add('open');
+}
+async function saveFunder(btn){
+  const body={table:'funders',id:document.getElementById('f_id').value||undefined,
+    name:document.getElementById('f_name').value,category:document.getElementById('f_category').value,
+    website:document.getElementById('f_website').value,contact_name:document.getElementById('f_cname').value,
+    contact_email:document.getElementById('f_cemail').value,contact_phone:document.getElementById('f_cphone').value,
+    eligibility:document.getElementById('f_elig').value,rules:document.getElementById('f_rules').value,
+    typical_amount:document.getElementById('f_amount').value,once_per_client:document.getElementById('f_once').checked,
+    active:document.getElementById('f_active').checked,notes:document.getElementById('f_notes').value};
+  if(!body.name){alert('Name is required');return;}
+  btn.textContent='Saving…';
+  const r=await fetch('/funding/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  btn.textContent='Save';
+  if(r.ok){closeM('mFunder');load();}else{alert('Save failed');}
+}
+
+function openApp(a){
+  a=a||{};
+  document.getElementById('aTitle').textContent=a.id?'Edit Application':'Log Application';
+  document.getElementById('a_id').value=a.id||'';
+  document.getElementById('a_res').value=a.resident_name||'';
+  document.getElementById('a_fund').value=a.funder_name||'';
+  document.getElementById('a_status').value=a.status||'applied';
+  document.getElementById('a_loc').value=a.level_of_care||'';
+  document.getElementById('a_applied').value=a.applied_date||'';
+  document.getElementById('a_decision').value=a.decision_date||'';
+  document.getElementById('a_start').value=a.coverage_start||'';
+  document.getElementById('a_end').value=a.coverage_end||'';
+  document.getElementById('a_amount').value=a.amount||'';
+  document.getElementById('a_notes').value=a.notes||'';
+  document.getElementById('mApp').classList.add('open');
+}
+async function saveApp(btn){
+  const g=id=>document.getElementById(id).value;
+  const body={table:'applications',id:g('a_id')||undefined,resident_name:g('a_res'),funder_name:g('a_fund'),
+    status:g('a_status'),level_of_care:g('a_loc'),applied_date:g('a_applied'),decision_date:g('a_decision'),
+    coverage_start:g('a_start'),coverage_end:g('a_end'),amount:g('a_amount'),notes:g('a_notes')};
+  if(!body.resident_name||!body.funder_name){alert('Resident and funder are required');return;}
+  btn.textContent='Saving…';
+  const r=await fetch('/funding/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  btn.textContent='Save';
+  if(r.ok){closeM('mApp');load();}else{alert('Save failed');}
+}
+async function del(table,id){
+  if(!confirm('Delete this record permanently?'))return;
+  const r=await fetch('/funding/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({table,action:'delete',id})});
+  if(r.ok)load();
+}
+
+/* eligibility engine: who has already used a once-per-client funder */
+function usedOnce(funderName){
+  return APPS.filter(a=>a.funder_name===funderName && ['approved','expired'].includes(a.status)).map(a=>a.resident_name);
+}
+
+function render(){
+  const grid=document.getElementById('grid'), note=document.getElementById('note');
+  const q=Q.toLowerCase();
+  let html='';
+  if(TAB==='funders'){
+    const rows=FUNDERS.filter(f=>!q||((f.name||'')+' '+(f.category||'')+' '+(f.eligibility||'')).toLowerCase().includes(q));
+    if(!rows.length){grid.innerHTML='';note.style.display='block';note.textContent='No funders yet — click “Add Funder” to build the directory.';return;}
+    html=rows.map(f=>{
+      const used=f.once_per_client?usedOnce(f.name):[];
+      return '<div class="card'+(f.active===false?' inactive':'')+'">'
+      +'<h3>'+esc(f.name)+'</h3>'
+      +'<div>'+(f.category?'<span class="chip applied">'+esc(f.category)+'</span>':'')
+      +(f.once_per_client?'<span class="chip once">1 per client</span>':'')
+      +(f.active===false?'<span class="chip expired">inactive</span>':'')+'</div>'
+      +'<div class="rows">'
+      +(f.typical_amount?'<div><b>Typical:</b> '+esc(f.typical_amount)+'</div>':'')
+      +(f.website?'<div><b>Apply:</b> <a href="'+esc(f.website)+'" target="_blank" rel="noopener">'+esc(f.website).slice(0,44)+'</a></div>':'')
+      +(f.contact_name||f.contact_email||f.contact_phone?'<div><b>Contact:</b> '+esc(f.contact_name||'')+(f.contact_email?(' · <a href="mailto:'+esc(f.contact_email)+'">'+esc(f.contact_email)+'</a>'):'')+(f.contact_phone?(' · <a href="tel:'+esc(f.contact_phone)+'">'+esc(f.contact_phone)+'</a>'):'')+'</div>':'')
+      +(f.eligibility?'<div><b>Eligibility:</b> '+esc(f.eligibility)+'</div>':'')
+      +(f.rules?'<div><b>Rules:</b> '+esc(f.rules)+'</div>':'')
+      +(used.length?'<div style="color:#f0b6b6"><b>Already used by:</b> '+used.map(esc).join(', ')+'</div>':'')
+      +(f.notes?'<div style="opacity:.7">'+esc(f.notes)+'</div>':'')
+      +'</div>'
+      +'<div class="btnrow"><button class="btn" onclick=\'openFunder('+JSON.stringify(f).replace(/'/g,"&#39;")+')\'>Edit</button>'
+      +'<button class="btn" onclick="prefillApp(\''+esc(f.name)+'\')">Apply for client</button>'
+      +'<button class="btn danger" onclick="del(\'funders\',\''+f.id+'\')">Delete</button></div></div>';
+    }).join('');
+  } else {
+    const rows=APPS.filter(a=>!q||((a.resident_name||'')+' '+(a.funder_name||'')+' '+(a.status||'')).toLowerCase().includes(q));
+    if(!rows.length){grid.innerHTML='';note.style.display='block';note.textContent='No applications logged yet.';return;}
+    html=rows.map(a=>{
+      const d=daysUntil(a.coverage_end);
+      const soon=a.status==='approved'&&d!==null&&d<=30&&d>=0;
+      return '<div class="card"'+(soon?' style="border-color:rgba(224,150,90,.5)"':'')+'>'
+      +'<h3>'+esc(a.resident_name)+'</h3>'
+      +'<div><span class="chip '+esc(a.status)+'">'+esc(a.status)+'</span>'
+      +(a.level_of_care?'<span class="chip applied">'+esc(a.level_of_care)+'</span>':'')
+      +(soon?'<span class="chip expsoon">Coverage ends in '+d+'d</span>':'')+'</div>'
+      +'<div class="rows">'
+      +'<div><b>Funder:</b> '+esc(a.funder_name)+'</div>'
+      +(a.amount?'<div><b>Amount:</b> $'+Number(a.amount).toLocaleString('en-US')+'</div>':'')
+      +(a.applied_date?'<div><b>Applied:</b> '+fmtD(a.applied_date)+'</div>':'')
+      +(a.decision_date?'<div><b>Decision:</b> '+fmtD(a.decision_date)+'</div>':'')
+      +((a.coverage_start||a.coverage_end)?'<div><b>Coverage:</b> '+fmtD(a.coverage_start)+' → '+fmtD(a.coverage_end)+'</div>':'')
+      +(a.notes?'<div style="opacity:.75;font-style:italic">'+esc(a.notes)+'</div>':'')
+      +'</div>'
+      +'<div class="btnrow"><button class="btn" onclick=\'openApp('+JSON.stringify(a).replace(/'/g,"&#39;")+')\'>Edit</button>'
+      +'<button class="btn danger" onclick="del(\'applications\',\''+a.id+'\')">Delete</button></div></div>';
+    }).join('');
+  }
+  note.style.display='none';
+  grid.innerHTML=html;
+}
+function prefillApp(name){openApp({funder_name:name});}
+
+document.getElementById('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('.tab'); if(!t)return;
+  TAB=t.dataset.t;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+  render();
+});
+document.getElementById('q').addEventListener('input',e=>{Q=e.target.value.trim();render();});
+
+async function load(){
+  const note=document.getElementById('note');
+  try{
+    const res=await fetch('/funding/list');
+    const data=await res.json();
+    if(res.status===401){note.textContent=data.error||'Not signed in — open a staff page to log in first.';return;}
+    if(data.error){note.textContent='Error: '+data.error;return;}
+    FUNDERS=data.funders||[]; APPS=data.applications||[];
+    document.getElementById('viewer').textContent='Signed in as '+(data.viewer||'');
+    document.getElementById('sFunders').textContent=FUNDERS.filter(f=>f.active!==false).length;
+    document.getElementById('sApproved').textContent=APPS.filter(a=>a.status==='approved').length;
+    document.getElementById('sPending').textContent=APPS.filter(a=>a.status==='applied').length;
+    document.getElementById('sExpiring').textContent=APPS.filter(a=>{const d=daysUntil(a.coverage_end);return a.status==='approved'&&d!==null&&d<=30&&d>=0;}).length;
+    document.getElementById('funderlist').innerHTML=FUNDERS.map(f=>'<option value="'+esc(f.name)+'">').join('');
+    ['stats','tabs','searchbar'].forEach(id=>{document.getElementById(id).style.display=id==='stats'?'grid':'flex';});
+    render();
+  }catch(_){note.textContent='Could not load. Check your connection and reload.';}
+}
+load();
+</script>
+</body>
+</html>
