@@ -71,6 +71,30 @@ export async function onRequest(context) {
   const newlyIntaked = intake.filter(r=>r.status==='intaked');
   const current = active.filter(r=>((Number(r.past_due)||0)+(Number(r.current_due)||0)-(Number(r.amount_paid)||0))<=0);
 
+  // ---------- MONEY TO RECOVER ----------
+  const balOf = r => (Number(r.past_due)||0)+(Number(r.current_due)||0)-(Number(r.amount_paid)||0);
+  const owing2 = active.filter(r=>balOf(r)>0).sort((a,b)=>balOf(b)-balOf(a));
+  const totalOwed = owing2.reduce((t,r)=>t+balOf(r),0);
+  const emptyBeds = openBeds.length;
+  const bedRevenue = openBeds.reduce((t,r)=>t+(Number(r.monthly_rent)||775),0);
+
+  // pick the right offer for each person, based on what their record actually says
+  function offerFor(r){
+    const b = balOf(r);
+    const wk = Math.max(25, Math.round(b/26/5)*5); // ~6 months of weekly payments
+    if ((r.payer_type||'')!=='self' && (r.payer_type||''))
+      return 'Confirm ' + r.payer_type + ' coverage is still active before chasing him &mdash; this may be a funding gap, not a refusal.';
+    if (r.funding_end && until(r.funding_end)!==null && until(r.funding_end)<=0)
+      return 'Funding ended ' + r.funding_end + '. He needs a new source or a plan &mdash; check the Funding Navigator for what he has not used.';
+    if (!r.employed)
+      return 'Not employed on record. Employment first, then a plan &mdash; a payment plan with no income is a promise nobody can keep.';
+    if (b >= 2000)
+      return 'Large balance. Offer a written plan at about $' + wk + '/week and put it in writing so both sides know what current means.';
+    if ((r.pay_schedule||'monthly')==='monthly')
+      return 'Switch him to weekly billing (about $' + Math.round((Number(r.monthly_rent)||775)/4.3) + '/wk). He is paid weekly; the monthly lump is the problem, not the willingness.';
+    return 'Offer a short plan at about $' + wk + '/week and set up autopay so it stops depending on memory.';
+  }
+
   const li=(t)=>'<li style="margin:.3rem 0">'+t+'</li>';
   const sec=(title,items)=> items.length? '<h3 style="font-family:Georgia,serif;color:#1a2744;margin:1.2rem 0 .4rem;font-size:1.05rem">'+title+'</h3><ul style="margin:0;padding-left:1.1rem;color:#333;font-size:.92rem">'+items.join('')+'</ul>' : '';
   const wrap=(title,inner)=>'<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;color:#1a2744">'
@@ -127,6 +151,26 @@ export async function onRequest(context) {
       li('In-kind codes pending redemption: '+inkind.filter(r=>(r.status||'issued')==='issued').length),
       li('Total declared in-kind value: $'+inkind.reduce((t,r)=>t+(Number(r.donor_value)||0),0).toLocaleString('en-US'))
     ])
+    + (owing2.length? ('<div style="background:#fdf6ef;border-left:4px solid #c9a96e;padding:.9rem 1.1rem;margin:1.2rem 0;border-radius:4px">'
+      +'<div style="font-family:Georgia,serif;color:#8a6a2f;font-size:1.05rem;margin-bottom:.15rem">Money On The Table</div>'
+      +'<div style="color:#6b5836;font-size:.86rem;margin-bottom:.6rem">$'+Math.round(totalOwed).toLocaleString('en-US')+' outstanding across '+owing2.length+' residents'
+      + (emptyBeds? (' &nbsp;·&nbsp; plus '+emptyBeds+' empty beds worth about $'+Math.round(bedRevenue).toLocaleString('en-US')+'/month'):'')+'</div>'
+      +'<ul style="margin:0;padding-left:1.1rem;color:#4a3f2c;font-size:.88rem">'
+      + owing2.slice(0,6).map(r=>'<li style="margin:.45rem 0"><b>'+r.name+'</b> &mdash; $'+Math.round(balOf(r)).toLocaleString('en-US')
+          +(r.house_name?(' &nbsp;<span style="color:#8a7a5c">'+r.house_name+'</span>'):'')
+          +'<br><span style="color:#6b5836;font-size:.84rem">'+offerFor(r)+'</span></li>').join('')
+      +'</ul></div>') : '')
+    + '<div style="background:#f4f6fb;border-left:4px solid #1a2744;padding:.9rem 1.1rem;margin:1.1rem 0;border-radius:4px">'
+      +'<div style="font-family:Georgia,serif;color:#1a2744;font-size:1.05rem;margin-bottom:.45rem">Do These Three Things</div>'
+      +'<ol style="margin:0;padding-left:1.2rem;color:#33436a;font-size:.9rem">'
+      + [
+          (emptyBeds? '<li style="margin:.4rem 0"><b>Fill beds before chasing balances.</b> '+emptyBeds+' open beds are worth about $'+Math.round(bedRevenue).toLocaleString('en-US')+'/month &mdash; more than most of what is owed, and it costs nobody their dignity. Check the intake queue for anyone who flagged &ldquo;housing needed.&rdquo;</li>':''),
+          (urgentStale.length? '<li style="margin:.4rem 0"><b>Call the '+urgentStale.length+' urgent intake'+(urgentStale.length>1?'s':'')+' still marked New.</b> Recent use plus no contact is the window that closes fastest.</li>':''),
+          (expiring.length? '<li style="margin:.4rem 0"><b>Get ahead of '+expiring.length+' funding cliff'+(expiring.length>1?'s':'')+'.</b> Apply to the next funder now, while there is still coverage &mdash; the Funding Navigator shows who has not used what.</li>':''),
+          (owing2.filter(r=>(r.pay_schedule||'monthly')==='monthly').length? '<li style="margin:.4rem 0"><b>Move people to weekly billing.</b> '+owing2.filter(r=>(r.pay_schedule||'monthly')==='monthly').length+' residents owing are billed monthly but paid weekly. That mismatch causes more of this balance than unwillingness does.</li>':''),
+          (docsMissing.length? '<li style="margin:.4rem 0"><b>'+docsMissing.length+' residents are missing ID, SS card, or birth certificate.</b> Under $100 each and nothing else works without them &mdash; no job, no bank account, no rent.</li>':'')
+        ].filter(Boolean).slice(0,3).join('')
+      +'</ol></div>'
     + '<p style="margin-top:1.4rem;font-family:Georgia,serif;font-style:italic;color:#666;font-size:.95rem;text-align:center">&ldquo;I made a difference to that one.&rdquo;</p>'
   );
 
