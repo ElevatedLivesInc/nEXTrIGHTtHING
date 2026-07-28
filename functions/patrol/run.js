@@ -227,7 +227,10 @@ export async function onRequest(context) {
     { to:TEAM.leadership, subject:'Daily Command Brief &mdash; The Next Right Thing', html:leadershipBody }
   ];
 
+  // Preview renders resident names and balances, so it requires a signed-in human.
+  // The cron key can trigger a send, but must never be able to display client data.
   const preview = url.searchParams.get('preview')==='1';
+  if (preview && keyOk) return json({ error:'Preview requires a signed-in staff account. The scheduler key can send briefs but cannot display them.' },403);
   if (preview) return new Response(
     messages.map(m=>'<div style="font:600 .7rem/1 Helvetica,Arial;letter-spacing:.12em;text-transform:uppercase;color:#999;max-width:640px;margin:2rem auto .4rem">Goes to: '+m.to.join(', ')+'</div>'+m.html).join('<hr style="margin:2.5rem 0;border:0;border-top:1px solid #ddd">'),
     {headers:{'Content-Type':'text/html; charset=utf-8'}});
