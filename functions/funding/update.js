@@ -2,8 +2,11 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json = (o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json'}});
+  // Client scholarship applications = treatment-center data. Not for donor-side staff.
+  const ALLOWED = ['gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com','rob@nextrighthing.com'];
   const who = await getAuthedEmail(request);
   if (!who) return json({ ok:false, error:'unauthorized' },401);
+  if (!ALLOWED.includes(who)) return json({ ok:false, error:'Your account does not have access to the Funding Navigator.' },403);
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ ok:false, error:'not configured' },500);
   let b; try { b = await request.json(); } catch { return json({ok:false,error:'bad request'},400); }
 

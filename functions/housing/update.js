@@ -2,8 +2,11 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json'}});
+  // Treatment-center data. Nonprofit-only staff must NOT be on this list.
+  const ALLOWED = ['gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'];
   const who = await getAuthedEmail(request);
   if (!who) return json({ ok:false, error:'unauthorized' },401);
+  if (!ALLOWED.includes(who)) return json({ ok:false, error:'Your account does not have access to Housing.' },403);
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ ok:false, error:'not configured' },500);
   let b; try{ b=await request.json(); }catch{ return json({ok:false,error:'bad request'},400); }
   const H={'Content-Type':'application/json','apikey':env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,'Prefer':'return=minimal'};

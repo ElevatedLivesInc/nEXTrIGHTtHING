@@ -2,8 +2,11 @@
 export async function onRequestGet(context) {
   const { request, env } = context;
   const json=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json'}});
+  // Treatment-center data. Nonprofit-only staff must NOT be on this list.
+  const ALLOWED = ['gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'];
   const who = await getAuthedEmail(request);
   if (!who) return json({ error:'Not signed in. Open a staff page to log in, then reload.' },401);
+  if (!ALLOWED.includes(who)) return json({ error:'Your account does not have access to Housing.' },403);
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ error:'not configured' },500);
   const h={ 'apikey':env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY };
   const [ho,re,ev]=await Promise.all([

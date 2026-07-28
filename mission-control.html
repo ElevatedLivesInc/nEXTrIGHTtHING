@@ -149,24 +149,25 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     const d=await res.json();
     if(res.status===401){note.style.display='block';note.innerHTML='Not signed in. Open any staff page (for example <b>/intake-queue</b>) to log in with your email code, then reload this page.';return;}
     if(d.error){note.style.display='block';note.textContent='Error: '+d.error;return;}
-    document.getElementById('viewer').textContent='Signed in as '+(d.viewer||'');
+    const scopes=d.scopes||[], canClient=scopes.indexOf('client')>-1, canDonor=scopes.indexOf('donor')>-1;
+    document.getElementById('viewer').innerHTML='Signed in as '+esc(d.viewer||'')+'<br><span style="opacity:.7">'+(canClient&&canDonor?'Full access':(canClient?'Treatment-center access':'Nonprofit access'))+'</span>';
+    // Hide systems this person doesn't own. Two entities, separate records.
+    const CLIENT_TILES=['/intake-queue','/funding','/housing','/payment-options'];
+    const DONOR_TILES=['/in-kind-report','/donations-report','/admin-issue','/carwash-report'];
+    document.querySelectorAll('#tiles .tile').forEach(function(el){
+      const href=el.getAttribute('href')||'';
+      if(CLIENT_TILES.indexOf(href)>-1 && !canClient) el.remove();
+      if(DONOR_TILES.indexOf(href)>-1 && !canDonor) el.remove();
+    });
     const I=d.intake||{},K=d.inkind||{},F=d.funding||{};
-    document.getElementById('iNew').textContent=I.new??0;
-    document.getElementById('iUrgent').textContent=I.urgent??0;
-    document.getElementById('iOpen').textContent=I.open??0;
-    document.getElementById('iDone').textContent=I.intaked??0;
-    document.getElementById('kTotal').textContent=K.total??0;
-    document.getElementById('kRedeemed').textContent=K.redeemed??0;
-    document.getElementById('kValue').textContent=money(K.value);
-    document.getElementById('fApproved').textContent=F.approved??0;
-    document.getElementById('fPending').textContent=F.pending??0;
-    document.getElementById('fExpiring').textContent=F.expiringSoon??0;
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    set('iNew',I.new??0); set('iUrgent',I.urgent??0); set('iOpen',I.open??0); set('iDone',I.intaked??0);
+    set('kTotal',K.total??0); set('kRedeemed',K.redeemed??0); set('kValue',money(K.value));
+    set('fApproved',F.approved??0); set('fPending',F.pending??0); set('fExpiring',F.expiringSoon??0);
     const H=d.housing||{};
-    if(document.getElementById('hOcc')){
-      document.getElementById('hOcc').textContent=(H.occupancy!=null?H.occupancy+'%':'–');
-      document.getElementById('hOpen').textContent=H.openBeds??'–';
-      document.getElementById('hOwed').textContent=(H.outstanding!=null?money(H.outstanding):'–');
-    }
+    set('hOcc',H.occupancy!=null?H.occupancy+'%':'–');
+    set('hOpen',H.openBeds??'–');
+    set('hOwed',H.outstanding!=null?money(H.outstanding):'–');
 
     const A=[];
     if(I.urgent)A.push({c:'hot',t:I.urgent+' intake request'+(I.urgent>1?'s':'')+' flagged for contact within 24 hours',l:'/intake-queue',b:'Open queue'});
