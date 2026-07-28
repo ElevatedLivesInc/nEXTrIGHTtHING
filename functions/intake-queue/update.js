@@ -15,6 +15,27 @@ export async function onRequestPost(context) {
   let body;
   try { body = await request.json(); } catch { return json({ ok: false, error: 'bad request' }, 400); }
 
+  // CREATE a request that did not come from the website (phone / walk-in / referral)
+  if (body.create === true) {
+    const S=(v,n)=> v==null?null:((''+v).trim().slice(0,n)||null);
+    const rec = {
+      first_name:S(body.first_name,120), last_name:S(body.last_name,120),
+      email:S(body.email,200), phone:S(body.phone,60),
+      reaching_as:S(body.reaching_as,20)||'self',
+      insurance:S(body.insurance,60), insurance_company:S(body.insurance_company,120),
+      needs_housing:S(body.needs_housing,20), probation_parole:S(body.probation_parole,30),
+      primary_substance:S(body.primary_substance,120), last_use:S(body.last_use,40),
+      motivation:S(body.motivation,500), best_time:S(body.best_time,20),
+      message:S(body.message,2000), source:S(body.source,40)||'phone',
+      referred_by:S(body.referred_by,200), status:'new'
+    };
+    if (!rec.first_name && !rec.phone) return json({ ok:false, error:'name or phone required' },400);
+    const H2={'Content-Type':'application/json','apikey':env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,'Prefer':'return=minimal'};
+    const r=await fetch(env.SUPABASE_URL+'/rest/v1/intake_requests',{method:'POST',headers:H2,body:JSON.stringify(rec)});
+    if(!r.ok){const d=await r.text();return json({ok:false,error:'create failed',detail:d},500);}
+    return json({ ok:true });
+  }
+
   const id = (body.id || '').toString().trim();
   if (!id) return json({ ok: false, error: 'invalid id' }, 400);
 
