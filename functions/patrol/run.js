@@ -13,7 +13,7 @@ const TEAM = {
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const json=(o,s=200)=>new Response(JSON.stringify(o,null,2),{status:s,headers:{'Content-Type':'application/json'}});
+  const json=(o,s=200)=>new Response(JSON.stringify(o,null,2),{status:s,headers:{'Content-Type':'application/json; charset=utf-8'}});
 
   const keyOk = env.PATROL_KEY && url.searchParams.get('key') === env.PATROL_KEY;
   const who = keyOk ? 'cron' : await getAuthedEmail(request);
@@ -23,11 +23,12 @@ export async function onRequest(context) {
   const h={ 'apikey':env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY };
   const get=async p=>{ try{const r=await fetch(env.SUPABASE_URL+'/rest/v1/'+p,{headers:h}); return r.ok? await r.json():[];}catch(_){return [];} };
 
-  const [intake, inkind, apps, residents] = await Promise.all([
+  const [intake, inkind, apps, residents, events] = await Promise.all([
     get('intake_requests?select=*&limit=1000'),
     get('authorizations?select=*&limit=1000'),
     get('funding_applications?select=*&limit=1000'),
-    get('residents?select=*&limit=1000')
+    get('residents?select=*&limit=1000'),
+    get('house_events?select=*&order=created_at.desc&limit=500')
   ]);
 
   const now=Date.now(), DAY=86400000;
@@ -58,44 +59,67 @@ export async function onRequest(context) {
   const fundingCliff = active.filter(r=>r.funding_end && until(r.funding_end)!==null && until(r.funding_end)<=30 && until(r.funding_end)>=0);
   const docsMissing = active.filter(r=>!(r.has_id&&r.has_ss_card&&r.has_birth_cert));
   const byHouse={};
-  residents.forEach(r=>{ const k=r.house_name||'—'; byHouse[k]=byHouse[k]||{beds:0,open:0}; byHouse[k].beds++; if((r.status||'')==='open')byHouse[k].open++; });
+  residents.forEach(r=>{ const k=r.house_name||'&mdash;'; byHouse[k]=byHouse[k]||{beds:0,open:0}; byHouse[k].beds++; if((r.status||'')==='open')byHouse[k].open++; });
+
+  // ---------- WINS (last 7 days) ----------
+  const wk = (events||[]).filter(e=>age(e.created_at)!==null && age(e.created_at)<=7);
+  const pays = wk.filter(e=>e.kind==='payment');
+  const collectedWk = pays.reduce((t,e)=>t+(Number(e.amount)||0),0);
+  const docsComplete = active.filter(r=>r.has_id&&r.has_ss_card&&r.has_birth_cert);
+  const employed = active.filter(r=>r.employed);
+  const savingsTotal = active.reduce((t,r)=>t+(Number(r.savings_balance)||0),0);
+  const newlyIntaked = intake.filter(r=>r.status==='intaked');
+  const current = active.filter(r=>((Number(r.past_due)||0)+(Number(r.current_due)||0)-(Number(r.amount_paid)||0))<=0);
 
   const li=(t)=>'<li style="margin:.3rem 0">'+t+'</li>';
   const sec=(title,items)=> items.length? '<h3 style="font-family:Georgia,serif;color:#1a2744;margin:1.2rem 0 .4rem;font-size:1.05rem">'+title+'</h3><ul style="margin:0;padding-left:1.1rem;color:#333;font-size:.92rem">'+items.join('')+'</ul>' : '';
-  const wrap=(title,inner)=>'<div style="font-family:Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;color:#1a2744">'
+  const wrap=(title,inner)=>'<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;color:#1a2744">'
     +'<div style="border-bottom:3px solid #c9a96e;padding-bottom:.6rem;margin-bottom:1rem">'
     +'<div style="font-family:Georgia,serif;font-size:1.5rem">'+title+'</div>'
-    +'<div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#888">The Next Right Thing · '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+'</div></div>'
+    +'<div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#888">The Next Right Thing &middot; '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+'</div></div>'
     + (inner || '<p style="color:#555">Nothing needs attention today. Queues are clear.</p>')
     +'<p style="margin-top:1.6rem;font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:.8rem">Open Mission Control: <a href="https://nextrighthing.com/mission-control">nextrighthing.com/mission-control</a></p></div>';
 
   const intakeBody = wrap('Intake Brief',
-    sec('Reach out today', urgentStale.map(r=>li('<b>'+(r.first_name||'')+' '+(r.last_name||'')+'</b> — recent use, still marked New'+(r.phone?' · '+r.phone:'')))) +
-    sec('New overnight', newOvernight.map(r=>li((r.first_name||'')+' '+(r.last_name||'')+(r.needs_housing==='Yes'?' · needs housing':'')+(r.insurance?' · '+r.insurance:'')))) +
-    sec('Ready for intake', ready.map(r=>li((r.first_name||'')+' '+(r.last_name||'')+' — checklist complete, move to Intaked once scheduled'))) +
-    sec('Gone quiet (14+ days)', silent.map(r=>li((r.first_name||'')+' '+(r.last_name||'')+' — no status change'))) +
-    sec('Funding coverage ending soon', expiring.map(a=>li('<b>'+a.resident_name+'</b> — '+a.funder_name+' ends '+a.coverage_end+' ('+until(a.coverage_end)+' days)'))) +
-    sec('Applications pending 14+ days', pendingLong.map(a=>li(a.resident_name+' — '+a.funder_name+', follow up')))
+    sec('Reach out today', urgentStale.map(r=>li('<b>'+(r.first_name||'')+' '+(r.last_name||'')+'</b> &mdash; recent use, still marked New'+(r.phone?' &middot; '+r.phone:'')))) +
+    sec('New overnight', newOvernight.map(r=>li((r.first_name||'')+' '+(r.last_name||'')+(r.needs_housing==='Yes'?' &middot; needs housing':'')+(r.insurance?' &middot; '+r.insurance:'')))) +
+    sec('Ready for intake', ready.map(r=>li((r.first_name||'')+' '+(r.last_name||'')+' &mdash; checklist complete, move to Intaked once scheduled'))) +
+    sec('Gone quiet (14+ days)', silent.map(r=>li((r.first_name||'')+' '+(r.last_name||'')+' &mdash; no status change'))) +
+    sec('Funding coverage ending soon', expiring.map(a=>li('<b>'+a.resident_name+'</b> &mdash; '+a.funder_name+' ends '+a.coverage_end+' ('+until(a.coverage_end)+' days)'))) +
+    sec('Applications pending 14+ days', pendingLong.map(a=>li(a.resident_name+' &mdash; '+a.funder_name+', follow up')))
   );
 
   const donationBody = wrap('Donations Brief',
-    sec('Codes issued but never redeemed (7+ days)', unredeemed.map(r=>li('<b>'+r.donor_name+'</b> — '+r.code+' · '+(r.description||'')))) +
-    sec('Donations missing an email address', noEmail.slice(0,10).map(r=>li(r.donor_name+' — no email captured, no thank-you possible')))
+    sec('Codes issued but never redeemed (7+ days)', unredeemed.map(r=>li('<b>'+r.donor_name+'</b> &mdash; '+r.code+' &middot; '+(r.description||'')))) +
+    sec('Donations missing an email address', noEmail.slice(0,10).map(r=>li(r.donor_name+' &mdash; no email captured, no thank-you possible')))
   );
 
   const houseLines = Object.keys(byHouse).map(k=>li(k+': '+byHouse[k].open+' open of '+byHouse[k].beds+' beds'));
+  const winBox = (items)=> items.length? '<div style="background:#f2f8f4;border-left:4px solid #78c896;padding:.9rem 1.1rem;margin:1rem 0;border-radius:4px">'
+    +'<div style="font-family:Georgia,serif;color:#2f7a52;font-size:1.05rem;margin-bottom:.4rem">Wins This Week</div>'
+    +'<ul style="margin:0;padding-left:1.1rem;color:#2c4a38;font-size:.92rem">'+items.join('')+'</ul></div>' : '';
+
   const leadershipBody = wrap('Daily Command Brief',
+    winBox([
+      pays.length? li('<b>'+pays.length+' payment'+(pays.length>1?'s':'')+' logged</b> this week &mdash; $'+collectedWk.toLocaleString('en-US')+' collected'):'',
+      current.length? li('<b>'+current.length+' of '+active.length+' residents are current</b> on rent'):'',
+      docsComplete.length? li('<b>'+docsComplete.length+' resident'+(docsComplete.length>1?'s have':' has')+' all core documents</b> &mdash; ID, SS card, birth certificate'):'',
+      employed.length? li('<b>'+employed.length+' resident'+(employed.length>1?'s':'')+' employed</b>'):'',
+      savingsTotal? li('<b>$'+savingsTotal.toLocaleString('en-US')+' saved</b> by residents building a cushion'):'',
+      newlyIntaked.length? li('<b>'+newlyIntaked.length+' '+(newlyIntaked.length>1?'people have':'person has')+' completed intake</b> &mdash; that is the whole point'):'',
+      inkind.filter(r=>(r.status||'')==='redeemed').length? li('<b>'+inkind.filter(r=>(r.status||'')==='redeemed').length+' donation receipt'+(inkind.filter(r=>(r.status||'')==='redeemed').length>1?'s':'')+' generated</b> for donors'):''
+    ].filter(Boolean)) +
     sec('Intake', [
       li('New requests: '+intake.filter(r=>(r.status||'new')==='new').length),
-      li('Flagged urgent: '+urgent.length+(urgentStale.length?' — <b>'+urgentStale.length+' untouched over 24h</b>':'')),
+      li('Flagged urgent: '+urgent.length+(urgentStale.length?' &mdash; <b>'+urgentStale.length+' untouched over 24h</b>':'')),
       li('Ready for intake: '+ready.length)
     ]) +
     sec('Funding', [
       li('Approved active: '+apps.filter(a=>a.status==='approved').length),
-      li('Coverage ending within 30 days: '+expiring.length+(expiring.length?' — '+expiring.slice(0,4).map(a=>a.resident_name).join(', '):''))
+      li('Coverage ending within 30 days: '+expiring.length+(expiring.length?' &mdash; '+expiring.slice(0,4).map(a=>a.resident_name).join(', '):''))
     ]) +
     (residents.length? sec('Housing', houseLines.concat([
-      li('Residents owing: '+owing.length+(bigDebt.length?' · <b>'+bigDebt.length+' over $1,500</b>':'')),
+      li('Residents owing: '+owing.length+(bigDebt.length?' &middot; <b>'+bigDebt.length+' over $1,500</b>':'')),
       li('Funding cliffs in 30 days: '+fundingCliff.length),
       li('Missing core documents: '+docsMissing.length+' of '+active.length+' residents')
     ])):'') +
@@ -103,18 +127,19 @@ export async function onRequest(context) {
       li('In-kind codes pending redemption: '+inkind.filter(r=>(r.status||'issued')==='issued').length),
       li('Total declared in-kind value: $'+inkind.reduce((t,r)=>t+(Number(r.donor_value)||0),0).toLocaleString('en-US'))
     ])
+    + '<p style="margin-top:1.4rem;font-family:Georgia,serif;font-style:italic;color:#666;font-size:.95rem;text-align:center">&ldquo;I made a difference to that one.&rdquo;</p>'
   );
 
   const messages = [
-    { to:TEAM.intake, subject:'Intake Brief — '+urgentStale.length+' urgent, '+newOvernight.length+' new', html:intakeBody },
-    { to:TEAM.donations, subject:'Donations Brief — '+unredeemed.length+' codes awaiting receipts', html:donationBody },
-    { to:TEAM.leadership, subject:'Daily Command Brief — The Next Right Thing', html:leadershipBody }
+    { to:TEAM.intake, subject:'Intake Brief &mdash; '+urgentStale.length+' urgent, '+newOvernight.length+' new', html:intakeBody },
+    { to:TEAM.donations, subject:'Donations Brief &mdash; '+unredeemed.length+' codes awaiting receipts', html:donationBody },
+    { to:TEAM.leadership, subject:'Daily Command Brief &mdash; The Next Right Thing', html:leadershipBody }
   ];
 
   const preview = url.searchParams.get('preview')==='1';
-  if (preview) return new Response(leadershipBody+'<hr>'+intakeBody+'<hr>'+donationBody,{headers:{'Content-Type':'text/html'}});
+  if (preview) return new Response(leadershipBody+'<hr>'+intakeBody+'<hr>'+donationBody,{headers:{'Content-Type':'text/html; charset=utf-8'}});
 
-  if (!env.RESEND_API_KEY) return json({ ok:false, error:'RESEND_API_KEY not set — add it in Cloudflare Pages settings, then redeploy.' },500);
+  if (!env.RESEND_API_KEY) return json({ ok:false, error:'RESEND_API_KEY not set &mdash; add it in Cloudflare Pages settings, then redeploy.' },500);
 
   const sent=[];
   for (const m of messages) {
