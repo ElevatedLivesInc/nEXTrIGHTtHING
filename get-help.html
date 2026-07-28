@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get Help — The Next Right Thing in Recovery | West Jordan, Utah</title>
+<meta name="description" content="Every way into recovery at The Next Right Thing — insurance, Medicaid, scholarships, private pay, court-ordered, or family reaching out. Find your path and what happens next.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#0d1424;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;--good:#78c896;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;line-height:1.7;}
+  a{color:inherit;}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 1.5rem;}
+  /* HERO */
+  .hero{background:linear-gradient(180deg,var(--navy),var(--navy-deep));border-bottom:3px solid var(--sand);padding:3.4rem 0 2.6rem;text-align:center;}
+  .eyebrow{font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--sand);margin-bottom:1rem;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.08;}
+  h1 em{color:var(--sand-light);font-style:italic;}
+  .sub{max-width:600px;margin:1.1rem auto 0;color:rgba(255,255,255,.72);font-weight:300;font-size:1.02rem;}
+  .crisis{max-width:640px;margin:1.8rem auto 0;background:rgba(224,120,120,.12);border:1px solid rgba(224,120,120,.4);border-radius:9px;padding:.9rem 1.2rem;font-size:.9rem;color:#f3c9c9;}
+  .crisis a{color:#fff;font-weight:700;}
+  .callnow{display:inline-block;margin-top:1.5rem;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;font-size:1rem;letter-spacing:.02em;padding:.95rem 2.2rem;border-radius:6px;text-decoration:none;box-shadow:0 6px 20px rgba(201,169,110,.3);}
+  /* SECTIONS */
+  section{padding:3rem 0;}
+  .lbl{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sand);text-align:center;}
+  h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.8rem,4.4vw,2.5rem);text-align:center;margin:.5rem 0 .4rem;}
+  h2 em{color:var(--sand-light);font-style:italic;}
+  .lede{max-width:620px;margin:0 auto 2.2rem;text-align:center;color:rgba(255,255,255,.65);font-weight:300;font-size:.95rem;}
+  /* PATH CARDS */
+  .paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.1rem;}
+  .path{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:1.5rem 1.6rem;display:flex;flex-direction:column;gap:.7rem;transition:border-color .2s,transform .2s;}
+  .path:hover{border-color:rgba(201,169,110,.6);transform:translateY(-3px);}
+  .path h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.45rem;color:var(--sand-light);}
+  .path .who{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);}
+  .path p{font-size:.88rem;color:rgba(255,255,255,.72);font-weight:300;}
+  .path ul{list-style:none;font-size:.85rem;color:rgba(255,255,255,.7);font-weight:300;}
+  .path li{padding-left:1.2rem;position:relative;margin:.32rem 0;}
+  .path li:before{content:"→";position:absolute;left:0;color:var(--sand);}
+  .cost{background:rgba(201,169,110,.1);border-left:2px solid var(--sand);padding:.55rem .8rem;font-size:.82rem;color:var(--sand-light);border-radius:0 5px 5px 0;}
+  .pbtn{margin-top:auto;display:inline-block;text-align:center;border:1.5px solid rgba(201,169,110,.65);border-radius:5px;color:var(--sand-light);font-size:.7rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:.75rem 1rem;text-decoration:none;cursor:pointer;background:transparent;font-family:'Raleway',sans-serif;}
+  .pbtn:hover{background:rgba(201,169,110,.18);}
+  /* TIMELINE */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem;}
+  .step{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:1.2rem;}
+  .step .n{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--sand);line-height:1;}
+  .step h4{font-size:.95rem;margin:.4rem 0 .3rem;color:#fff;font-weight:600;}
+  .step p{font-size:.82rem;color:rgba(255,255,255,.62);font-weight:300;}
+  /* PROGRAMS STRIP */
+  .strip{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1.4rem;}
+  .chip{border:1px solid rgba(201,169,110,.35);border-radius:50px;padding:.42rem 1.1rem;font-size:.75rem;color:rgba(255,255,255,.8);font-weight:300;}
+  /* FORM */
+  .formwrap{max-width:660px;margin:0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.28);border-radius:14px;padding:2rem;}
+  .fg{margin-bottom:.9rem;}
+  .fg label{display:block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.3rem;}
+  .fg input,.fg select,.fg textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.9rem;padding:.65rem .8rem;}
+  .fg textarea{min-height:90px;resize:vertical;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+  .submit{width:100%;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;font-size:.95rem;padding:.95rem;border:none;border-radius:6px;cursor:pointer;font-family:'Raleway',sans-serif;letter-spacing:.02em;margin-top:.5rem;}
+  .privacy{font-size:.74rem;color:rgba(255,255,255,.45);margin-top:1rem;text-align:center;font-weight:300;}
+  .success{display:none;text-align:center;padding:2rem 1rem;}
+  .success h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--sand-light);font-weight:300;margin-bottom:.7rem;}
+  .success p{color:rgba(255,255,255,.75);font-weight:300;max-width:460px;margin:0 auto .8rem;}
+  /* MONEY */
+  .money{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:1.6rem 1.8rem;max-width:820px;margin:0 auto;}
+  .money h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.35rem;color:var(--sand-light);margin-bottom:.7rem;}
+  .money ul{list-style:none;}
+  .money li{padding-left:1.4rem;position:relative;margin:.5rem 0;font-size:.9rem;color:rgba(255,255,255,.75);font-weight:300;}
+  .money li:before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:700;}
+  footer{background:var(--navy);border-top:3px solid var(--sand);padding:2.4rem 0;text-align:center;font-size:.85rem;color:rgba(255,255,255,.55);font-weight:300;}
+  footer a{color:var(--sand-light);text-decoration:none;}
+  .quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;color:var(--sand-light);text-align:center;margin:2.4rem auto 0;max-width:520px;font-weight:300;}
+  @media(max-width:620px){.two{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <p class="eyebrow">West Jordan, Utah &nbsp;·&nbsp; Licensed Treatment &amp; Recovery Housing</p>
+    <h1>There is a way in.<br><em>Let's find yours.</em></h1>
+    <p class="sub">Insurance, Medicaid, scholarship, private pay, court-ordered, or a family member trying to help someone they love — every one of those has a path here. Pick the one that sounds like you.</p>
+    <a class="callnow" href="tel:8018164977">Call (801) 816-4977</a>
+    <div class="crisis"><strong>In crisis right now?</strong> Call or text <a href="tel:988">988</a> — trained, free, available 24/7. Then call us when you're safe.</div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="lbl">Six Ways In</p>
+    <h2>Whatever your <em>situation</em></h2>
+    <p class="lede">Money is the reason most people don't call. So here's exactly what each path costs and what happens next — before you talk to anybody.</p>
+
+    <div class="paths">
+
+      <div class="path">
+        <div class="who">Most common</div>
+        <h3>I have Medicaid</h3>
+        <p>Utah Medicaid covers treatment here, and if you're on Targeted Adult Medicaid you may also qualify for housing support through HRSS.</p>
+        <ul>
+          <li>Treatment covered</li>
+          <li>Housing help may be covered too</li>
+          <li>We verify it for you — you don't chase it</li>
+        </ul>
+        <div class="cost">Usually little to no out-of-pocket cost for treatment.</div>
+        <button class="pbtn" onclick="pick('medicaid','Medicaid')">Start here</button>
+      </div>
+
+      <div class="path">
+        <div class="who">Commercial plans</div>
+        <h3>I have insurance</h3>
+        <p>Private or employer insurance often covers Day Treatment, IOP, and outpatient care. We check your benefits and tell you the real number before you commit.</p>
+        <ul>
+          <li>Free benefits check</li>
+          <li>Same-day admission when a bed is open</li>
+          <li>Private and semi-private rooms available</li>
+        </ul>
+        <div class="cost">You'll know your actual cost before day one. No surprises.</div>
+        <button class="pbtn" onclick="pick('insurance','Private insurance')">Check my benefits</button>
+      </div>
+
+      <div class="path">
+        <div class="who">No insurance, no money</div>
+        <h3>I can't pay anything</h3>
+        <p>This is the one people are most afraid to ask about. There are Utah scholarship funds built for exactly this — and we apply on your behalf.</p>
+        <ul>
+          <li>We know which funds you qualify for</li>
+          <li>We handle the applications</li>
+          <li>Some cover months of housing and therapy</li>
+        </ul>
+        <div class="cost">Being broke is not a disqualifier here. Ask anyway.</div>
+        <button class="pbtn" onclick="pick('scholarship','No insurance — need scholarship')">Ask about a scholarship</button>
+      </div>
+
+      <div class="path">
+        <div class="who">Private pay</div>
+        <h3>I'm paying myself</h3>
+        <p>Private room, same-day admission, weekly family updates, transportation included, and discretion for people whose license or career is on the line.</p>
+        <ul>
+          <li>Private or semi-private room</li>
+          <li>Weekly call to whoever you choose</li>
+          <li>Documentation for employers or boards</li>
+        </ul>
+        <div class="cost">Your payment also keeps a scholarship bed open for someone who has nothing.</div>
+        <button class="pbtn" onclick="pick('private','Private pay')">See private options</button>
+      </div>
+
+      <div class="path">
+        <div class="who">Court, probation, DUI</div>
+        <h3>It's court-ordered</h3>
+        <p>We work with courts, probation, and attorneys every week. You need proof of compliance — we produce it without you having to chase anyone.</p>
+        <ul>
+          <li>DUI and DV classes on site</li>
+          <li>Compliance letters for your PO or attorney</li>
+          <li>Enrollment documentation before sentencing</li>
+        </ul>
+        <div class="cost">Your PO or attorney can call us directly — we answer.</div>
+        <button class="pbtn" onclick="pick('court','Court / probation ordered')">Get compliant</button>
+      </div>
+
+      <div class="path">
+        <div class="who">Family &amp; friends</div>
+        <h3>It's for someone I love</h3>
+        <p>You can't force anyone into recovery. But you can find out what's available, what it costs, and exactly what to say — before they're ready.</p>
+        <ul>
+          <li>We'll talk to you even if they haven't agreed</li>
+          <li>Al-Anon and family resources</li>
+          <li>Weekly updates once they're here, if they consent</li>
+        </ul>
+        <div class="cost">Calling on someone else's behalf is not betraying them. It's loving them.</div>
+        <button class="pbtn" onclick="pick('family','Family member reaching out')">Reach out for them</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section style="background:rgba(255,255,255,.02);">
+  <div class="wrap">
+    <p class="lbl">No Mystery</p>
+    <h2>What actually <em>happens</em> after you reach out</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h4>You hear from a person</h4><p>A real human calls or texts — usually same day, always within one business day. Not a robot, not a queue.</p></div>
+      <div class="step"><div class="n">2</div><h4>We figure out the money</h4><p>Insurance verified, Medicaid checked, or scholarship applications started. We do the paperwork, not you.</p></div>
+      <div class="step"><div class="n">3</div><h4>You get a plan</h4><p>Level of care, a bed if you need one, transportation if you need it, and a start date you can actually count on.</p></div>
+      <div class="step"><div class="n">4</div><h4>Somebody stays with it</h4><p>A case manager who knows your name. Not a file number, not a different person every week.</p></div>
+    </div>
+    <div class="strip">
+      <span class="chip">Day Treatment</span><span class="chip">IOP</span><span class="chip">General Outpatient</span>
+      <span class="chip">Recovery Housing</span><span class="chip">Peer Support</span><span class="chip">Case Management</span>
+      <span class="chip">DUI Classes</span><span class="chip">DV Classes</span><span class="chip">Parenting</span>
+      <span class="chip">Job Placement</span><span class="chip">Transportation</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="lbl">The Honest Part</p>
+    <h2>Nobody gets turned away for <em>asking</em></h2>
+    <div class="money">
+      <h3>If money is the thing stopping you, read this</h3>
+      <ul>
+        <li><strong>Utah scholarship funds exist</strong> specifically to pay for recovery housing and treatment for people who can't. We track which ones are open, what they cover, and who qualifies.</li>
+        <li><strong>We apply for you.</strong> Most people never get these funds because nobody told them they existed or the paperwork beat them.</li>
+        <li><strong>Medicaid may cover more than you think</strong> — including housing-related support if you qualify.</li>
+        <li><strong>Payment plans are normal here.</strong> If you're paid weekly, we can bill weekly. Rent should match how you actually get paid.</li>
+        <li><strong>Owing money before doesn't disqualify you.</strong> Come talk to us.</li>
+      </ul>
+    </div>
+    <p class="quote">"Connecting the gap between being sober and living sober."</p>
+  </div>
+</section>
+
+<section style="background:rgba(255,255,255,.02);">
+  <div class="wrap">
+    <p class="lbl">One Form, One Minute</p>
+    <h2>Tell us where you're <em>at</em></h2>
+    <p class="lede">Every question is optional except how to reach you. The more you share, the less you'll have to repeat on the phone.</p>
+
+    <div class="formwrap">
+      <form id="helpForm" onsubmit="return submitForm(event)">
+        <div class="two">
+          <div class="fg"><label>First name</label><input id="f_first" required></div>
+          <div class="fg"><label>Last name</label><input id="f_last"></div>
+        </div>
+        <div class="two">
+          <div class="fg"><label>Phone</label><input id="f_phone" type="tel" placeholder="(801) 555-0000"></div>
+          <div class="fg"><label>Email</label><input id="f_email" type="email"></div>
+        </div>
+        <div class="two">
+          <div class="fg"><label>This is for</label><select id="f_as">
+            <option value="self">Myself</option><option value="family">Someone I love</option>
+          </select></div>
+          <div class="fg"><label>Best time to reach you</label><select id="f_time">
+            <option value="">Any time</option><option>Morning</option><option>Afternoon</option><option>Evening</option>
+          </select></div>
+        </div>
+        <div class="two">
+          <div class="fg"><label>How would this be paid for?</label><select id="f_ins">
+            <option value="">Not sure yet</option>
+            <option>Medicaid</option><option>Medicare</option><option>Private insurance</option>
+            <option>No insurance</option><option>Paying myself</option><option>Court / probation ordered</option>
+          </select></div>
+          <div class="fg"><label>Insurance company (if known)</label><input id="f_inscomp"></div>
+        </div>
+        <div class="two">
+          <div class="fg"><label>Do you need housing?</label><select id="f_house">
+            <option value="">Not sure</option><option>Yes</option><option>No</option>
+          </select></div>
+          <div class="fg"><label>On probation or parole?</label><select id="f_prob">
+            <option value="">Prefer not to say</option><option>Yes</option><option>No</option>
+          </select></div>
+        </div>
+        <div class="two">
+          <div class="fg"><label>Primary substance</label><input id="f_sub" placeholder="Optional"></div>
+          <div class="fg"><label>Last use</label><select id="f_use">
+            <option value="">Prefer not to say</option><option>Today</option><option>This week</option>
+            <option>This month</option><option>Over a month ago</option>
+          </select></div>
+        </div>
+        <div class="fg"><label>What's making you reach out right now?</label><input id="f_mot" placeholder="In your own words — short is fine"></div>
+        <div class="fg"><label>Anything else we should know</label><textarea id="f_msg"></textarea></div>
+        <input type="hidden" id="f_source" value="get-help-page">
+        <button type="submit" class="submit" id="subBtn">Send this to our intake team</button>
+        <p class="privacy">This goes straight to our intake coordinator — not a call center, not a lead broker. We don't sell or share your information.</p>
+      </form>
+
+      <div class="success" id="successBox">
+        <h3>You did it. That was the hardest part.</h3>
+        <p>Someone from our team will personally call or text you — usually the same day, always within one business day.</p>
+        <p>If you'd rather not wait, call us right now at <a href="tel:8018164977" style="color:var(--sand-light);font-weight:700">(801) 816-4977</a>.</p>
+        <p style="font-size:.85rem;opacity:.7">And if things get bad before we reach you, call or text <strong>988</strong>. Any hour.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <strong style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400">The Next Right Thing in Recovery</strong><br>
+    8901 South 1300 West, West Jordan, UT 84088<br>
+    <a href="tel:8018164977">(801) 816-4977</a> &nbsp;·&nbsp; <a href="mailto:cateo@nextrighthing.com">cateo@nextrighthing.com</a> &nbsp;·&nbsp; <a href="/">nextrighthing.com</a><br>
+    <span style="font-size:.78rem;opacity:.7;display:block;margin-top:.8rem">Scholarship funds are administered through partner organizations and The Right Thing in Recovery, a separate 501(c)(3).</span>
+  </div>
+</footer>
+
+<script>
+function pick(val,label){
+  var ins=document.getElementById('f_ins');
+  for(var i=0;i<ins.options.length;i++){ if(ins.options[i].text===label||ins.options[i].value===label){ins.selectedIndex=i;break;} }
+  if(val==='family'){document.getElementById('f_as').value='family';}
+  if(val==='court'){for(var j=0;j<ins.options.length;j++){if(ins.options[j].text.indexOf('Court')>-1){ins.selectedIndex=j;break;}}}
+  document.getElementById('f_source').value='get-help:'+val;
+  document.getElementById('helpForm').scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(function(){document.getElementById('f_first').focus();},600);
+}
+
+async function submitForm(e){
+  e.preventDefault();
+  var btn=document.getElementById('subBtn');
+  btn.textContent='Sending…'; btn.disabled=true;
+  var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
+  var payload={
+    first_name:g('f_first'), last_name:g('f_last'), phone:g('f_phone'), email:g('f_email'),
+    reaching_as:g('f_as'), insurance:g('f_ins'), insurance_company:g('f_inscomp'),
+    needs_housing:g('f_house'), probation_parole:g('f_prob'), primary_substance:g('f_sub'),
+    last_use:g('f_use'), motivation:g('f_mot'), best_time:g('f_time'), message:g('f_msg'),
+    source:g('f_source')
+  };
+  try{ await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(_){}
+  try{
+    var fd=new FormData();
+    Object.keys(payload).forEach(function(k){fd.append(k,payload[k]);});
+    fd.append('_subject','Pre-Intake Request — '+payload.first_name+' '+payload.last_name+(payload.insurance?(' — '+payload.insurance):''));
+    await fetch('https://formspree.io/f/xeeyllga',{method:'POST',body:fd,headers:{'Accept':'application/json'}});
+  }catch(_){}
+  document.getElementById('helpForm').style.display='none';
+  document.getElementById('successBox').style.display='block';
+  document.getElementById('successBox').scrollIntoView({behavior:'smooth',block:'center'});
+  return false;
+}
+</script>
+</body>
+</html>
