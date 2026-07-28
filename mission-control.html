@@ -103,6 +103,22 @@
       <div class="nums"><div class="num"><b>New</b><span>Donation</span></div></div>
     </a>
 
+    <a class="tile" href="/housing">
+      <h3>Housing Command</h3>
+      <p>Six houses, every bed — occupancy, balances, funding cliffs, and each resident's success record.</p>
+      <div class="nums">
+        <div class="num"><b id="hOcc">–</b><span>Occupancy</span></div>
+        <div class="num flag"><b id="hOpen">–</b><span>Open Beds</span></div>
+        <div class="num flag"><b id="hOwed">–</b><span>Outstanding</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/patrol/run?preview=1" target="_blank">
+      <h3>Patrol Agent</h3>
+      <p>Preview today's briefs, or let it email them automatically each morning to whoever owns the work.</p>
+      <div class="nums"><div class="num"><b>Preview</b><span>Today's Briefs</span></div></div>
+    </a>
+
     <a class="tile" href="/carwash-report">
       <h3>Event Signups</h3>
       <p>Fundraiser RSVPs, volunteer slots, and the live scoreboard.</p>
@@ -112,21 +128,7 @@
 
   <div class="sec">Coming Online</div>
   <div class="tiles soon">
-    <div class="tile">
-      <h3>Housing Command</h3>
-      <p>6 houses · 68 beds · live occupancy, rent status, collection board, house-manager view — and open beds surfacing straight into the intake queue.</p>
-      <div class="nums"><div class="num"><b>Next</b><span>In Build</span></div></div>
-    </div>
-    <div class="tile">
-      <h3>Resident Success Record</h3>
-      <p>Documents, benefits, employment, savings and blueprint milestones tracked beside rent — because economic milestones are recovery milestones.</p>
-      <div class="nums"><div class="num"><b>Next</b><span>In Build</span></div></div>
-    </div>
-    <div class="tile">
-      <h3>Patrol Agent</h3>
-      <p>Runs every morning: overnight intakes, untouched urgent cards, coverage cliffs, unredeemed codes — emailed to whoever owns them.</p>
-      <div class="nums"><div class="num"><b>Needs</b><span>Resend Verified</span></div></div>
-    </div>
+
   </div>
 
   <div class="note" id="note" style="display:none">Loading…</div>
@@ -159,6 +161,12 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     document.getElementById('fApproved').textContent=F.approved??0;
     document.getElementById('fPending').textContent=F.pending??0;
     document.getElementById('fExpiring').textContent=F.expiringSoon??0;
+    const H=d.housing||{};
+    if(document.getElementById('hOcc')){
+      document.getElementById('hOcc').textContent=(H.occupancy!=null?H.occupancy+'%':'–');
+      document.getElementById('hOpen').textContent=H.openBeds??'–';
+      document.getElementById('hOwed').textContent=(H.outstanding!=null?money(H.outstanding):'–');
+    }
 
     const A=[];
     if(I.urgent)A.push({c:'hot',t:I.urgent+' intake request'+(I.urgent>1?'s':'')+' flagged for contact within 24 hours',l:'/intake-queue',b:'Open queue'});

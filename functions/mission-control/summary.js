@@ -8,10 +8,11 @@ export async function onRequestGet(context) {
   const h = { 'apikey':env.SUPABASE_SERVICE_ROLE_KEY, 'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY };
   const get = async (path)=>{ try{ const r=await fetch(env.SUPABASE_URL+'/rest/v1/'+path,{headers:h}); return r.ok? await r.json():[]; }catch(_){ return []; } };
 
-  const [intake, inkind, apps] = await Promise.all([
+  const [intake, inkind, apps, residents] = await Promise.all([
     get('intake_requests?select=id,status,last_use,created_at&limit=1000'),
     get('authorizations?select=id,status,donor_value&limit=1000'),
-    get('funding_applications?select=id,status,coverage_end,resident_name&limit=1000')
+    get('funding_applications?select=id,status,coverage_end,resident_name&limit=1000'),
+    get('residents?select=status,past_due,current_due,amount_paid,monthly_rent&limit=1000')
   ]);
 
   const openIntake = intake.filter(r=>(r.status||'new')!=='closed');
@@ -19,8 +20,14 @@ export async function onRequestGet(context) {
   const soon = new Date(Date.now()+30*24*3600*1000);
   const expiring = apps.filter(a=>a.status==='approved' && a.coverage_end && new Date(a.coverage_end) <= soon && new Date(a.coverage_end) >= new Date());
 
+  const filled=(residents||[]).filter(r=>(r.status||'active')!=='open');
+  const openB=(residents||[]).filter(r=>(r.status||'')==='open');
+  const outstanding=filled.reduce((t,r)=>t+Math.max((Number(r.past_due)||0)+(Number(r.current_due)||0)-(Number(r.amount_paid)||0),0),0);
+
   return json({
     viewer: who,
+    housing: residents.length? { beds:residents.length, filled:filled.length, openBeds:openB.length,
+      occupancy: Math.round(filled.length/residents.length*100), outstanding } : {},
     intake: { total:intake.length, open:openIntake.length, new:intake.filter(r=>(r.status||'new')==='new').length, urgent:hot.length, intaked:intake.filter(r=>r.status==='intaked').length },
     inkind: { total:inkind.length, redeemed:inkind.filter(r=>(r.status||'')==='redeemed').length, pending:inkind.filter(r=>(r.status||'issued')==='issued').length, value:inkind.reduce((t,r)=>t+(Number(r.donor_value)||0),0) },
     funding: { applications:apps.length, approved:apps.filter(a=>a.status==='approved').length, pending:apps.filter(a=>a.status==='applied').length, denied:apps.filter(a=>a.status==='denied').length, expiringSoon:expiring.length, expiringList:expiring.slice(0,8).map(a=>({name:a.resident_name,end:a.coverage_end})) }
