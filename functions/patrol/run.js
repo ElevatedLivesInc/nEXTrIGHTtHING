@@ -235,6 +235,13 @@ export async function onRequest(context) {
     messages.map(m=>'<div style="font:600 .7rem/1 Helvetica,Arial;letter-spacing:.12em;text-transform:uppercase;color:#999;max-width:640px;margin:2rem auto .4rem">Goes to: '+m.to.join(', ')+'</div>'+m.html).join('<hr style="margin:2.5rem 0;border:0;border-top:1px solid #ddd">'),
     {headers:{'Content-Type':'text/html; charset=utf-8'}});
 
+  // Master switch. Briefs are OFF unless PATROL_ENABLED is explicitly "true" in Cloudflare.
+  // Deliberately fail-safe: if the variable is missing, nothing sends.
+  if ((env.PATROL_ENABLED || '').toLowerCase() !== 'true') {
+    return json({ ok:false, sent:[], disabled:true,
+      note:'Morning briefs are turned off. To turn them on, set PATROL_ENABLED=true in Cloudflare Pages settings and redeploy.' });
+  }
+
   if (!env.RESEND_API_KEY) return json({ ok:false, error:'RESEND_API_KEY not set &mdash; add it in Cloudflare Pages settings, then redeploy.' },500);
 
   const sent=[];
