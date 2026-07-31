@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Incident Log — Staff Only</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;--good:#78c896;--bad:#e07878;--warn:#e0965a;--lav:#c9b6f0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.3rem 1.5rem;}
+  .top-inner{max-width:1120px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.7rem;}
+  h1 em{color:var(--sandl);font-style:italic;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);text-align:right;}
+  .viewer a{color:var(--sandl);text-decoration:none;display:inline-block;border:1px solid rgba(201,169,110,.45);border-radius:50px;padding:.3rem .85rem;margin-top:.35rem;white-space:nowrap;}
+  .wrap{max-width:1120px;margin:0 auto;padding:1.4rem 1.5rem 4rem;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.3rem;}
+  .stat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:.9rem 1rem;text-align:center;}
+  .stat .n{font-family:'Cormorant Garamond',serif;font-size:1.85rem;color:var(--sandl);}
+  .stat .l{font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.2rem;}
+  .stat.bad{border-color:rgba(224,120,120,.5);} .stat.bad .n{color:#f0b6b6;}
+  .bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;align-items:center;}
+  .fbtn{padding:.45rem 1.05rem;border-radius:50px;border:1px solid rgba(201,169,110,.35);background:transparent;color:rgba(255,255,255,.72);font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;font-family:'Raleway',sans-serif;}
+  .fbtn.active{background:rgba(201,169,110,.2);color:var(--sandl);border-color:rgba(201,169,110,.6);}
+  #q{margin-left:auto;padding:.45rem .9rem;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;min-width:190px;}
+  .rows{display:flex;flex-direction:column;gap:.6rem;}
+  .row{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.9rem 1.1rem;cursor:pointer;}
+  .row:hover{border-color:rgba(201,169,110,.45);}
+  .row.crit{border-color:rgba(224,120,120,.55);}
+  .rhead{display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;}
+  .rcase{font-family:monospace;font-size:.78rem;color:var(--sand);white-space:nowrap;}
+  .rtype{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--sandl);}
+  .rdate{font-size:.72rem;color:rgba(255,255,255,.5);margin-left:auto;white-space:nowrap;}
+  .rmeta{font-size:.76rem;color:rgba(255,255,255,.58);margin-top:.35rem;line-height:1.55;font-weight:300;}
+  .chip{display:inline-block;font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .55rem;border-radius:4px;font-weight:700;margin-right:.3rem;}
+  .c-crit{background:rgba(224,120,120,.2);color:#f0b6b6;border:1px solid rgba(224,120,120,.5);}
+  .c-serious{background:rgba(224,150,90,.2);color:#f3c48f;border:1px solid rgba(224,150,90,.5);}
+  .c-open{background:rgba(201,169,110,.16);color:var(--sandl);border:1px solid rgba(201,169,110,.45);}
+  .c-closed{background:rgba(120,200,150,.16);color:#a9e5c3;border:1px solid rgba(120,200,150,.45);}
+  .c-esc{background:rgba(124,92,191,.2);color:var(--lav);border:1px solid rgba(124,92,191,.5);}
+  .c-voice{background:rgba(120,200,150,.14);color:#a9e5c3;border:1px solid rgba(120,200,150,.4);}
+  .modal{display:none;position:fixed;inset:0;background:rgba(2,4,12,.93);z-index:100;overflow-y:auto;padding:2rem 1rem;}
+  .modal.open{display:block;}
+  .sheet{max-width:760px;margin:0 auto;background:var(--navy);border:1px solid rgba(201,169,110,.4);border-radius:12px;padding:1.7rem;}
+  .sheet h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.5rem;color:var(--sandl);}
+  .sheet .sub{font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:1.1rem;font-family:monospace;}
+  .sec{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);margin:1.2rem 0 .4rem;border-bottom:1px solid rgba(201,169,110,.2);padding-bottom:.25rem;}
+  .val{font-size:.88rem;color:rgba(255,255,255,.85);font-weight:300;line-height:1.7;white-space:pre-wrap;}
+  .kv{display:grid;grid-template-columns:150px 1fr;gap:.3rem .9rem;font-size:.84rem;}
+  .kv dt{color:rgba(255,255,255,.45);font-weight:300;}
+  .kv dd{color:rgba(255,255,255,.88);}
+  @media(max-width:560px){.kv{grid-template-columns:1fr;}.kv dt{margin-top:.5rem;}}
+  .chain{display:flex;gap:.3rem;flex-wrap:wrap;margin:.5rem 0 .8rem;}
+  .step{flex:1;min-width:96px;padding:.45rem .4rem;border-radius:6px;text-align:center;font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12);}
+  .step.on{background:rgba(124,92,191,.22);color:var(--lav);border-color:rgba(124,92,191,.55);}
+  textarea,input,select{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.85rem;padding:.55rem .7rem;}
+  textarea{min-height:70px;resize:vertical;line-height:1.6;}
+  label{display:block;font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5);margin:.7rem 0 .25rem;}
+  .btn{font-size:.63rem;letter-spacing:.06em;text-transform:uppercase;padding:.5rem 1rem;border-radius:6px;border:1px solid rgba(201,169,110,.45);background:transparent;color:var(--sandl);cursor:pointer;font-family:'Raleway',sans-serif;font-weight:600;}
+  .btn.solid{background:rgba(201,169,110,.24);}
+  .btn.esc{border-color:rgba(124,92,191,.55);color:var(--lav);}
+  .btnrow{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.2rem;}
+  .note{max-width:620px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.7;}
+  @media print{
+    body{background:#fff;color:#000;} .top,.bar,.stats,.btnrow,.viewer,.foot{display:none!important;}
+    .modal{position:static;background:#fff;padding:0;} .sheet{border:none;background:#fff;max-width:100%;}
+    .sheet h2,.sec{color:#1a2744;} .val,.kv dd{color:#000;} .kv dt{color:#555;}
+    .sub{color:#555;} .step{color:#000;border-color:#999;}
+  }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <h1>Incident <em>Log</em></h1>
+  <div class="viewer"><span id="viewer"></span><br>
+    <a href="/incident-report">+ New Report</a> <a href="/mission-control">&larr; Mission Control</a></div>
+</div></div>
+
+<div class="wrap">
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat"><div class="n" id="sTotal">0</div><div class="l">Total Reports</div></div>
+    <div class="stat bad"><div class="n" id="sOpen">0</div><div class="l">Open</div></div>
+    <div class="stat bad"><div class="n" id="sCrit">0</div><div class="l">Critical</div></div>
+    <div class="stat bad"><div class="n" id="sUnreported">0</div><div class="l">Critical, Not Yet Reported To OL</div></div>
+    <div class="stat"><div class="n" id="sEsc">0</div><div class="l">Escalated</div></div>
+  </div>
+
+  <div class="bar" id="bar" style="display:none">
+    <button class="fbtn active" data-f="open">Open</button>
+    <button class="fbtn" data-f="critical">Critical</button>
+    <button class="fbtn" data-f="escalated">Escalated</button>
+    <button class="fbtn" data-f="sober_living">Sober Living</button>
+    <button class="fbtn" data-f="treatment_center">Treatment Center</button>
+    <button class="fbtn" data-f="voice">Speak Up Line</button>
+    <button class="fbtn" data-f="all">All</button>
+    <button class="fbtn" onclick="exportCSV()">CSV</button>
+    <input id="q" placeholder="Search case, type, house, name…">
+  </div>
+
+  <div class="rows" id="rows"></div>
+  <div class="note" id="note">Loading…</div>
+
+  <div class="foot">
+    <b>Client information.</b> These are treatment-center records protected under 42&nbsp;CFR&nbsp;Part&nbsp;2 and HIPAA. Visible only to staff on the access list, never emailed in full, and never mixed with nonprofit or donor records.<br>
+    <em>"I made a difference to that one."</em>
+  </div>
+</div>
+
+<div class="modal" id="m"><div class="sheet" id="sheet"></div></div>
+
+<script>
+let DATA=[], FILTER='open', Q='', CUR=null;
+const g=id=>document.getElementById(id);
+function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
+function fmt(d){if(!d)return '—';try{return new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});}catch(_){return d;}}
+function fmtTs(t){if(!t)return '—';try{return new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});}catch(_){return t;}}
+const LEVELS=['Filed','House / Program Manager','Clinical & Executive','Licensing / External'];
+const progName=p=>p==='treatment_center'?'Treatment Center':(p==='sober_living'?'Sober Living':'Not stated');
+
+function match(r){
+  if(Q){const q=Q.toLowerCase();
+    const hay=((r.case_number||'')+' '+(r.incident_type||'')+' '+(r.house_name||'')+' '+(r.persons_involved||'')+' '+(r.narrative||'')+' '+(r.message||'')).toLowerCase();
+    if(hay.indexOf(q)===-1) return false;}
+  if(FILTER==='all') return true;
+  if(FILTER==='voice') return r._voice;
+  if(FILTER==='open') return (r.status||'open')!=='closed' && (r.status||'')!=='resolved';
+  if(FILTER==='critical') return !!r.critical_incident;
+  if(FILTER==='escalated') return (Number(r.escalation_level)||0)>0;
+  if(FILTER==='sober_living'||FILTER==='treatment_center') return r.program===FILTER;
+  return true;
+}
+
+function render(){
+  const rows=DATA.filter(match);
+  g('note').style.display=rows.length?'none':'block';
+  if(!rows.length) g('note').textContent='Nothing here. That is usually good news.';
+  g('rows').innerHTML=rows.map(r=>{
+    const lvl=Number(r.escalation_level)||0;
+    const chips=[
+      r._voice?'<span class="chip c-voice">Speak Up</span>':'',
+      r.critical_incident?'<span class="chip c-crit">Critical</span>':'',
+      (!r._voice&&r.severity==='serious')?'<span class="chip c-serious">Serious</span>':'',
+      lvl>0?'<span class="chip c-esc">'+esc(LEVELS[lvl])+'</span>':'',
+      '<span class="chip '+((r.status==='closed'||r.status==='resolved')?'c-closed':'c-open')+'">'+esc(r.status||'open')+'</span>',
+      (r.critical_incident&&!r.ol_reported)?'<span class="chip c-crit">OL not filed</span>':''
+    ].join('');
+    return '<div class="row'+(r.critical_incident?' crit':'')+'" onclick="open_('+"'"+r.id+"'"+')">'
+      +'<div class="rhead"><span class="rcase">'+esc(r.case_number||'—')+'</span>'
+      +'<span class="rtype">'+esc(r._voice?(r.concern_type||'Concern raised'):(r.incident_type||'Incident'))+'</span>'
+      +'<span class="rdate">'+fmt(r.incident_date||r.occurred_on)+(r.incident_time?' · '+esc(r.incident_time):'')+'</span></div>'
+      +'<div class="rmeta">'+chips+'<br>'+progName(r.program)
+      +(r.house_name?' · '+esc(r.house_name):'')
+      +(r._voice?(r.wants_response?' · wants a reply':' · anonymous'):(r.reported_by?' · filed by '+esc(r.reported_by):''))
+      +'</div></div>';
+  }).join('');
+}
+
+function open_(id){
+  const r=DATA.find(x=>x.id===id); if(!r)return; CUR=r;
+  const lvl=Number(r.escalation_level)||0;
+  const row=(k,v)=> v?('<dt>'+k+'</dt><dd>'+esc(v)+'</dd>'):'';
+  let h='';
+  if(r._voice){
+    h='<h2>'+esc(r.concern_type||'Concern raised')+'</h2>'
+     +'<div class="sub">'+esc(r.case_number||'')+' &middot; Speak Up line &middot; '+(r.wants_response?'wants a reply':'anonymous')+'</div>'
+     +'<div class="sec">When</div><dl class="kv">'
+     + row('Happened', fmt(r.occurred_on)) + row('Submitted', fmtTs(r.submitted_at))
+     + row('Where', progName(r.program)) + row('House', r.house_name)
+     + row('Contact given', r.contact || 'None — anonymous') + '</dl>'
+     +'<div class="sec">In their words</div><div class="val">'+esc(r.message||'')+'</div>'
+     +'<label>Response notes</label><textarea id="f_notes">'+esc(r.response_notes||'')+'</textarea>'
+     +'<div class="btnrow">'
+     +'<button class="btn solid" onclick="saveConcern(\'reviewing\')">Mark reviewing</button>'
+     +'<button class="btn solid" onclick="saveConcern(\'resolved\')">Mark resolved</button>'
+     +'<button class="btn" onclick="window.print()">Print</button>'
+     +'<button class="btn" style="margin-left:auto" onclick="closeM()">Close</button></div>';
+  } else {
+    h='<h2>'+esc(r.incident_type||'Incident')+'</h2>'
+     +'<div class="sub">'+esc(r.case_number||'')+' &middot; occurred '+fmt(r.incident_date)+(r.incident_time?' at '+esc(r.incident_time):'')
+     +' &middot; filed '+fmtTs(r.reported_at)+'</div>'
+
+     +'<div class="chain">'+LEVELS.map((l,i)=>'<div class="step'+(i<=lvl?' on':'')+'">'+esc(l)+'</div>').join('')+'</div>'
+
+     +'<div class="sec">Where and who</div><dl class="kv">'
+     + row('Program', progName(r.program)) + row('House / site', r.house_name) + row('Location', r.location_detail)
+     + row('Severity', r.severity) + row('Critical incident', r.critical_incident?'Yes — licensing reportable':'No')
+     + row('Involved', r.persons_involved) + row('Witnesses', r.witnesses)
+     + row('Filed by', r.reported_by) + '</dl>'
+
+     +'<div class="sec">What happened</div><div class="val">'+esc(r.narrative||'')+'</div>'
+     +(r.contributing_factors?'<div class="sec">What led up to it</div><div class="val">'+esc(r.contributing_factors)+'</div>':'')
+     +(r.immediate_actions?'<div class="sec">Done at the time</div><div class="val">'+esc(r.immediate_actions)+'</div>':'')
+
+     +'<div class="sec">Injury, police, notifications</div><dl class="kv">'
+     + row('Injuries', r.injuries?'Yes':'No') + row('Medical care', r.medical_attention)
+     + row('Law enforcement', r.law_enforcement?'Yes':'No') + row('Agency', r.le_agency) + row('Police case #', r.le_case_number)
+     + row('Notified', (r.notified||'').split('|').join(', ')) + row('Follow-up due', fmt(r.follow_up_due)) + '</dl>'
+
+     +(r.escalation_log?'<div class="sec">Escalation history</div><div class="val" style="font-size:.8rem">'+esc(r.escalation_log)+'</div>':'')
+
+     +'<div class="sec">Review and corrective action</div>'
+     +'<label>What should change going forward</label><textarea id="f_corrective">'+esc(r.corrective_actions||'')+'</textarea>'
+     +'<label>Review notes</label><textarea id="f_notes">'+esc(r.review_notes||'')+'</textarea>'
+     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem">'
+     +'<div><label>Reported to OL</label><select id="f_ol"><option value="false"'+(r.ol_reported?'':' selected')+'>Not yet</option><option value="true"'+(r.ol_reported?' selected':'')+'>Yes</option></select></div>'
+     +'<div><label>Date reported</label><input type="date" id="f_oldate" value="'+esc(r.ol_reported_at||'')+'"></div>'
+     +'<div><label>OL reference</label><input id="f_olref" value="'+esc(r.ol_reference||'')+'"></div>'
+     +'</div>'
+
+     +'<div class="btnrow">'
+     +'<button class="btn solid" onclick="saveInc()">Save</button>'
+     +(lvl<3?'<button class="btn esc" onclick="escalate()">Escalate to '+esc(LEVELS[lvl+1])+'</button>':'')
+     +'<button class="btn solid" onclick="saveInc(\'closed\')">Save &amp; close case</button>'
+     +'<button class="btn" onclick="window.print()">Print</button>'
+     +'<button class="btn" style="margin-left:auto" onclick="closeM()">Close</button></div>';
+  }
+  g('sheet').innerHTML=h;
+  g('m').classList.add('open');
+}
+function closeM(){g('m').classList.remove('open');CUR=null;}
+
+async function saveInc(status){
+  const b={id:CUR.id,
+    corrective_actions:g('f_corrective').value,
+    review_notes:g('f_notes').value,
+    ol_reported:g('f_ol').value==='true',
+    ol_reported_at:g('f_oldate').value,
+    ol_reference:g('f_olref').value};
+  if(status) b.status=status;
+  const r=await fetch('/incident/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+  if(r.ok){closeM();load();}else{alert('Save failed.');}
+}
+async function escalate(){
+  const reason=prompt('Why are you escalating this? (optional)')||'';
+  const r=await fetch('/incident/save',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:CUR.id,escalate:true,reason:reason})});
+  const d=await r.json().catch(()=>({}));
+  if(r.ok&&d.ok){closeM();load();}else{alert(d.error||'Could not escalate.');}
+}
+async function saveConcern(status){
+  const r=await fetch('/incident/concern',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:CUR.id,status:status,response_notes:g('f_notes').value})});
+  if(r.ok){closeM();load();}else{alert('Save failed.');}
+}
+
+function exportCSV(){
+  const rows=DATA.filter(match).filter(r=>!r._voice);
+  const cols=['case_number','incident_date','incident_time','program','house_name','incident_type','severity',
+    'critical_incident','persons_involved','narrative','contributing_factors','immediate_actions',
+    'corrective_actions','injuries','law_enforcement','notified','escalation_level','ol_reported',
+    'ol_reference','status','reported_by','reported_at'];
+  const q=v=>{v=(v==null?'':v)+'';return '"'+v.replace(/"/g,'""')+'"';};
+  const csv=[cols.join(',')].concat(rows.map(r=>cols.map(c=>q(r[c])).join(','))).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='incidents-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+document.querySelectorAll('.fbtn[data-f]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.fbtn[data-f]').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');FILTER=b.dataset.f;render();});
+g('q').oninput=e=>{Q=e.target.value.trim();render();};
+g('m').onclick=e=>{if(e.target.id==='m')closeM();};
+
+async function load(){
+  try{
+    const r=await fetch('/incident/list');
+    if(r.status===401){location.href='/signin?next='+encodeURIComponent('/incident-log');return;}
+    const d=await r.json();
+    if(r.status===403||d.error){
+      g('note').innerHTML='<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.8rem;color:#e8d5b0">This one is not yours</div>'
+        +'<p style="margin-top:.8rem">You are signed in, but your account is not set up for incident reports. Text Gabe — two-minute fix.</p>';
+      return;
+    }
+    g('viewer').textContent='Signed in as '+(d.viewer||'');
+    const inc=(d.incidents||[]).map(x=>Object.assign({_voice:false},x));
+    const con=(d.concerns||[]).map(x=>Object.assign({_voice:true,incident_date:x.occurred_on||(x.submitted_at||'').slice(0,10)},x));
+    DATA=inc.concat(con).sort((a,b)=>((b.incident_date||'')<(a.incident_date||''))?-1:1);
+    g('sTotal').textContent=inc.length;
+    g('sOpen').textContent=inc.filter(r=>(r.status||'open')!=='closed').length;
+    g('sCrit').textContent=inc.filter(r=>r.critical_incident).length;
+    g('sUnreported').textContent=inc.filter(r=>r.critical_incident&&!r.ol_reported).length;
+    g('sEsc').textContent=inc.filter(r=>(Number(r.escalation_level)||0)>0).length;
+    g('stats').style.display='grid'; g('bar').style.display='flex';
+    render();
+  }catch(_){g('note').textContent='Could not load. Check your connection and reload.';}
+}
+load();
+</script>
+</body>
+</html>

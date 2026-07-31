@@ -37,12 +37,14 @@ export async function onRequest(context) {
   const h={ 'apikey':env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY };
   const get=async p=>{ try{const r=await fetch(env.SUPABASE_URL+'/rest/v1/'+p,{headers:h}); return r.ok? await r.json():[];}catch(_){return [];} };
 
-  const [intake, inkind, apps, residents, events] = await Promise.all([
+  const [intake, inkind, apps, residents, events, incidents, concerns] = await Promise.all([
     get('intake_requests?select=*&limit=1000'),
     get('authorizations?select=*&limit=1000'),
     get('funding_applications?select=*&limit=1000'),
     get('residents?select=*&limit=1000'),
-    get('house_events?select=*&order=created_at.desc&limit=500')
+    get('house_events?select=*&order=created_at.desc&limit=500'),
+    get('incidents?select=*&order=incident_date.desc&limit=500'),
+    get('concerns?select=*&order=submitted_at.desc&limit=300')
   ]);
 
   const now=Date.now(), DAY=86400000;
@@ -108,6 +110,16 @@ export async function onRequest(context) {
       return 'Switch him to weekly billing (about $' + Math.round((Number(r.monthly_rent)||775)/4.3) + '/wk). He is paid weekly; the monthly lump is the problem, not the willingness.';
     return 'Offer a short plan at about $' + wk + '/week and set up autopay so it stops depending on memory.';
   }
+
+
+  // ---------- INCIDENTS ----------
+  const incOpen     = (incidents||[]).filter(i => (i.status||'open') !== 'closed');
+  const incCritOpen = incOpen.filter(i => i.critical_incident && !i.ol_reported);
+  const incWeek     = (incidents||[]).filter(i => i.incident_date && until(i.incident_date) !== null && until(i.incident_date) >= -7);
+  const incEsc      = incOpen.filter(i => (Number(i.escalation_level)||0) >= 2);
+  const incOverdue  = incOpen.filter(i => i.follow_up_due && until(i.follow_up_due) !== null && until(i.follow_up_due) < 0);
+  const voiceNew    = (concerns||[]).filter(c => (c.status||'new') === 'new');
+  const voiceReply  = voiceNew.filter(c => c.wants_response);
 
   const li=(t)=>'<li style="margin:.3rem 0">'+t+'</li>';
   const sec=(title,items)=> items.length? '<h3 style="font-family:Georgia,serif;color:#1a2744;margin:1.2rem 0 .4rem;font-size:1.05rem">'+title+'</h3><ul style="margin:0;padding-left:1.1rem;color:#333;font-size:.92rem">'+items.join('')+'</ul>' : '';
@@ -219,11 +231,24 @@ export async function onRequest(context) {
     sec('Residents with no funding source on record', active.filter(r=>!r.funding_source && (r.payer_type||'self')==='self' && balOf(r)>0).slice(0,12).map(r=>li(nm(r)+' &mdash; $'+Math.round(balOf(r)).toLocaleString('en-US')+' owed and no source logged. Worth one application.')))
   );
 
+  const incidentBlock =
+      sec('Critical incidents not yet reported to Licensing', incCritOpen.map(i=>li('<b>'+i.case_number+'</b> &mdash; '+i.incident_type+', occurred '+i.incident_date+'. Utah OL expects the Provider Portal report within one business day.'))) +
+      sec('Escalated and still open', incEsc.map(i=>li('<b>'+i.case_number+'</b> &mdash; '+i.incident_type+' ('+i.incident_date+'), at '+(['Filed','House Manager','Clinical & Executive','Licensing / External'][Number(i.escalation_level)||0])+''))) +
+      sec('Follow-up past due', incOverdue.map(i=>li(i.case_number+' &mdash; was due '+i.follow_up_due))) +
+      sec('Filed in the last 7 days', incWeek.map(i=>li(i.case_number+' &mdash; '+i.incident_type+' &middot; '+i.incident_date+' &middot; '+(i.program==='sober_living'?'Sober Living':'Treatment Center')))) +
+      sec('Speak Up line', voiceNew.map(c=>li(c.case_number+' &mdash; '+(c.concern_type||'concern raised')+(c.wants_response?' &middot; <b>asked for a reply</b>':' &middot; anonymous'))));
+
+  const incidentBody = wrap('Incident & Compliance Brief',
+      (incCritOpen.length===0 && voiceReply.length===0 && incOverdue.length===0
+        ? '<div style="background:#eef7f1;border-left:3px solid #78c896;padding:.8rem 1rem;border-radius:0 6px 6px 0;margin-bottom:1rem;color:#2f6b4a;font-size:.9rem">Nothing is overdue and every critical incident has been reported. Keep it there.</div>'
+        : '') + incidentBlock);
+
   const messages = [
     { to:TEAM.intake, subject:'Intake Brief &mdash; '+urgentStale.length+' urgent, '+newOvernight.length+' new', html:intakeBody },
     { to:TEAM.donations, subject:'Donations Brief &mdash; '+unredeemed.length+' codes awaiting receipts', html:donationBody },
     { to:TEAM.housing, subject:'House Brief &mdash; '+onNotice.length+' on notice, '+openBeds.length+' open beds', html:houseBody },
     { to:TEAM.funding, subject:'Funding Brief &mdash; '+expiring.length+' coverage'+(expiring.length===1?'':'s')+' ending within 30 days', html:fundingBody },
+    { to:TEAM.leadership, subject:'Incident & Compliance Brief &mdash; '+incCritOpen.length+' critical unreported, '+voiceNew.length+' Speak Up', html:incidentBody },
     { to:TEAM.leadership, subject:'Daily Command Brief &mdash; The Next Right Thing', html:leadershipBody }
   ];
 

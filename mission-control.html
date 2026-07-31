@@ -124,6 +124,23 @@
       <div class="nums"><div class="num"><b>Preview</b><span>Today's Briefs</span></div></div>
     </a>
 
+
+    <a class="tile" href="/incident-log">
+      <h3>Incident Reports</h3>
+      <p>Sober living and treatment center. Dated to when it happened, escalatable up the chain, licensing-ready.</p>
+      <div class="nums">
+        <div class="num"><b id="nOpen">–</b><span>Open</span></div>
+        <div class="num flag"><b id="nCrit">–</b><span>Critical</span></div>
+        <div class="num flag"><b id="nVoice">–</b><span>Speak Up New</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/incident-report">
+      <h3>File an Incident</h3>
+      <p>Two minutes, on a phone, standing in the house. Facts while they are fresh.</p>
+      <div class="nums"><div class="num"><b>New</b><span>Report</span></div></div>
+    </a>
+
     <a class="tile" href="/carwash-report">
       <h3>Event Signups</h3>
       <p>Fundraiser RSVPs, volunteer slots, and the live scoreboard.</p>
@@ -135,6 +152,7 @@
   <div class="links">
     <a href="/get-help" target="_blank"><b>Get Help</b><span>Six honest doors in &mdash; each one states the real cost. Public.</span></a>
     <a href="/payment-options" target="_blank"><b>Payment Options</b><span>For any resident who is behind. Text or hand it to them. Public.</span></a>
+    <a href="/speak-up" target="_blank"><b>Speak Up Line</b><span>Anonymous concern line for clients, residents and families. Public, no login.</span></a>
     <a href="/fellowship-hall-meetings" target="_blank"><b>Fellowship Hall Meetings</b><span>The meeting schedule. Public.</span></a>
     <a href="/" target="_blank"><b>Main Site</b><span>nextrighthing.com &mdash; the front door.</span></a>
   </div>
@@ -184,6 +202,7 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     const d=await res.json();
     if(res.status===401||res.status===403){showWelcome('Mission Control', 'One address for everything you own. Sign in once and it remembers you for about a week.', res.status); return;}
     if(d.error){note.style.display='block';note.textContent='Error: '+d.error;return;}
+    const EXTRA=[];
     const scopes=d.scopes||[], canClient=scopes.indexOf('client')>-1, canDonor=scopes.indexOf('donor')>-1;
     document.getElementById('viewer').innerHTML='Signed in as '+esc(d.viewer||'')+'<br><span style="opacity:.7">'+(canClient&&canDonor?'Full access':(canClient?'Treatment-center access':'Nonprofit access'))+'</span>';
     // Hide systems this person doesn't own. Two entities, separate records.
@@ -204,7 +223,24 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     set('hOpen',H.openBeds??'–');
     set('hOwed',H.outstanding!=null?money(H.outstanding):'–');
 
-    const A=[];
+    if(canClient){
+      try{
+        const ir=await fetch('/incident/list');
+        if(ir.ok){
+          const idata=await ir.json();
+          const inc=idata.incidents||[], con=idata.concerns||[];
+          set('nOpen', inc.filter(x=>(x.status||'open')!=='closed').length);
+          set('nCrit', inc.filter(x=>x.critical_incident&&!x.ol_reported).length);
+          set('nVoice', con.filter(x=>(x.status||'new')==='new').length);
+          const openCrit=inc.filter(x=>x.critical_incident&&!x.ol_reported).length;
+          const newVoice=con.filter(x=>(x.status||'new')==='new').length;
+          if(openCrit) EXTRA.push({c:'hot',t:openCrit+' critical incident'+(openCrit>1?'s':'')+' not yet reported to the Office of Licensing',l:'/incident-log',b:'Open log'});
+          if(newVoice) EXTRA.push({c:'warm',t:newVoice+' new Speak Up submission'+(newVoice>1?'s':'')+' waiting to be read',l:'/incident-log',b:'Read them'});
+        }
+      }catch(_){}
+    }
+
+    const A=[].concat(EXTRA);
     if(I.urgent)A.push({c:'hot',t:I.urgent+' intake request'+(I.urgent>1?'s':'')+' flagged for contact within 24 hours',l:'/intake-queue',b:'Open queue'});
     if(F.expiringSoon){
       const names=(F.expiringList||[]).map(x=>x.name).filter(Boolean).slice(0,3).join(', ');

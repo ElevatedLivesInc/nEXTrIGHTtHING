@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Incident Report — The Next Right Thing in Recovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;--good:#78c896;--bad:#e07878;--warn:#e0965a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.3rem 1.5rem;}
+  .top-inner{max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.75rem;}
+  h1 em{color:var(--sandl);font-style:italic;}
+  .tagline{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.42);margin-top:.25rem;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);text-align:right;}
+  .viewer a{color:var(--sandl);text-decoration:none;display:inline-block;border:1px solid rgba(201,169,110,.45);border-radius:50px;padding:.3rem .85rem;margin-top:.35rem;white-space:nowrap;}
+  .wrap{max-width:820px;margin:0 auto;padding:1.5rem 1.5rem 4rem;}
+  .lead{color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.92rem;margin-bottom:1.4rem;}
+  .grp{border:1px solid rgba(201,169,110,.22);border-radius:10px;padding:1.1rem 1.2rem;margin-bottom:1rem;background:rgba(255,255,255,.02);}
+  .grp h3{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);margin-bottom:.9rem;}
+  .fld{margin-bottom:.85rem;}
+  label{display:block;font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.28rem;}
+  .hint{font-size:.72rem;color:rgba(255,255,255,.4);font-weight:300;margin-top:.25rem;line-height:1.5;}
+  input,select,textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:7px;color:#fff;font-family:'Raleway',sans-serif;font-size:.9rem;padding:.62rem .75rem;}
+  textarea{min-height:96px;resize:vertical;line-height:1.6;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sand);}
+  select option{background:var(--navy);}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+  .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;}
+  @media(max-width:620px){.two,.three{grid-template-columns:1fr;}}
+  .req{color:var(--sand);}
+  .checks{display:flex;flex-wrap:wrap;gap:.5rem 1.1rem;}
+  .checks label{display:flex;align-items:center;gap:.4rem;font-size:.82rem;text-transform:none;letter-spacing:0;color:rgba(255,255,255,.82);cursor:pointer;margin:0;}
+  .checks input{width:auto;accent-color:#c9a96e;}
+  .sev{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem;}
+  @media(max-width:520px){.sev{grid-template-columns:1fr 1fr;}}
+  .sev button{padding:.6rem .3rem;border-radius:7px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(255,255,255,.72);font-family:'Raleway',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;}
+  .sev button.on{background:rgba(201,169,110,.26);border-color:var(--sand);color:var(--sandl);}
+  .sev button.on[data-v="serious"]{background:rgba(224,150,90,.26);border-color:var(--warn);color:#f3c48f;}
+  .sev button.on[data-v="critical"]{background:rgba(224,120,120,.26);border-color:var(--bad);color:#f0b6b6;}
+  .alertbox{display:none;background:rgba(224,120,120,.12);border:1px solid rgba(224,120,120,.5);border-left:4px solid var(--bad);border-radius:0 8px 8px 0;padding:1rem 1.1rem;margin-bottom:1rem;}
+  .alertbox.show{display:block;}
+  .alertbox b{color:#f0b6b6;display:block;font-size:.92rem;margin-bottom:.35rem;}
+  .alertbox p{font-size:.83rem;color:rgba(255,255,255,.78);font-weight:300;line-height:1.65;}
+  .alertbox a{color:var(--sandl);}
+  .submit{width:100%;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;padding:1rem;border:0;border-radius:8px;font-size:.98rem;font-family:'Raleway',sans-serif;cursor:pointer;}
+  .submit:disabled{opacity:.55;cursor:default;}
+  .msg{margin-top:.9rem;font-size:.85rem;text-align:center;color:#f0b6b6;min-height:1.2em;}
+  .done{display:none;text-align:center;padding:2.5rem 1rem;}
+  .done.show{display:block;}
+  .case{font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:var(--sandl);letter-spacing:.04em;margin:.6rem 0 .3rem;}
+  .foot{margin-top:2rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <div>
+    <h1>Incident <em>Report</em></h1>
+    <div class="tagline">The Next Right Thing in Recovery</div>
+  </div>
+  <div class="viewer"><span id="viewer"></span><br><a href="/incident-log">Incident Log</a> <a href="/mission-control">&larr; Mission Control</a></div>
+</div></div>
+
+<div class="wrap">
+  <div id="form">
+    <p class="lead">Write it down while it is fresh. Report the facts as you observed them &mdash; what you saw and heard, not what you concluded. If you are unsure whether something belongs here, file it. An unnecessary report costs nothing; a missing one costs a great deal.</p>
+
+    <div class="alertbox" id="critAlert">
+      <b>This looks like a critical incident.</b>
+      <p>Utah Office of Licensing expects a critical incident report through the OL Provider Portal <b>within one business day of the occurrence</b>. Filing here does not satisfy that requirement &mdash; it records it. Tell your supervisor now, and if anyone is in danger call 911 first.<br>
+      Office of Licensing: <a href="tel:8018902007">(801) 890-2007</a> &middot; Adult Protective Services: <a href="tel:18003717897">1-800-371-7897</a></p>
+    </div>
+
+    <div class="grp"><h3>When and where it happened</h3>
+      <div class="three">
+        <div class="fld">
+          <label>Date it happened <span class="req">*</span></label>
+          <input type="date" id="incident_date">
+          <div class="hint">Not today's date &mdash; the day of the event.</div>
+        </div>
+        <div class="fld"><label>Approximate time</label><input type="time" id="incident_time"></div>
+        <div class="fld"><label>Program <span class="req">*</span></label>
+          <select id="program">
+            <option value="sober_living">Sober Living</option>
+            <option value="treatment_center">Treatment Center</option>
+          </select>
+        </div>
+      </div>
+      <div class="two">
+        <div class="fld"><label>House or site</label>
+          <select id="house_name">
+            <option value="">— select —</option>
+            <option>TRIBAL</option><option>LOWER SANDY</option><option>UPPER SANDY</option>
+            <option>TAYLORSVILLE</option><option>RR MIDVALE</option><option>SOUTH HIGH APTS</option>
+            <option>Treatment Center — West Jordan</option><option>Off site</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fld"><label>Where exactly</label><input id="location_detail" placeholder="Kitchen, parking lot, group room…"></div>
+      </div>
+    </div>
+
+    <div class="grp"><h3>What happened</h3>
+      <div class="fld"><label>Type of incident <span class="req">*</span></label>
+        <select id="incident_type">
+          <option value="">— select —</option>
+          <optgroup label="Critical — licensing reportable">
+            <option>Death</option>
+            <option>Overdose</option>
+            <option>Suicide attempt or self-harm</option>
+            <option>Allegation of abuse, neglect or exploitation</option>
+            <option>Serious injury requiring medical care</option>
+            <option>Substance use, alcohol or contraband on site</option>
+            <option>Law enforcement involvement or arrest</option>
+            <option>Missing person or unauthorized absence</option>
+            <option>Physical altercation</option>
+            <option>Sexual misconduct allegation</option>
+            <option>Medication error or diversion</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option>Positive or refused UA</option>
+            <option>Rule violation</option>
+            <option>Verbal altercation or threat</option>
+            <option>Property damage or theft</option>
+            <option>Client grievance</option>
+            <option>Vehicle accident</option>
+            <option>Fire or safety hazard</option>
+            <option>Discharge or eviction</option>
+            <option>Medical event, non-critical</option>
+            <option>Other</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="fld"><label>How serious <span class="req">*</span></label>
+        <div class="sev" id="sev">
+          <button type="button" data-v="minor">Minor</button>
+          <button type="button" data-v="moderate" class="on">Moderate</button>
+          <button type="button" data-v="serious">Serious</button>
+          <button type="button" data-v="critical">Critical</button>
+        </div>
+      </div>
+
+      <div class="fld checks" style="margin-bottom:1rem">
+        <label><input type="checkbox" id="critical_incident"> <b>Critical incident</b> — reportable to Utah Office of Licensing</label>
+      </div>
+
+      <div class="two">
+        <div class="fld"><label>Who was involved</label><input id="persons_involved" placeholder="Resident name or initials, staff names">
+          <div class="hint">Client information. Everything here stays inside the system.</div>
+        </div>
+        <div class="fld"><label>Witnesses</label><input id="witnesses" placeholder="Anyone who saw it"></div>
+      </div>
+
+      <div class="fld"><label>What happened <span class="req">*</span></label>
+        <textarea id="narrative" placeholder="Describe what you observed, in order. Facts, not conclusions. Quote what was said if you remember it."></textarea>
+        <div class="hint">Write it as though someone who was not there has to understand it a year from now.</div>
+      </div>
+    </div>
+
+    <div class="grp"><h3>Cause and response</h3>
+      <div class="fld"><label>What led up to it</label>
+        <textarea id="contributing_factors" style="min-height:74px" placeholder="Conditions, timing, staffing, prior warnings, anything that set it up."></textarea>
+        <div class="hint">This is the part that prevents the next one.</div>
+      </div>
+      <div class="fld"><label>What you did at the time</label>
+        <textarea id="immediate_actions" style="min-height:74px" placeholder="Separated them, called 911, administered naloxone, notified the on-call…"></textarea>
+      </div>
+      <div class="fld"><label>What should change going forward</label>
+        <textarea id="corrective_actions" style="min-height:74px" placeholder="What would stop this happening again. Leave blank if leadership will decide."></textarea>
+      </div>
+
+      <div class="two">
+        <div class="fld"><label>Injuries and medical care</label>
+          <div class="checks" style="margin-bottom:.45rem"><label><input type="checkbox" id="injuries"> Someone was injured</label></div>
+          <input id="medical_attention" placeholder="911, ER, urgent care, first aid, refused care…">
+        </div>
+        <div class="fld"><label>Law enforcement</label>
+          <div class="checks" style="margin-bottom:.45rem"><label><input type="checkbox" id="law_enforcement"> Police were involved</label></div>
+          <div class="two">
+            <input id="le_agency" placeholder="Agency">
+            <input id="le_case_number" placeholder="Case number">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grp"><h3>Who has been told</h3>
+      <div class="checks" id="notified" style="margin-bottom:.9rem">
+        <label><input type="checkbox" value="House manager"> House manager</label>
+        <label><input type="checkbox" value="Case manager"> Case manager</label>
+        <label><input type="checkbox" value="Clinical director"> Clinical director</label>
+        <label><input type="checkbox" value="Executive director"> Executive director</label>
+        <label><input type="checkbox" value="On-call"> On-call</label>
+        <label><input type="checkbox" value="911 / EMS"> 911 / EMS</label>
+        <label><input type="checkbox" value="Family or emergency contact"> Family / emergency contact</label>
+        <label><input type="checkbox" value="Probation or parole"> Probation / parole</label>
+        <label><input type="checkbox" value="Office of Licensing"> Office of Licensing</label>
+      </div>
+      <div class="fld" style="max-width:280px"><label>Follow-up due by</label><input type="date" id="follow_up_due"></div>
+    </div>
+
+    <button class="submit" id="go" onclick="submitReport()">File this report</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="done" id="done">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:#fff;font-weight:300">Report filed.</div>
+    <div class="case" id="caseNum"></div>
+    <p style="color:rgba(255,255,255,.65);font-weight:300;line-height:1.75;font-size:.92rem;max-width:460px;margin:0 auto 1.6rem">
+      Write this number down. It is dated to the day the incident happened, not today, and leadership has been notified that a report exists.
+    </p>
+    <div id="critReminder"></div>
+    <a href="/incident-log" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.85rem 1.8rem;border-radius:7px;text-decoration:none;font-size:.9rem;margin-right:.5rem">Open the log</a>
+    <a href="/incident-report" style="display:inline-block;border:1px solid rgba(201,169,110,.5);color:var(--sandl);padding:.85rem 1.8rem;border-radius:7px;text-decoration:none;font-size:.9rem">File another</a>
+  </div>
+
+  <div class="foot">
+    <b>Client information.</b> Incident reports are treatment-center records protected under 42 CFR Part 2 and HIPAA. They are visible only to staff on the access list and are never emailed in full. Nonprofit and donor staff cannot see this system.<br>
+    <em>"I made a difference to that one."</em>
+  </div>
+</div>
+
+<script>
+const g = id => document.getElementById(id);
+let SEV = 'moderate';
+
+// Types that Utah OL treats as critical - ticking one pre-flags the report.
+const CRITICAL_TYPES = ['Death','Overdose','Suicide attempt or self-harm',
+  'Allegation of abuse, neglect or exploitation','Serious injury requiring medical care',
+  'Substance use, alcohol or contraband on site','Law enforcement involvement or arrest',
+  'Missing person or unauthorized absence','Physical altercation','Sexual misconduct allegation',
+  'Medication error or diversion'];
+
+document.querySelectorAll('#sev button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#sev button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); SEV = b.dataset.v;
+  if (SEV === 'critical') g('critical_incident').checked = true;
+  syncCritical();
+});
+g('incident_type').onchange = () => {
+  if (CRITICAL_TYPES.includes(g('incident_type').value)) g('critical_incident').checked = true;
+  syncCritical();
+};
+g('critical_incident').onchange = syncCritical;
+function syncCritical(){ g('critAlert').classList.toggle('show', g('critical_incident').checked); }
+
+// Default the date to today but leave it editable - it is the OCCURRENCE date.
+g('incident_date').value = new Date().toISOString().slice(0,10);
+g('incident_date').max   = new Date().toISOString().slice(0,10);
+
+async function submitReport(){
+  const msg = g('msg'); msg.textContent = '';
+  const notified = [...document.querySelectorAll('#notified input:checked')].map(i => i.value).join(' | ');
+  const body = {
+    incident_date: g('incident_date').value,
+    incident_time: g('incident_time').value,
+    program: g('program').value,
+    house_name: g('house_name').value,
+    location_detail: g('location_detail').value,
+    incident_type: g('incident_type').value,
+    severity: SEV,
+    critical_incident: g('critical_incident').checked,
+    persons_involved: g('persons_involved').value,
+    witnesses: g('witnesses').value,
+    narrative: g('narrative').value,
+    contributing_factors: g('contributing_factors').value,
+    immediate_actions: g('immediate_actions').value,
+    corrective_actions: g('corrective_actions').value,
+    injuries: g('injuries').checked,
+    medical_attention: g('medical_attention').value,
+    law_enforcement: g('law_enforcement').checked,
+    le_agency: g('le_agency').value,
+    le_case_number: g('le_case_number').value,
+    notified: notified,
+    follow_up_due: g('follow_up_due').value
+  };
+  if (!body.incident_date) { msg.textContent = 'The date it happened is required.'; return; }
+  if (!body.incident_type) { msg.textContent = 'Please choose the type of incident.'; return; }
+  if ((body.narrative||'').trim().length < 20) { msg.textContent = 'Please describe what happened in a few sentences.'; return; }
+
+  g('go').disabled = true; g('go').textContent = 'Filing…';
+  let r, d;
+  try {
+    r = await fetch('/incident/save', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    d = await r.json();
+  } catch(_) {
+    g('go').disabled = false; g('go').textContent = 'File this report';
+    msg.textContent = 'Could not reach the server. Check your connection and try again — nothing was lost.'; return;
+  }
+  if (r.status === 401) { location.href = '/signin?next=' + encodeURIComponent('/incident-report'); return; }
+  if (!d.ok) {
+    g('go').disabled = false; g('go').textContent = 'File this report';
+    msg.textContent = d.error || 'Could not save. Try again, or call (801) 816-4977.'; return;
+  }
+  g('caseNum').textContent = (d.incident && d.incident.case_number) || 'Filed';
+  if (body.critical_incident) {
+    g('critReminder').innerHTML =
+      '<div style="background:rgba(224,120,120,.12);border:1px solid rgba(224,120,120,.5);border-radius:8px;padding:1rem 1.2rem;max-width:520px;margin:0 auto 1.6rem;text-align:left">'
+      + '<b style="color:#f0b6b6;display:block;margin-bottom:.35rem">Still to do</b>'
+      + '<p style="font-size:.85rem;color:rgba(255,255,255,.78);font-weight:300;line-height:1.65">'
+      + 'Submit the critical incident report through the OL Provider Portal within one business day of the occurrence, '
+      + 'then record the reference number against this case in the log.</p></div>';
+  }
+  g('form').style.display = 'none';
+  g('done').classList.add('show');
+  window.scrollTo(0,0);
+}
+
+(async function(){
+  try {
+    const r = await fetch('/incident/list');
+    if (r.status === 401) { location.href = '/signin?next=' + encodeURIComponent('/incident-report'); return; }
+    const d = await r.json();
+    if (d.viewer) g('viewer').textContent = 'Signed in as ' + d.viewer;
+    if (r.status === 403) {
+      document.getElementById('form').innerHTML =
+        '<div style="text-align:center;padding:3rem 1rem"><div style="font-family:\'Cormorant Garamond\',serif;font-size:1.8rem;color:#e8d5b0">This one is not yours</div>'
+        + '<p style="color:rgba(255,255,255,.7);font-weight:300;line-height:1.75;max-width:420px;margin:1rem auto">'
+        + 'You are signed in, but your account is not set up for incident reports. Text Gabe and it is a two-minute fix.</p></div>';
+    }
+  } catch(_) {}
+})();
+</script>
+</body>
+</html>
