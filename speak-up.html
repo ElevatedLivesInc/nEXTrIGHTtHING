@@ -123,9 +123,26 @@
 
   <div class="done" id="done">
     <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:#fff;font-weight:300">Thank you for telling us.</div>
-    <div class="ref" id="ref"></div>
-    <p style="max-width:480px;margin:0 auto">Write that reference down if you want to follow up. It has been sent to the executive director. Someone will look at it &mdash; and if you asked for a reply, you will get one.</p>
-    <p style="max-width:480px;margin:1rem auto 0;color:rgba(255,255,255,.5);font-size:.88rem">If you are in danger right now, call 911. If you are struggling, call or text 988.</p>
+
+    <div style="background:rgba(201,169,110,.1);border:1px solid var(--sand);border-radius:10px;padding:1.3rem 1.2rem;max-width:420px;margin:1.4rem auto;">
+      <div style="font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sand)">Your reference number</div>
+      <div class="ref" id="ref" style="margin:.35rem 0 .8rem"></div>
+      <button onclick="copyRef(this)" style="background:transparent;border:1px solid rgba(201,169,110,.5);color:var(--sandl);border-radius:50px;padding:.45rem 1.2rem;font-family:'Raleway',sans-serif;font-size:.78rem;cursor:pointer;margin-right:.4rem">Copy it</button>
+      <button onclick="window.print()" style="background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);border-radius:50px;padding:.45rem 1.2rem;font-family:'Raleway',sans-serif;font-size:.78rem;cursor:pointer">Print this</button>
+    </div>
+
+    <p style="max-width:480px;margin:0 auto">Take a photo of that number or write it down. It is how you follow up, and it is the only thing tying you to what you sent.</p>
+    <p id="emailNote" style="max-width:480px;margin:1rem auto 0;color:rgba(255,255,255,.6);font-size:.9rem;display:none">
+      We have also emailed you that reference. It says nothing about what you told us &mdash; in case someone else sees your screen.
+    </p>
+    <p id="anonNote" style="max-width:480px;margin:1rem auto 0;color:rgba(255,255,255,.6);font-size:.9rem;display:none">
+      You sent this anonymously, so there is no email and no way for us to reach you. That is exactly how it should work if that is what you wanted &mdash; but it does mean this number is your only copy.
+    </p>
+
+    <p style="max-width:480px;margin:1.6rem auto 0;color:rgba(255,255,255,.5);font-size:.88rem">
+      Nothing about raising a concern changes your care, your housing, or how you are treated.<br>
+      If you are in danger right now, call 911. If you are struggling, call or text 988.
+    </p>
   </div>
 
   <div class="foot">
@@ -168,9 +185,25 @@ async function send(){
     msg.textContent = d.error || 'Could not send. Please call (801) 816-4977.'; return;
   }
   g('ref').textContent = d.case_number || '';
+  const gotEmail = g('wants_response').checked && g('contact').value.indexOf('@') > -1;
+  g(gotEmail ? 'emailNote' : 'anonNote').style.display = 'block';
   g('form').style.display = 'none';
   g('done').classList.add('show');
   window.scrollTo(0,0);
+}
+function copyRef(btn){
+  const t = g('ref').textContent;
+  const done = () => { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(()=>btn.textContent=o, 1600); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(done).catch(fallback);
+  } else { fallback(); }
+  function fallback(){
+    const a = document.createElement('textarea');
+    a.value = t; a.style.position='fixed'; a.style.opacity='0';
+    document.body.appendChild(a); a.select();
+    try { document.execCommand('copy'); done(); } catch(_) {}
+    document.body.removeChild(a);
+  }
 }
 </script>
 </body>

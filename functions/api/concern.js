@@ -38,6 +38,39 @@ export async function onRequestPost(context) {
   if (!r.ok) return json({ ok:false, error:'Could not save. Please call (801) 816-4977.' },500);
   const saved = (await r.json())[0] || {};
 
+  // Receipt to the person who spoke up - ONLY if they gave contact and asked for a reply.
+  // Deliberately says nothing about what they reported: someone else may see their screen.
+  if (env.RESEND_API_KEY && rec.wants_response && (rec.contact||'').includes('@')) {
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.RESEND_API_KEY},
+        body: JSON.stringify({
+          from: env.RESEND_FROM || 'The Next Right Thing <patrol@nextrighthing.com>',
+          to: [rec.contact.trim()],
+          subject: 'We received your message &mdash; ' + (saved.case_number || ''),
+          html: '<meta charset="utf-8">'
+            + '<div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;color:#1a2744">'
+            + '<div style="border-bottom:3px solid #c9a96e;padding-bottom:.6rem;margin-bottom:1.2rem">'
+            + '<div style="font-family:Georgia,serif;font-size:1.4rem">Thank you for speaking up.</div></div>'
+            + '<p style="color:#333;font-size:.96rem;line-height:1.7">We received what you sent and someone is going to look at it. '
+            + 'You asked to hear back, so you will.</p>'
+            + '<div style="background:#f4f1ea;border:1px solid #c9a96e;border-radius:8px;padding:1rem 1.2rem;margin:1.2rem 0;text-align:center">'
+            + '<div style="font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:#8a6d3b">Your reference</div>'
+            + '<div style="font-family:Georgia,serif;font-size:1.7rem;color:#1a2744;margin-top:.2rem">'+(saved.case_number||'')+'</div></div>'
+            + '<p style="color:#555;font-size:.88rem;line-height:1.7">Keep this number if you want to follow up. '
+            + 'We have not put any details of what you told us in this email, on purpose &mdash; in case someone else sees your screen.</p>'
+            + '<p style="color:#555;font-size:.88rem;line-height:1.7">Nothing about raising a concern changes your care, your housing, or how you are treated. '
+            + 'If you would rather go outside the organization, the Utah Office of Licensing investigates concerns about licensed programs at (801)&nbsp;890-2007.</p>'
+            + '<p style="color:#555;font-size:.88rem;line-height:1.7">If you are in danger right now, call 911. If you are struggling, call or text 988, any hour.</p>'
+            + '<p style="margin-top:1.6rem;padding-top:1rem;border-top:1px solid #eee;font-size:.78rem;color:#999;line-height:1.6">'
+            + 'The Next Right Thing in Recovery &middot; 8901 South 1300 West, West Jordan, UT 84088 &middot; (801) 816-4977<br>'
+            + '<em style="font-family:Georgia,serif;color:#8a6d3b">"I made a difference to that one."</em></p></div>'
+        })
+      });
+    } catch (_) { /* a failed receipt must never lose the report */ }
+  }
+
   // Tell leadership something arrived. The message body is NOT emailed -
   // it stays in the system, so an anonymous report cannot leak through an inbox.
   if (env.RESEND_API_KEY) {
