@@ -10,8 +10,11 @@ export async function onRequestGet(context) {
 
   const ALLOWED = allowedFor('intake-queue');
   const who = await getAuthedEmail(request, env);
-  const authorized = who && ALLOWED.includes(who);
-  if (!authorized) return json({ error: 'Not signed in. Open the staff page URL itself first to log in, then reload.' }, 401);
+  // 401 and 403 mean different things to the page: 401 shows the sign-in
+  // screen, 403 says "this one is not yours". Collapsing them sent a signed-in
+  // person who simply lacks access back through a login they had already done.
+  if (!who) return json({ error: 'Not signed in. Open a staff page to log in, then reload.' }, 401);
+  if (!ALLOWED.includes(who)) return json({ error: 'Your account does not have access to the Intake Queue.' }, 403);
 
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ error: 'not configured' }, 500);
 

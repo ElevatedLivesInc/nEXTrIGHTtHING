@@ -11,8 +11,8 @@ export const ROSTER = {
   'funding':          ['gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com','rob@nextrighthing.com'],
   'housing':          ['gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'],
   'intake-queue':     ['gabe@nextrighthing.com','bailey@nextrighthing.com','cateo@nextrighthing.com'],
-  'in-kind-report':   ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com'],
-  'donations-report': ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com']
+  'in-kind-report':   ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
+  'donations-report': ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com']
 };
 
 export function allowedFor(system) {

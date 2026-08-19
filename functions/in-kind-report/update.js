@@ -9,7 +9,8 @@ export async function onRequestPost(context) {
 
   const ALLOWED = allowedFor('in-kind-report');
   const who = await getAuthedEmail(request, env);
-  if (!who || !ALLOWED.includes(who)) return json({ ok: false, error: 'unauthorized' }, 401);
+  if (!who) return json({ ok: false, error: 'unauthorized' }, 401);
+  if (!ALLOWED.includes(who)) return json({ ok: false, error: 'Your account does not have access to the In-Kind Report.' }, 403);
 
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ ok: false, error: 'not configured' }, 500);
 

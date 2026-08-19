@@ -13,7 +13,7 @@ export async function onRequestGet(context) {
   const ROLES = {
     'gabe@nextrighthing.com':   ['client','donor'],
     'cateo@nextrighthing.com':  ['client','donor'],
-    'bailey@nextrighthing.com': ['client'],
+    'bailey@nextrighthing.com': ['client','donor'],
     'rob@nextrighthing.com':    ['client'],
     'ryan@nextrighthing.com':   ['donor']
   };

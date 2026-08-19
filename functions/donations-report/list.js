@@ -10,7 +10,8 @@ export async function onRequestGet(context) {
 
   const ALLOWED = allowedFor('donations-report');
   const who = await getAuthedEmail(request, env);
-  if (!who || !ALLOWED.includes(who)) return json({ error: 'Not signed in. Open /in-kind-report first to log in, then come back and reload.' }, 401);
+  if (!who) return json({ error: 'Not signed in. Open a staff page to log in, then reload.' }, 401);
+  if (!ALLOWED.includes(who)) return json({ error: 'Your account does not have access to the Donations Report.' }, 403);
 
   if (!env.SQUARE_ACCESS_TOKEN || !env.SQUARE_LOCATION_ID) return json({ error: 'Square not configured.' }, 500);
 

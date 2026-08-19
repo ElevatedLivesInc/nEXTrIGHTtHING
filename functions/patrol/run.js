@@ -7,12 +7,16 @@
 const GABE = 'gabe@nextrighthing.com';
 // Gabe is on every brief on purpose - he sees exactly what each person sees,
 // so nobody has to describe a problem he can already read.
+// Every brief goes to Cate and Gabe only, on purpose. Roles are still settling,
+// and a daily email to someone who is not yet responsible for that system
+// trains them to ignore it. Widen this per-role once the roles are final.
+const CATE = 'cateo@nextrighthing.com';
 const TEAM = {
-  intake:   ['bailey@nextrighthing.com', GABE],
-  donations:['ryan@nextrighthing.com', GABE],
-  housing:  ['rob@nextrighthing.com', 'cateo@nextrighthing.com', GABE],
-  funding:  ['bailey@nextrighthing.com', 'cateo@nextrighthing.com', GABE],
-  leadership:[GABE,'cateo@nextrighthing.com']
+  intake:    [CATE, GABE],
+  donations: [CATE, GABE],
+  housing:   [CATE, GABE],
+  funding:   [CATE, GABE],
+  leadership:[CATE, GABE]
 };
 
 import { getAuthedEmail } from '../_lib/auth.js';
