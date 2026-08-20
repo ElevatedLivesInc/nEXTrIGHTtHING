@@ -12,11 +12,20 @@ export async function onRequestGet(context) {
   if (!ALLOWED.includes(who)) return json({ error:'Your account does not have access to Housing.' },403);
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ error:'not configured' },500);
   const h={ 'apikey':env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY };
-  const [ho,re,ev]=await Promise.all([
+  // Funders and applications ride along so Housing can answer the question that
+  // actually gets money in the door: who is still eligible for what. The
+  // housing and funding rosters are the same four people, so this crosses no
+  // access boundary.
+  const [ho,re,ev,fu,ap]=await Promise.all([
     fetch(env.SUPABASE_URL+'/rest/v1/houses?select=*&order=sort_order.asc&limit=100',{headers:h}),
     fetch(env.SUPABASE_URL+'/rest/v1/residents?select=*&limit=1000',{headers:h}),
-    fetch(env.SUPABASE_URL+'/rest/v1/house_events?select=*&order=created_at.desc&limit=200',{headers:h})
+    fetch(env.SUPABASE_URL+'/rest/v1/house_events?select=*&order=created_at.desc&limit=200',{headers:h}),
+    fetch(env.SUPABASE_URL+'/rest/v1/funders?select=*&order=name.asc&limit=500',{headers:h}),
+    fetch(env.SUPABASE_URL+'/rest/v1/funding_applications?select=*&order=created_at.desc&limit=1000',{headers:h})
   ]);
   if(!ho.ok||!re.ok) return json({ error:'load failed', detail:(await ho.text())+(await re.text()) },500);
-  return json({ viewer:who, houses:await ho.json(), residents:await re.json(), events: ev.ok? await ev.json():[] });
+  return json({ viewer:who, houses:await ho.json(), residents:await re.json(),
+                events: ev.ok? await ev.json():[],
+                funders: fu.ok? await fu.json():[],
+                applications: ap.ok? await ap.json():[] });
 }

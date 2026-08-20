@@ -317,7 +317,7 @@ function showWelcome(title, blurb, status){
     + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
     + '</div>';
 }
-let HOUSES=[],RES=[],EVENTS=[],TAB='map',Q='';
+let HOUSES=[],RES=[],EVENTS=[],FUNDERS=[],APPS=[],TAB='map',Q='';
 const g=id=>document.getElementById(id);
 function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
 function n(v){return Number(v)||0;}
@@ -350,6 +350,35 @@ function nextStep(r){
   if(!n(r.savings_balance)) return {rank:7,label:'Open savings and make the first deposit',short:'save'};
   if(n(r.savings_balance)<1000) return {rank:8,label:'Build savings toward first month plus deposit',short:money(r.savings_balance)};
   return {rank:9,label:'Ready for independent housing — start the search',short:'ready'};
+}
+
+/* Money that can still come back.
+   A balance does not stop being collectable when somebody moves out, and a
+   funder does not stop existing. Most scholarships are once per client, so a
+   person who never used one is still eligible for it - including for a stay
+   that already happened, if the funder backdates. This works out what is left
+   on the table for one person. */
+function recoup(r){
+  const mine=APPS.filter(a=>(a.resident_name||'').trim().toLowerCase()===(r.name||'').trim().toLowerCase());
+  const touched=new Set(mine.map(a=>a.funder_name));
+  const spent=new Set(mine.filter(a=>['approved','expired'].includes(a.status)).map(a=>a.funder_name));
+  const untried=FUNDERS.filter(f=>f.active!==false && !touched.has(f.name) && !(f.once_per_client&&spent.has(f.name)));
+  const pending=mine.filter(a=>a.status==='applied');
+  const denied=mine.filter(a=>a.status==='denied');
+  const chips=[];
+  if(r.employed) chips.push({c:'job',t:'Employed'+(r.employer?' — '+r.employer:'')+' · wage plan'});
+  if(pending.length) chips.push({c:'cliff',t:pending.length+' application'+(pending.length===1?'':'s')+' still pending'});
+  if(untried.length) chips.push({c:'job',t:untried.length+' funder'+(untried.length===1?'':'s')+' never tried'});
+  if(!untried.length&&!pending.length&&denied.length) chips.push({c:'warn2',t:'every funder exhausted'});
+  return {chips:chips,untried:untried,pending:pending};
+}
+function recoupLine(r){
+  const x=recoup(r);
+  let out='';
+  if(x.chips.length) out+='<br>'+x.chips.map(c=>'<span class="chip '+c.c+'">'+esc(c.t)+'</span>').join(' ');
+  if(x.untried.length) out+='<br><span style="opacity:.78">Still eligible: '+esc(x.untried.slice(0,3).map(f=>f.name).join(', '))+(x.untried.length>3?' +'+(x.untried.length-3)+' more':'')+'</span>';
+  if(!x.chips.length&&!x.untried.length) out+='<br><span style="opacity:.6">No funder list loaded — add funders in the Funding Navigator</span>';
+  return out;
 }
 function docsDone(r){return r.has_id&&r.has_ss_card&&r.has_birth_cert;}
 function closeM(){g('mRes').classList.remove('open');}
@@ -604,7 +633,7 @@ function render(){
     const total=rows.reduce((t,r)=>t+bal(r),0);
     v.innerHTML='<div class="rows">'
       +(rows.length?('<div class="row" style="background:rgba(201,169,110,.08)"><div class="rname">'+rows.length+' former resident'+(rows.length===1?'':'s')+' owing</div>'
-        +'<div class="rmeta">Left with a balance. Collectable, and it follows them to the next house.</div>'
+        +'<div class="rmeta">Left with a balance. Collectable, and it follows them to the next house.<br>Check each one for a funder they never applied to before writing the money off.</div>'
         +'<div class="rbal owe">'+money(total)+'</div></div>'):'')
       +(rows.length?rows.map(r=>{
         const days=daysAgo(r.move_out_date);
@@ -614,6 +643,7 @@ function render(){
         +' · moved out '+ago(r.move_out_date)
         +(days!==null&&days>90?' <span class="chip warn2">'+Math.floor(days/30)+' months ago</span>':'')
         +(r.phone?'<br><span style="opacity:.78">'+esc(r.phone)+'</span>':'')
+        +recoupLine(r)
         +'</div>'
         +'<div class="rbal owe">'+money(bal(r))+'</div></div>';
       }).join(''):'<div class="note">Nobody who moved out still owes. That is worth noticing.</div>')
@@ -640,6 +670,7 @@ function render(){
       +(missing.length?'<br><span style="opacity:.7">Still missing: '+esc(missing.join(', '))+'</span>':'<br><span class="chip job">fully documented</span>')
       +(have.length?'<br><span style="opacity:.66">Has: '+esc(have.join(', '))+'</span>':'')
       +(r.case_manager?'<br><span style="opacity:.66">CM: '+esc(r.case_manager)+'</span>':'<br><span class="chip warn2">no case manager</span>')
+      +recoupLine(r)
       +'</div>'
       +'<div class="rbal '+(gap.rank<=1?'owe':'ok')+'">'+gap.short+'</div></div>';
     }).join(''):'<div class="note">No residents to show.</div>')+'</div>';
@@ -724,6 +755,7 @@ async function load(){
     if(res.status===401||res.status===403){showWelcome('Housing Command', 'Six houses, every bed, every balance, and each resident&rsquo;s house record &mdash; on one screen. Sign in and it is all here.', res.status); return;}
     if(d.error){note.innerHTML='Error: '+esc(d.error)+'<br><br>If this says the table is missing, run <code>1-housing-schema.sql</code> then <code>2-housing-import.sql</code> in Supabase.';return;}
     HOUSES=d.houses||[];RES=d.residents||[];EVENTS=d.events||[];
+    FUNDERS=d.funders||[];APPS=d.applications||[];
     g('viewer').textContent='Signed in as '+(d.viewer||'');
     const filled=RES.filter(r=>!isOpen(r)),open=RES.filter(isOpen);
     const owed=filled.reduce((t,r)=>t+Math.max(bal(r),0),0);

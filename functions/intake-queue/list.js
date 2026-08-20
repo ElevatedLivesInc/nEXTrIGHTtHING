@@ -18,13 +18,21 @@ export async function onRequestGet(context) {
 
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ error: 'not configured' }, 500);
 
-  const res = await fetch(env.SUPABASE_URL + '/rest/v1/intake_requests?select=*&order=created_at.desc&limit=300', {
-    headers: {
-      'apikey': env.SUPABASE_SERVICE_ROLE_KEY,
-      'Authorization': 'Bearer ' + env.SUPABASE_SERVICE_ROLE_KEY
-    }
-  });
+  const H = {
+    'apikey': env.SUPABASE_SERVICE_ROLE_KEY,
+    'Authorization': 'Bearer ' + env.SUPABASE_SERVICE_ROLE_KEY
+  };
+  // Active funders and existing applications come along so the funding
+  // conversation can start on the first call instead of after admission,
+  // which is the difference between covered and uncovered.
+  const [res, fu, ap] = await Promise.all([
+    fetch(env.SUPABASE_URL + '/rest/v1/intake_requests?select=*&order=created_at.desc&limit=300', { headers: H }),
+    fetch(env.SUPABASE_URL + '/rest/v1/funders?select=name,category,typical_amount,eligibility,active&order=name.asc&limit=500', { headers: H }),
+    fetch(env.SUPABASE_URL + '/rest/v1/funding_applications?select=resident_name,funder_name,status,amount&limit=1000', { headers: H })
+  ]);
   if (!res.ok) { const detail = await res.text(); return json({ error: 'load failed', detail }, 500); }
   const rows = await res.json();
-  return json({ viewer: who, requests: Array.isArray(rows) ? rows : [] });
+  return json({ viewer: who, requests: Array.isArray(rows) ? rows : [],
+                funders: fu.ok ? await fu.json() : [],
+                applications: ap.ok ? await ap.json() : [] });
 }

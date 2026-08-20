@@ -158,6 +158,7 @@ function showWelcome(title, blurb, status){
     + '</div>';
 }
 let DATA=[], FILTER='open';
+let FUNDERS=[], APPS=[];
 const STATUSES=['new','contacted','scheduled','intaked','closed'];
 const CHECKS=['Insurance verified','Callback made','Assessment scheduled','ROI signed','Docs collected'];
 
@@ -264,6 +265,28 @@ function triage(r){
   return f;
 }
 
+/* The funding conversation belongs on the first call, not after admission.
+   By the time somebody is in a bed, the question "who is paying" has usually
+   already been answered badly. This turns what they told the form into the
+   next concrete step. */
+function fundingPath(r){
+  const name=((r.first_name||'')+' '+(r.last_name||'')).trim().toLowerCase();
+  const logged=APPS.filter(a=>(a.resident_name||'').trim().toLowerCase()===name);
+  if(logged.length){
+    const approved=logged.filter(a=>a.status==='approved');
+    if(approved.length) return {c:'ready',t:'Funded — '+esc(approved[0].funder_name||'')};
+    return {c:'warm',t:logged.length+' application'+(logged.length===1?'':'s')+' logged — '+esc(logged[0].status||'applied')};
+  }
+  const ins=(r.insurance||'').toLowerCase();
+  const active=FUNDERS.filter(f=>f.active!==false);
+  if(ins==='medicaid')          return {c:'ready',t:'Medicaid — verify eligibility and level of care'};
+  if(ins==='medicare')          return {c:'ready',t:'Medicare — run the benefits check'};
+  if(ins==='private insurance') return {c:'ready',t:'Private insurance — run the benefits check'};
+  if(ins==='no insurance')      return {c:'hot',t:active.length?('Uninsured — '+active.length+' scholarship funder'+(active.length===1?'':'s')+' to try today'):'Uninsured — no funders on file yet'};
+  if(ins==='not sure')          return {c:'hot',t:'Insurance unconfirmed — settle it before the call ends'};
+  return {c:'hot',t:'No funding path yet — nobody is paying for this bed'};
+}
+
 function render(){
   try{updateStats();}catch(_){}
   const grid=document.getElementById('grid');
@@ -287,6 +310,8 @@ function render(){
       +'<div class="pbar" title="'+done+' of '+CHECKS.length+' steps done"><i style="width:'+pct+'%"></i></div>'
       +((ready&&(r.status||'new')!=='intaked')?'<div class="flags"><span class="flag ready">&#10003; Ready for intake</span></div>':'')
       +(flags.length?'<div class="flags">'+flags.map(x=>'<span class="flag '+x.c+'">'+esc(x.t)+'</span>').join('')+'</div>':'')
+      +(function(){const fp=fundingPath(r);return '<div class="flags"><span class="flag '+fp.c+'">$ '+fp.t+'</span>'
+        +'<a href="/funding" style="font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:#c9a96e;text-decoration:none;align-self:center;margin-left:.3rem">Funding Navigator &rarr;</a></div>';})()
       +'<div class="rows">'
       +line('Phone', r.phone?null:null)
       +(r.phone?('<div><b>Phone:</b> <a href="tel:'+esc(r.phone.replace(/[^0-9+]/g,''))+'">'+esc(r.phone)+'</a></div>'):'')
@@ -342,6 +367,7 @@ document.getElementById('filters').addEventListener('click',e=>{
     const data=await res.json();
     if(data.error){note.textContent='Error: '+data.error;return;}
     DATA=data.requests||[];
+    FUNDERS=data.funders||[];APPS=data.applications||[];
     document.getElementById('viewer').textContent='Signed in as '+(data.viewer||'');
     document.getElementById('filters').style.display='flex';
     render();
