@@ -127,6 +127,8 @@
       <div class="fld"><label>Expires</label><input id="d_exp" type="date"></div>
     </div>
     <div class="fld"><label>Title / where it lives</label><input id="d_title" placeholder="e.g. Lease — Redwood 2A — signed original in binder"></div>
+    <div class="fld"><label>Attach the file (optional — PDF, photo or Word, up to 25 MB)</label><input id="d_file" type="file" accept=".pdf,.jpg,.jpeg,.png,.heic,.webp,.tif,.tiff,.doc,.docx,.txt"></div>
+    <div id="d_prog" style="font-size:.78rem;color:rgba(255,255,255,.6);margin-bottom:.5rem"></div>
     <button class="btn" onclick="saveDoc(this)">Record document</button>
   </div>
 
@@ -306,7 +308,8 @@ function render(){
     return '<div class="row"><div class="rname">'+esc(x.resident_name)+'</div>'
     +'<div class="rmeta"><span class="chip info">'+esc(x.doc_type)+'</span> '+esc(x.title||'(untitled)')
     +(x.signed_on?'<br><span style="opacity:.7">signed '+esc(x.signed_on)+'</span>':'')
-    +(exp!==null?(' <span class="chip '+(exp<0?'bad':(exp<30?'warn':'ok'))+'">'+(exp<0?'expired':'expires in '+exp+'d')+'</span>'):'')+'</div>'
+    +(exp!==null?(' <span class="chip '+(exp<0?'bad':(exp<30?'warn':'ok'))+'">'+(exp<0?'expired':'expires in '+exp+'d')+'</span>'):'')
+    +(x.file_path?' <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#c9a96e;font-size:.78rem;text-decoration:none">open file &rarr;</a>':' <span class="chip warn">no file attached</span>')+'</div>'
     +'<div class="rside">'+esc(x.uploaded_by||'')+'</div></div>';
   }).join(''):'<div class="note">No documents recorded yet.</div>')+'</div>';
 }
@@ -329,7 +332,8 @@ function openC(id){
       +(n.next_step?'<br><b>Next:</b> '+esc(n.next_step)+(n.next_step_due?' (by '+esc(n.next_step_due)+')':''):'')+'</div>').join(''):'<div class="item">No contact notes yet.</div>')
     +(gs.length?'<h3 style="margin-top:1rem">Goals</h3>'+gs.map(x=>'<div class="item"><span class="chip info">'+esc(x.domain)+'</span> '+esc(x.goal)+' <span class="chip '+(x.status==='met'?'ok':'warn')+'">'+esc(x.status)+'</span></div>').join(''):'')
     +(ms.length?'<h3 style="margin-top:1rem">Meetings</h3>'+ms.map(x=>'<div class="item">'+esc(x.meeting_date)+' — '+esc(x.kind)+(x.verified_by?' (verified by '+esc(x.verified_by)+')':'')+'</div>').join(''):'')
-    +(ds.length?'<h3 style="margin-top:1rem">Documents</h3>'+ds.map(x=>'<div class="item">'+esc(x.doc_type)+' — '+esc(x.title||'')+(x.signed_on?' · signed '+esc(x.signed_on):'')+'</div>').join(''):'');
+    +(ds.length?'<h3 style="margin-top:1rem">Documents</h3>'+ds.map(x=>'<div class="item">'+esc(x.doc_type)+' — '+esc(x.title||'')+(x.signed_on?' · signed '+esc(x.signed_on):'')
+      +(x.file_path?' · <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" style="color:#c9a96e">open file &rarr;</a>':'')+'</div>').join(''):'');
   g('mClient').classList.add('open');
 }
 function closeM(){g('mClient').classList.remove('open');}
@@ -353,9 +357,36 @@ function saveGoal(b){ if(!g('g_goal').value.trim())return alert('Write the goal 
 function saveMeeting(b){ if(!g('m_date').value)return alert('Pick a date.');
   send({what:'meeting',resident_name:CUR.name,house_name:CUR.house_name,kind:g('m_kind').value,
     meeting_date:g('m_date').value,verified_by:g('m_by').value},b); }
-function saveDoc(b){ if(!g('d_title').value.trim())return alert('Give it a title so it can be found.');
-  send({what:'document',resident_name:CUR.name,house_name:CUR.house_name,doc_type:g('d_type').value,
-    title:g('d_title').value,signed_on:g('d_signed').value,expires_on:g('d_exp').value},b); }
+/* The file goes browser -> Supabase directly on a one-time signed URL. It
+   never passes through the Worker, which keeps leases and IDs out of the
+   request path and sidesteps body size limits. The metadata row is written
+   only after the bytes have actually landed, so a failed upload can never
+   leave a document record pointing at nothing. */
+async function saveDoc(btn){
+  if(!g('d_title').value.trim()) return alert('Give it a title so it can be found.');
+  const f=g('d_file').files&&g('d_file').files[0];
+  const prog=g('d_prog');
+  let file_path=null, mime=null, size=null;
+  if(f){
+    if(f.size>25*1024*1024) return alert('That file is larger than 25 MB. Photograph the pages separately or split the PDF.');
+    prog.textContent='Preparing upload…';
+    try{
+      const pr=await fetch('/case/upload',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({resident_name:CUR.name,filename:f.name,mime_type:f.type,size_bytes:f.size})});
+      const pd=await pr.json();
+      if(!pr.ok||!pd.ok){prog.textContent='';return alert('Upload could not start'+(pd.error?': '+pd.error:''));}
+      prog.textContent='Uploading '+f.name+'…';
+      const up=await fetch(pd.uploadUrl,{method:'PUT',headers:{'Content-Type':f.type||'application/octet-stream'},body:f});
+      if(!up.ok){prog.textContent='';return alert('Upload failed. Check your connection and try again.');}
+      file_path=pd.path; mime=f.type; size=f.size;
+      prog.textContent='Uploaded.';
+    }catch(_){prog.textContent='';return alert('Upload failed. Check your connection and try again.');}
+  }
+  const okDone=await send({what:'document',resident_name:CUR.name,house_name:CUR.house_name,doc_type:g('d_type').value,
+    title:g('d_title').value,signed_on:g('d_signed').value,expires_on:g('d_exp').value,
+    file_path:file_path,mime_type:mime,size_bytes:size},btn);
+  if(okDone){ g('d_file').value=''; prog.textContent=''; }
+}
 
 function saveNeeds(b){
   const needs=NEED_KEYS.reduce((o,k)=>{const el=g('need_'+k); if(el&&el.value)o[k]=el.value; return o;},{});

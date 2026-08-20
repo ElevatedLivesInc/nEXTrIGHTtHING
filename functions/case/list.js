@@ -48,7 +48,7 @@ export async function onRequestGet(context) {
     get('meetings?select=*&order=meeting_date.desc&limit=3000'),
     // Metadata only. The files themselves live in a private bucket and are
     // fetched through a signed URL when someone actually opens one.
-    get('documents?select=id,resident_name,doc_type,title,signed_on,expires_on,uploaded_by,uploaded_at,notes&order=uploaded_at.desc&limit=2000'),
+    get('documents?select=id,resident_name,doc_type,title,file_path,mime_type,size_bytes,signed_on,expires_on,uploaded_by,uploaded_at,notes&order=uploaded_at.desc&limit=2000'),
     get('funding_applications?select=*&order=created_at.desc&limit=1000'),
     get('funders?select=*&order=name.asc&limit=500')
   ]);

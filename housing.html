@@ -134,6 +134,7 @@
     <button class="tab" data-t="beds">Open Beds</button>
     <button class="tab" data-t="moveouts">Move-Outs Owing</button>
     <button class="tab" data-t="readiness">Readiness</button>
+    <button class="tab" data-t="ledger">Ledger</button>
     <button class="tab" data-t="casemgmt">Case Management</button>
     <input id="q" placeholder="Search resident, house, room…">
     <button class="btn" onclick="window.print()">Print</button>
@@ -279,7 +280,17 @@
       <div class="fld"><label>Amount (if payment)</label><input id="e_amount"></div>
       <div class="fld"><label>&nbsp;</label><button class="btn solid" style="width:100%" onclick="logEvent(this)">Log it</button></div>
     </div>
+    <div class="three">
+      <div class="fld"><label>Date taken</label><input id="e_paidon" type="date"></div>
+      <div class="fld"><label>How</label><select id="e_method">
+        <option value="">&mdash;</option><option value="cash">Cash</option><option value="card">Card</option>
+        <option value="check">Check</option><option value="money order">Money order</option>
+        <option value="transfer">Transfer</option><option value="funder">Paid by funder</option>
+        <option value="credit">Credit</option><option value="adjustment">Adjustment</option></select></div>
+      <div class="fld"><label>Taken by</label><input id="e_takenby" placeholder="defaults to you"></div>
+    </div>
     <div class="fld"><label>Detail</label><input id="e_detail"></div>
+    <div style="margin-top:1rem"><h4 style="font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#c9a96e;margin-bottom:.5rem">Payment ledger</h4><div id="ledger"></div></div>
   </div>
 
   <div class="btnrow">
@@ -317,7 +328,7 @@ function showWelcome(title, blurb, status){
     + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
     + '</div>';
 }
-let HOUSES=[],RES=[],EVENTS=[],FUNDERS=[],APPS=[],TAB='map',Q='';
+let HOUSES=[],RES=[],EVENTS=[],FUNDERS=[],APPS=[],PAY=[],TAB='map',Q='';
 const g=id=>document.getElementById(id);
 function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
 function n(v){return Number(v)||0;}
@@ -379,6 +390,23 @@ function recoupLine(r){
   if(x.untried.length) out+='<br><span style="opacity:.78">Still eligible: '+esc(x.untried.slice(0,3).map(f=>f.name).join(', '))+(x.untried.length>3?' +'+(x.untried.length-3)+' more':'')+'</span>';
   if(!x.chips.length&&!x.untried.length) out+='<br><span style="opacity:.6">No funder list loaded — add funders in the Funding Navigator</span>';
   return out;
+}
+/* Every payment for one person, newest first. This is the answer to "what did
+   she pay on the 14th and who took it" - a question a running total can never
+   answer, and the one that comes up when somebody disputes a balance. */
+function ledgerFor(r){
+  return PAY.filter(p=>!p.voided&&(p.resident_name||'').trim().toLowerCase()===(r.name||'').trim().toLowerCase());
+}
+function ledgerHtml(r){
+  const rows=ledgerFor(r).slice(0,20);
+  if(!rows.length) return '<div style="opacity:.55;font-size:.85rem">No payments recorded yet. Anything logged here from now on keeps its date, method and who took it.</div>';
+  const total=ledgerFor(r).reduce((t,p)=>t+(Number(p.amount)||0),0);
+  return '<div style="font-size:.85rem;line-height:1.7">'
+    +rows.map(p=>'<div style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid rgba(201,169,110,.15);padding:.3rem 0">'
+      +'<span>'+esc(p.paid_on||'')+' &middot; '+esc(p.kind||'rent')+(p.method?' &middot; '+esc(p.method):'')
+      +'<br><span style="opacity:.6;font-size:.9em">taken by '+esc(p.taken_by||'—')+(p.note?' &middot; '+esc(p.note):'')+'</span></span>'
+      +'<b style="color:#9fd8b0;white-space:nowrap">'+money(p.amount)+'</b></div>').join('')
+    +'<div style="display:flex;justify-content:space-between;padding-top:.5rem;font-weight:700"><span>Recorded total</span><span>'+money(total)+'</span></div></div>';
 }
 function docsDone(r){return r.has_id&&r.has_ss_card&&r.has_birth_cert;}
 function closeM(){g('mRes').classList.remove('open');}
@@ -502,6 +530,8 @@ function openRes(id){
   g('rStamp').innerHTML=stampLine(r);
   set('r_notes',r.notes);
   g('e_amount').value=''; g('e_detail').value='';
+  g('e_paidon').value=new Date().toISOString().slice(0,10); g('e_method').value=''; g('e_takenby').value='';
+  { const el=g('ledger'); if(el) el.innerHTML=ledgerHtml(r); }
   g('mRes').classList.add('open');
 }
 
@@ -564,7 +594,8 @@ async function saveRes(btn){
 async function logEvent(btn){
   const id=g('r_id').value; const res=RES.find(x=>x.id===id)||{};
   const b={event:true,resident_id:id,resident_name:res.name,house_name:res.house_name,
-    kind:g('e_kind').value,amount:g('e_amount').value,detail:g('e_detail').value};
+    kind:g('e_kind').value,amount:g('e_amount').value,detail:g('e_detail').value,
+    paid_on:g('e_paidon').value,method:g('e_method').value,taken_by:g('e_takenby').value};
   if(!b.detail&&!b.amount){alert('Add an amount or a detail');return;}
   btn.textContent='…';
   const r=await fetch('/housing/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
@@ -623,6 +654,30 @@ function render(){
       +'<div class="rmeta">Room '+esc(r.room||'—')+' · <span class="chip open">available</span></div>'
       +'<div class="rbal ok">'+money(r.monthly_rent||775)+'/mo</div></div>').join('')
       :'<div class="note">No open beds — every bed is filled.</div>')+'</div>';
+    return;
+  }
+
+  if(TAB==='ledger'){
+    /* Every payment across every house, newest first. Corrections are new
+       rows, never edits, so this list is the record rather than a summary of
+       one. Voided rows are excluded but still exist. */
+    const rows=PAY.filter(p=>!p.voided&&(!Q||((p.resident_name||'')+' '+(p.house_name||'')+' '+(p.method||'')).toLowerCase().includes(Q.toLowerCase())));
+    const total=rows.reduce((t,p)=>t+(Number(p.amount)||0),0);
+    const now=new Date(), mStart=new Date(now.getFullYear(),now.getMonth(),1).toISOString().slice(0,10);
+    const thisMonth=rows.filter(p=>(p.paid_on||'')>=mStart).reduce((t,p)=>t+(Number(p.amount)||0),0);
+    v.innerHTML='<div class="rows">'
+      +'<div class="row" style="background:rgba(201,169,110,.08)"><div class="rname">'+rows.length+' payment'+(rows.length===1?'':'s')+' recorded</div>'
+      +'<div class="rmeta">This month: <b>'+money(thisMonth)+'</b>. Each row keeps its own date, method and who took it &mdash; which is what makes a balance defensible when somebody disputes it.</div>'
+      +'<div class="rbal ok">'+money(total)+'</div></div>'
+      +(rows.length?rows.slice(0,300).map(p=>
+        '<div class="row"><div class="rname">'+esc(p.resident_name||'')+'</div>'
+        +'<div class="rmeta">'+esc(p.paid_on||'')+' &middot; <span class="chip job">'+esc(p.kind||'rent')+'</span>'
+        +(p.method?' <span class="chip quiet">'+esc(p.method)+'</span>':'')
+        +(p.house_name?' &middot; '+esc(p.house_name):'')
+        +'<br><span style="opacity:.7">taken by '+esc(p.taken_by||'—')+(p.note?' &middot; '+esc(p.note):'')+'</span></div>'
+        +'<div class="rbal ok">'+money(p.amount)+'</div></div>').join('')
+        :'<div class="note">No payments recorded yet. Log one from any resident and it lands here with its date and method.</div>')
+      +'</div>';
     return;
   }
 
@@ -756,7 +811,7 @@ async function load(){
     if(res.status===401||res.status===403){showWelcome('Housing Command', 'Six houses, every bed, every balance, and each resident&rsquo;s house record &mdash; on one screen. Sign in and it is all here.', res.status); return;}
     if(d.error){note.innerHTML='Error: '+esc(d.error)+'<br><br>If this says the table is missing, run <code>1-housing-schema.sql</code> then <code>2-housing-import.sql</code> in Supabase.';return;}
     HOUSES=d.houses||[];RES=d.residents||[];EVENTS=d.events||[];
-    FUNDERS=d.funders||[];APPS=d.applications||[];
+    FUNDERS=d.funders||[];APPS=d.applications||[];PAY=d.payments||[];
     g('viewer').textContent='Signed in as '+(d.viewer||'');
     const filled=RES.filter(r=>!isOpen(r)),open=RES.filter(isOpen);
     const owed=filled.reduce((t,r)=>t+Math.max(bal(r),0),0);

@@ -38,6 +38,21 @@ export async function onRequestPost(context) {
       kind:S(b.kind,40)||'note', amount:N(b.amount), detail:S(b.detail,2000), logged_by:who };
     const r=await fetch(env.SUPABASE_URL+'/rest/v1/house_events',{method:'POST',headers:H,body:JSON.stringify(rec)});
     if(!r.ok){const d=await r.text();return json({ok:false,error:'log failed',detail:d},500);}
+    // A payment gets a proper ledger row as well as an activity entry.
+    // house_events is the feed; payments is the record. Cate asked to see
+    // "each payment made, and by who" - a feed entry cannot carry the method,
+    // the date it was actually taken, or survive a correction, and a running
+    // total on residents cannot be audited at all.
+    if (rec.kind==='payment' && rec.amount) {
+      await fetch(env.SUPABASE_URL+'/rest/v1/payments',{method:'POST',headers:H,body:JSON.stringify({
+        resident_name: rec.resident_name, house_name: rec.house_name,
+        amount: rec.amount,
+        paid_on: S(b.paid_on,20) || new Date().toISOString().slice(0,10),
+        method: S(b.method,30), kind: S(b.pay_kind,20) || 'rent',
+        taken_by: S(b.taken_by,120) || who,
+        reference: S(b.reference,120), note: rec.detail, created_by: who
+      })});
+    }
     // a logged payment also reduces the balance
     if (rec.kind==='payment' && b.resident_id && rec.amount) {
       const g=await fetch(env.SUPABASE_URL+'/rest/v1/residents?id=eq.'+encodeURIComponent(b.resident_id)+'&select=amount_paid',{headers:H});
