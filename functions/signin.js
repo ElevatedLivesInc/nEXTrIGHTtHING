@@ -16,7 +16,7 @@ import { authenticate } from './_lib/auth.js';
 // missing, so staff bounced off those two pages landed on the wrong screen.
 const SAFE = ['/mission-control','/housing','/funding','/intake-queue','/in-kind-report',
               '/donations-report','/admin-issue','/carwash-report','/patrol/run',
-              '/incident-report','/incident-log'];
+              '/incident-report','/incident-log','/case-management'];
 
 function safeNext(raw) {
   const next = raw || '/mission-control';

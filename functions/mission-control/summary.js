@@ -27,11 +27,14 @@ export async function onRequestGet(context) {
   const get = async (path)=>{ try{ const r=await fetch(env.SUPABASE_URL+'/rest/v1/'+path,{headers:h}); return r.ok? await r.json():[]; }catch(_){ return []; } };
 
   const none = async ()=>[];
-  const [intake, inkind, apps, residents] = await Promise.all([
+  const [intake, inkind, apps, residents, caseRes, notes] = await Promise.all([
     canClient ? get('intake_requests?select=id,status,last_use,created_at&limit=1000') : none(),
     canDonor  ? get('authorizations?select=id,status,donor_value&limit=1000') : none(),
     canClient ? get('funding_applications?select=id,status,coverage_end,resident_name&limit=1000') : none(),
-    canClient ? get('residents?select=status,past_due,current_due,amount_paid,monthly_rent&limit=1000') : none()
+    canClient ? get('residents?select=status,past_due,current_due,amount_paid,monthly_rent&limit=1000') : none(),
+    // Name and dates only - the case management tile never needs a balance.
+    canClient ? get('residents?select=name,status,move_out_date,last_contact,last_talked&limit=1000') : none(),
+    canClient ? get('case_notes?select=resident_name,note_date,next_step,next_step_due&order=note_date.desc&limit=2000') : none()
   ]);
 
   const openIntake = intake.filter(r=>(r.status||'new')!=='closed');
@@ -43,9 +46,21 @@ export async function onRequestGet(context) {
   const openB=(residents||[]).filter(r=>(r.status||'')==='open');
   const outstanding=filled.reduce((t,r)=>t+Math.max((Number(r.past_due)||0)+(Number(r.current_due)||0)-(Number(r.amount_paid)||0),0),0);
 
+  // Case management: how many people are current on contact, and how much has
+  // been promised in a note and then missed.
+  const DAY=86400000, nowT=Date.now();
+  const activeClients=(caseRes||[]).filter(r=>!r.move_out_date&&(r.status||'active')!=='open');
+  const touch=r=>{
+    const own=(notes||[]).filter(n=>(n.resident_name||'').trim().toLowerCase()===(r.name||'').trim().toLowerCase());
+    return [own.length?own[0].note_date:null, r.last_contact, r.last_talked].filter(Boolean).sort().pop()||null;
+  };
+  const staleClients=activeClients.filter(r=>{const t=touch(r); return !t || (nowT-new Date(t+'T00:00:00').getTime())/DAY > 7;});
+  const overdueSteps=(notes||[]).filter(n=>n.next_step && n.next_step_due && new Date(n.next_step_due+'T00:00:00').getTime() < nowT);
+
   return json({
     viewer: who,
     scopes,
+    caseload: { active:activeClients.length, stale:staleClients.length, overdue:overdueSteps.length },
     housing: residents.length? { beds:residents.length, filled:filled.length, openBeds:openB.length,
       occupancy: Math.round(filled.length/residents.length*100), outstanding } : {},
     intake: { total:intake.length, open:openIntake.length, new:intake.filter(r=>(r.status||'new')==='new').length, urgent:hot.length, intaked:intake.filter(r=>r.status==='intaked').length },
