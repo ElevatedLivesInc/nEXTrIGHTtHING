@@ -41,7 +41,7 @@ export async function onRequestGet(context) {
   const h = { 'apikey':env.SUPABASE_SERVICE_ROLE_KEY, 'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY };
   const get = async p => { try { const r = await fetch(env.SUPABASE_URL+'/rest/v1/'+p,{headers:h}); return r.ok ? await r.json() : []; } catch(_) { return []; } };
 
-  const [clients, notes, goals, meetings, docs, apps, funders] = await Promise.all([
+  const [clients, notes, goals, meetings, docs, apps, funders, work, compliance] = await Promise.all([
     get('residents?select='+RESIDENT_COLS+'&limit=1000'),
     get('case_notes?select=*&order=note_date.desc&limit=2000'),
     get('client_goals?select=*&order=created_at.desc&limit=2000'),
@@ -50,8 +50,10 @@ export async function onRequestGet(context) {
     // fetched through a signed URL when someone actually opens one.
     get('documents?select=id,resident_name,doc_type,title,file_path,mime_type,size_bytes,signed_on,expires_on,uploaded_by,uploaded_at,notes&order=uploaded_at.desc&limit=2000'),
     get('funding_applications?select=*&order=created_at.desc&limit=1000'),
-    get('funders?select=*&order=name.asc&limit=500')
+    get('funders?select=*&order=name.asc&limit=500'),
+    get('work_signups?select=*&order=created_at.desc&limit=1000'),
+    get('compliance_items?select=*&order=expires_on.asc&limit=500')
   ]);
 
-  return json({ viewer:who, clients, notes, goals, meetings, documents:docs, applications:apps, funders });
+  return json({ viewer:who, clients, notes, goals, meetings, documents:docs, applications:apps, funders, work, compliance });
 }

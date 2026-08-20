@@ -43,14 +43,17 @@ export async function onRequest(context) {
   const h={ 'apikey':env.SUPABASE_SERVICE_ROLE_KEY,'Authorization':'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY };
   const get=async p=>{ try{const r=await fetch(env.SUPABASE_URL+'/rest/v1/'+p,{headers:h}); return r.ok? await r.json():[];}catch(_){return [];} };
 
-  const [intake, inkind, apps, residents, events, incidents, concerns] = await Promise.all([
+  const [intake, inkind, apps, residents, events, incidents, concerns, compliance, docs, crew] = await Promise.all([
     get('intake_requests?select=*&limit=1000'),
     get('authorizations?select=*&limit=1000'),
     get('funding_applications?select=*&limit=1000'),
     get('residents?select=*&limit=1000'),
     get('house_events?select=*&order=created_at.desc&limit=500'),
     get('incidents?select=*&order=incident_date.desc&limit=500'),
-    get('concerns?select=*&order=submitted_at.desc&limit=300')
+    get('concerns?select=*&order=submitted_at.desc&limit=300'),
+    get('compliance_items?select=*&limit=500'),
+    get('documents?select=resident_name,doc_type,title,expires_on&limit=2000'),
+    get('work_signups?select=*&limit=500')
   ]);
 
   const now=Date.now(), DAY=86400000;
@@ -249,12 +252,58 @@ export async function onRequest(context) {
         ? '<div style="background:#eef7f1;border-left:3px solid #78c896;padding:.8rem 1rem;border-radius:0 6px 6px 0;margin-bottom:1rem;color:#2f6b4a;font-size:.9rem">Nothing is overdue and every critical incident has been reported. Keep it there.</div>'
         : '') + incidentBlock);
 
+  // ---------- CHECKS AND BALANCES ----------
+  // Insurance, licences and registrations do not announce themselves when they
+  // lapse. They are fine right up until somebody asks for proof. Sixty days is
+  // enough notice to renew without paying a rush fee or pausing work.
+  const ENTITY={treatment_center:'Treatment Center',nonprofit:'Nonprofit (501c3)',rent_a_husband:'Rent A Husband',other:'Other'};
+  const compLive=(compliance||[]).filter(c=>c.status!=='cancelled'&&c.status!=='not_required');
+  const compExpired=compLive.filter(c=>c.expires_on&&until(c.expires_on)<0);
+  const compSoon=compLive.filter(c=>c.expires_on&&until(c.expires_on)>=0&&until(c.expires_on)<=60)
+    .sort((a,b)=>until(a.expires_on)-until(b.expires_on));
+  const compNoDate=compLive.filter(c=>!c.expires_on);
+  const compLapsed=compLive.filter(c=>c.status==='lapsed'||c.status==='pending');
+
+  // Rent A Husband specifically: if its insurance or licence is not current,
+  // crews should not be on somebody's roof, and that is a Cate and Gabe
+  // decision rather than a discovery made afterwards.
+  const rahItems=compLive.filter(c=>c.entity==='rent_a_husband');
+  const rahBad=rahItems.filter(c=>c.status!=='active'||(c.expires_on&&until(c.expires_on)<0));
+  const rahOk=rahItems.length&&!rahBad.length;
+
+  const docExpired=(docs||[]).filter(d=>d.expires_on&&until(d.expires_on)<0);
+  const docSoon=(docs||[]).filter(d=>d.expires_on&&until(d.expires_on)>=0&&until(d.expires_on)<=30)
+    .sort((a,b)=>until(a.expires_on)-until(b.expires_on));
+
+  const crewPending=(crew||[]).filter(c=>['new','screening'].includes(c.status)&&age(c.created_at)>=3);
+  const crewBgStuck=(crew||[]).filter(c=>(c.background_ok||'unknown')!=='cleared'&&c.status==='placed');
+
+  const complianceBody = wrap('Checks &amp; Balances',
+    (rahItems.length
+      ? '<div style="border-left:4px solid '+(rahOk?'#2f7d4f':'#b23a3a')+';background:'+(rahOk?'#f2f8f4':'#fdf2f2')+';padding:.7rem 1rem;margin-bottom:1rem;font-size:.92rem">'
+        +'<b>Rent A Husband:</b> '+(rahOk
+          ? 'all '+rahItems.length+' item'+(rahItems.length===1?'':'s')+' current. Crews are clear to work.'
+          : rahBad.length+' item'+(rahBad.length===1?' is':'s are')+' not current &mdash; '+rahBad.map(c=>c.name).join(', ')+'. Decide before crews go out.')
+        +'</div>'
+      : '<div style="border-left:4px solid #c9a96e;background:#fdfaf4;padding:.7rem 1rem;margin-bottom:1rem;font-size:.92rem">'
+        +'<b>Rent A Husband:</b> nothing on file yet. Add the LLC registration, the liability policy and any licence so this can be verified rather than assumed.</div>') +
+    sec('EXPIRED &mdash; act today', compExpired.map(c=>li('<b>'+(ENTITY[c.entity]||c.entity)+'</b> &mdash; '+c.name+(c.provider?' ('+c.provider+')':'')+' expired '+c.expires_on+', '+Math.abs(until(c.expires_on))+' days ago'))) +
+    sec('Expiring within 60 days', compSoon.map(c=>li('<b>'+(ENTITY[c.entity]||c.entity)+'</b> &mdash; '+c.name+' expires '+c.expires_on+' ('+until(c.expires_on)+' days)'+(c.policy_number?' &middot; #'+c.policy_number:'')))) +
+    sec('Marked pending or lapsed', compLapsed.map(c=>li((ENTITY[c.entity]||c.entity)+' &mdash; '+c.name+' is '+c.status))) +
+    sec('No expiry date recorded', compNoDate.map(c=>li((ENTITY[c.entity]||c.entity)+' &mdash; '+c.name+' &middot; add a date so this can be watched'))) +
+    sec('Resident documents expired', docExpired.slice(0,15).map(d=>li('<b>'+d.resident_name+'</b> &mdash; '+d.doc_type+(d.title?' ('+d.title+')':'')+' expired '+d.expires_on))) +
+    sec('Resident documents expiring within 30 days', docSoon.slice(0,15).map(d=>li('<b>'+d.resident_name+'</b> &mdash; '+d.doc_type+' expires '+d.expires_on+' ('+until(d.expires_on)+' days)'))) +
+    sec('Crew placed without a cleared background check', crewBgStuck.map(c=>li('<b>'+c.name+'</b> &mdash; working, background is '+(c.background_ok||'unknown')))) +
+    sec('Crew signups waiting 3+ days', crewPending.map(c=>li(c.name+' &mdash; '+c.status+' since '+String(c.created_at||'').slice(0,10)+(c.phone?' &middot; '+c.phone:''))))
+  );
+
   const messages = [
     { to:TEAM.intake, subject:'Intake Brief &mdash; '+urgentStale.length+' urgent, '+newOvernight.length+' new', html:intakeBody },
     { to:TEAM.donations, subject:'Donations Brief &mdash; '+unredeemed.length+' codes awaiting receipts', html:donationBody },
     { to:TEAM.housing, subject:'House Brief &mdash; '+onNotice.length+' on notice, '+openBeds.length+' open beds', html:houseBody },
     { to:TEAM.funding, subject:'Funding Brief &mdash; '+expiring.length+' coverage'+(expiring.length===1?'':'s')+' ending within 30 days', html:fundingBody },
     { to:TEAM.leadership, subject:'Incident & Compliance Brief &mdash; '+incCritOpen.length+' critical unreported, '+voiceNew.length+' Speak Up', html:incidentBody },
+    { to:TEAM.leadership, subject:'Checks &amp; Balances &mdash; '+(compExpired.length+docExpired.length)+' expired, '+compSoon.length+' expiring within 60 days', html:complianceBody },
     { to:TEAM.leadership, subject:'Daily Command Brief &mdash; The Next Right Thing', html:leadershipBody }
   ];
 

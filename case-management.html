@@ -74,6 +74,8 @@
     <button class="tab" data-t="goals">Goals</button>
     <button class="tab" data-t="meetings">Meeting Log</button>
     <button class="tab" data-t="needs">Needs &amp; Services</button>
+    <button class="tab" data-t="work">Work Crew</button>
+    <button class="tab" data-t="compliance">Checks &amp; Balances</button>
     <button class="tab" data-t="docs">Documents</button>
     <input id="q" placeholder="Search client, house…" style="max-width:280px">
   </div>
@@ -145,7 +147,7 @@
 </div></div>
 
 <script>
-let CLIENTS=[],NOTES=[],GOALS=[],MEET=[],DOCS=[],APPS=[],FUNDERS=[],TAB='caseload',Q='',CUR=null;
+let CLIENTS=[],NOTES=[],GOALS=[],MEET=[],DOCS=[],APPS=[],FUNDERS=[],WORK=[],COMP=[],TAB='caseload',Q='',CUR=null;
 const g=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
@@ -281,6 +283,78 @@ function render(){
     ).join(''):'<div class="note">No meetings logged yet. Every one you log here keeps its own date, which a counter never could.</div>')+'</div>';
     return;
   }
+  if(TAB==='compliance'){
+    /* Insurance, licences, registrations. None of them announce themselves
+       when they lapse - they are simply fine until somebody asks for proof.
+       The patrol agent reads the same rows every morning and mails Cate and
+       Gabe, so an expiry arrives as notice rather than as a discovery. */
+    const ENT={treatment_center:'Treatment Center',nonprofit:'Nonprofit 501(c)(3)',rent_a_husband:'Rent A Husband',other:'Other'};
+    const live=COMP.filter(c=>c.status!=='cancelled'&&c.status!=='not_required'&&(!Q||((c.name||'')+' '+(c.provider||'')+' '+(ENT[c.entity]||'')).toLowerCase().includes(Q.toLowerCase())));
+    const rank=c=>{const d=daysUntil(c.expires_on);return d===null?9999:d;};
+    const sorted=live.slice().sort((a,b)=>rank(a)-rank(b));
+    const bad=live.filter(c=>{const d=daysUntil(c.expires_on);return (d!==null&&d<0)||c.status==='lapsed';});
+    v.innerHTML='<div class="rows">'
+      +'<div class="row" style="background:rgba(201,169,110,.08);cursor:default"><div class="rname">'+(bad.length?bad.length+' not current':'All current')+'</div>'
+      +'<div class="rmeta">The patrol agent mails this list to Cate and Gabe every morning. Anything expiring inside 60 days shows up there before it shows up as a problem.</div>'
+      +'<div class="rside">'+live.length+' tracked</div></div>'
+      +(sorted.length?sorted.map(c=>{
+        const d=daysUntil(c.expires_on);
+        const cls=(d!==null&&d<0)||c.status==='lapsed'?'bad':(d!==null&&d<=60?'warn':(c.status==='pending'?'warn':'ok'));
+        return '<div class="row" style="cursor:default"><div class="rname">'+esc(ENT[c.entity]||c.entity)+'</div>'
+        +'<div class="rmeta"><b>'+esc(c.name)+'</b> <span class="chip info">'+esc(c.item_type)+'</span> <span class="chip '+cls+'">'+esc(c.status)+'</span>'
+        +(c.provider?'<br><span style="opacity:.75">'+esc(c.provider)+(c.policy_number?' · #'+esc(c.policy_number):'')+'</span>':'')
+        +(c.owner?'<br><span style="opacity:.6">owner: '+esc(c.owner)+'</span>':'')+'</div>'
+        +'<div class="rside">'+(c.expires_on
+            ? '<span class="chip '+cls+'">'+(d<0?Math.abs(d)+'d expired':(d===0?'expires today':'in '+d+'d'))+'</span><br><span style="opacity:.6">'+esc(c.expires_on)+'</span>'
+            : '<span class="chip warn">no expiry set</span>')+'</div></div>';
+      }).join(''):'<div class="note">Nothing tracked yet. Add the Rent A Husband LLC registration and liability policy first — those are the ones that stop crews working.</div>')
+      +'<div class="row" style="cursor:default;border-style:dashed"><div class="rname">Add an item</div>'
+      +'<div class="rmeta"><div class="three">'
+      +'<div class="fld"><label>Entity</label><select id="k_ent"><option value="treatment_center">Treatment Center</option><option value="nonprofit">Nonprofit 501(c)(3)</option><option value="rent_a_husband">Rent A Husband</option><option value="other">Other</option></select></div>'
+      +'<div class="fld"><label>Type</label><select id="k_type"><option>insurance</option><option>license</option><option>registration</option><option>certification</option><option>lease</option><option>contract</option><option>inspection</option><option>other</option></select></div>'
+      +'<div class="fld"><label>Expires</label><input id="k_exp" type="date"></div></div>'
+      +'<div class="two"><div class="fld"><label>Name</label><input id="k_name" placeholder="e.g. General liability policy"></div>'
+      +'<div class="fld"><label>Provider / number</label><input id="k_prov" placeholder="Acuity · GL-88213"></div></div>'
+      +'</div><div class="rside"><button class="btn" onclick="saveComp(this)">Add</button></div></div>'
+      +'</div>';
+    return;
+  }
+
+  if(TAB==='work'){
+    /* Rent A Husband signups. A name on this list is somebody who asked for
+       work, which is a different and better problem than somebody who has not.
+       Marking them placed writes employment back onto their resident record,
+       so the readiness board stops asking for a job that now exists. */
+    const rows=WORK.filter(w=>!Q||((w.name||'')+' '+(w.skills||'')+' '+(w.status||'')).toLowerCase().includes(Q.toLowerCase()));
+    const waiting=rows.filter(w=>['new','screening','ready'].includes(w.status));
+    const S=['new','screening','ready','placed','paused','declined'];
+    const B=['unknown','pending','cleared','barred'];
+    v.innerHTML='<div class="rows">'
+      +'<div class="row" style="background:rgba(201,169,110,.08);cursor:default"><div class="rname">'+waiting.length+' waiting on a shift</div>'
+      +'<div class="rmeta">Rent A Husband &mdash; handyman crews across the Salt Lake Valley, run by Koby. Licensed, insured, an LLC, backed by a recovery center. <a href="/work-signup" target="_blank" style="color:var(--sand)">signup form &rarr;</a></div>'
+      +'<div class="rside">'+rows.length+' total</div></div>'
+      +(rows.length?rows.map(w=>{
+        const cls=w.status==='placed'?'ok':(w.status==='declined'?'bad':'warn');
+        return '<div class="row" style="cursor:default"><div class="rname">'+esc(w.name||'')+'</div>'
+        +'<div class="rmeta">'
+        +(w.phone?'<a href="tel:'+esc(String(w.phone).replace(/[^0-9+]/g,''))+'" style="color:var(--sandl)">'+esc(w.phone)+'</a> · ':'')
+        +esc(w.house_name||'no house given')
+        +(w.availability?' · '+esc(w.availability):'')+(w.hours_wanted?' · '+esc(w.hours_wanted):'')
+        +(w.has_transport?' <span class="chip ok">has a ride</span>':' <span class="chip warn">needs a ride</span>')
+        +(w.has_tools?' <span class="chip ok">has tools</span>':'')
+        +(w.skills?'<br><span style="opacity:.78">'+esc(w.skills)+'</span>':'')
+        +(w.notes?'<br><span style="opacity:.6">'+esc(w.notes)+'</span>':'')
+        +'<br><span class="chip '+cls+'">'+esc(w.status)+'</span> <span class="chip info">background: '+esc(w.background_ok||'unknown')+'</span>'
+        +'<div style="display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap">'
+        +'<select onchange="setWork(\''+w.id+'\',\'status\',this.value,this)">'+S.map(x=>'<option'+(x===w.status?' selected':'')+'>'+x+'</option>').join('')+'</select>'
+        +'<select onchange="setWork(\''+w.id+'\',\'background_ok\',this.value,this)">'+B.map(x=>'<option'+(x===(w.background_ok||'unknown')?' selected':'')+'>'+x+'</option>').join('')+'</select>'
+        +'</div></div>'
+        +'<div class="rside">'+esc((w.created_at||'').slice(0,10))+'</div></div>';
+      }).join(''):'<div class="note">Nobody has signed up yet. The form is at /work-signup — put it on the fridge in every house.</div>')
+      +'</div>';
+    return;
+  }
+
   if(TAB==='needs'){
     /* Sorted by who has the most unresolved. A caseload of open needs is the
        actual work; the client list is just the index to it. */
@@ -393,6 +467,36 @@ function saveNeeds(b){
   send({what:'client',id:CUR.id,case_needs:needs,case_followup_date:g('c_followup').value},b);
 }
 
+/* Matching a signup to a resident row by name is what lets "placed" write
+   employment back onto the readiness board. If the names do not match, the
+   signup still stands - it just does not update anyone's record. */
+async function setWork(id,field,value,el){
+  const w=WORK.find(x=>x.id===id)||{};
+  const who=CLIENTS.find(c=>(c.name||'').trim().toLowerCase()===(w.name||'').trim().toLowerCase());
+  el.disabled=true;
+  const body={what:'work',id:id};
+  body[field]=value;
+  if(field==='status'&&value==='placed'){ body.resident_id=who?who.id:null; body.resident_name=who?who.name:null; }
+  try{
+    const r=await fetch('/case/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||d.ok===false) alert('Could not save'+(d.error?': '+d.error:''));
+    else if(field==='status'&&value==='placed'&&!who) alert('Saved. No resident record matches "'+w.name+'", so nobody\'s employment status was updated — match the name and set it again if they are one of ours.');
+    await load(true);
+  }catch(_){ alert('Could not save — check your connection.'); }
+  el.disabled=false;
+}
+
+async function saveComp(btn){
+  const name=g('k_name').value.trim();
+  if(!name) return alert('Give it a name.');
+  const prov=g('k_prov').value.split('·');
+  const okDone=await send({what:'compliance',entity:g('k_ent').value,item_type:g('k_type').value,
+    name:name, provider:(prov[0]||'').trim(), policy_number:(prov[1]||'').trim(),
+    expires_on:g('k_exp').value},btn);
+  if(okDone) render();
+}
+
 function showWelcome(status){
   const el=g('note'); el.style.display='block';
   el.innerHTML='<div style="max-width:520px;margin:2rem auto;text-align:center">'
@@ -416,7 +520,7 @@ async function load(quiet){
     const d=await res.json();
     if(d.error){g('note').textContent='Error: '+d.error;return;}
     CLIENTS=d.clients||[];NOTES=d.notes||[];GOALS=d.goals||[];MEET=d.meetings||[];
-    DOCS=d.documents||[];APPS=d.applications||[];FUNDERS=d.funders||[];
+    DOCS=d.documents||[];APPS=d.applications||[];FUNDERS=d.funders||[];WORK=d.work||[];COMP=d.compliance||[];
     g('viewer').textContent='Signed in as '+(d.viewer||'');
     g('tabs').style.display='flex'; stats(); render();
   }catch(_){ if(!quiet) g('note').textContent='Could not load. Check your connection and reload.'; }

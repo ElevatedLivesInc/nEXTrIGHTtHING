@@ -89,6 +89,36 @@ export async function onRequestPost(context) {
     }));
   }
 
+  if (what === 'work') {
+    if (!b.id) return json({ok:false,error:'id required'},400);
+    const rec = { status:S(b.status,20), background_ok:S(b.background_ok,20),
+      first_shift_date:S(b.first_shift_date,20), resident_name:S(b.resident_name,160),
+      notes:S(b.notes,2000), updated_by:who };
+    Object.keys(rec).forEach(k=>{ if(rec[k]==null) delete rec[k]; });
+    const r = await patch('work_signups', b.id, rec);
+    if (!r.ok) return json({ok:false,error:'write failed',detail:await r.text()},500);
+    // Placing somebody on the crew is the moment "unemployed" stops being true.
+    // Write it back to the resident record so the readiness board and the
+    // morning brief both stop nagging about a job that now exists.
+    if (rec.status === 'placed' && b.resident_id) {
+      await patch('residents', b.resident_id, {
+        employed: true, employer: 'Rent A Husband',
+        job_start_date: rec.first_shift_date || new Date().toISOString().slice(0,10)
+      });
+    }
+    return json({ ok:true });
+  }
+
+  if (what === 'compliance') {
+    if (b.action === 'delete') { if(!b.id) return json({ok:false,error:'id required'},400); return done(await del('compliance_items', b.id)); }
+    const rec = { entity:S(b.entity,30)||'treatment_center', item_type:S(b.item_type,30)||'other',
+      name:S(b.name,300), provider:S(b.provider,200), policy_number:S(b.policy_number,120),
+      coverage:S(b.coverage,300), effective_on:S(b.effective_on,20), expires_on:S(b.expires_on,20),
+      status:S(b.status,20)||'active', owner:S(b.owner,160), notes:S(b.notes,2000), updated_by:who };
+    if (!rec.name) return json({ok:false,error:'name required'},400);
+    return done(b.id ? await patch('compliance_items', b.id, rec) : await post('compliance_items', rec));
+  }
+
   if (what === 'client') {
     if (!b.id) return json({ok:false,error:'id required'},400);
     const rec = {};
