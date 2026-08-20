@@ -52,6 +52,7 @@
   .qstat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:.8rem 1rem;text-align:center;}
   .qstat .n{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--sand-light);}
   .qstat .l{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.2rem;}
+  .qstat.bad{border-color:rgba(224,120,120,.5);} .qstat.bad .n{color:#f0b6b6;}
   .nf{margin-bottom:.65rem;}
   .nf label{display:block;font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.22rem;}
   .nf input,.nf select,.nf textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;padding:.48rem .65rem;}
@@ -72,6 +73,7 @@
     <div class="qstat"><div class="n" id="qHot">0</div><div class="l">Reach Out 24h</div></div>
     <div class="qstat"><div class="n" id="qReady">0</div><div class="l">Ready For Intake</div></div>
     <div class="qstat"><div class="n" id="qIntaked">0</div><div class="l">Intaked</div></div>
+    <div class="qstat bad"><div class="n" id="qUnfunded">0</div><div class="l">No Funding Path</div></div>
   </div>
   <div class="bar" id="filters" style="display:none">
     <button class="fbtn active" data-f="open">Open</button>
@@ -217,6 +219,7 @@ function updateStats(){
   document.getElementById('qHot').textContent=open.filter(r=>triage(r).some(x=>x.c==='hot')).length;
   document.getElementById('qReady').textContent=open.filter(r=>isReady(r)&&(r.status||'new')!=='intaked').length;
   document.getElementById('qIntaked').textContent=DATA.filter(r=>(r.status||'new')==='intaked').length;
+  document.getElementById('qUnfunded').textContent=open.filter(r=>fundingPath(r).c==='hot').length;
   document.getElementById('qstats').style.display='grid';
 }
 function copySummary(id,btn){
@@ -265,10 +268,15 @@ function triage(r){
   return f;
 }
 
+function daysSince(iso){ if(!iso) return null; try{ return Math.floor((new Date()-new Date(iso))/86400000); }catch(_){ return null; } }
+
 /* The funding conversation belongs on the first call, not after admission.
    By the time somebody is in a bed, the question "who is paying" has usually
    already been answered badly. This turns what they told the form into the
-   next concrete step. */
+   next concrete step. Every "hot" reason also carries how long it's been
+   sitting there — a gap that's invisible today, since a person with no
+   application logged just disappears into the queue until someone opens
+   their card and thinks to check. */
 function fundingPath(r){
   const name=((r.first_name||'')+' '+(r.last_name||'')).trim().toLowerCase();
   const logged=APPS.filter(a=>(a.resident_name||'').trim().toLowerCase()===name);
@@ -277,14 +285,16 @@ function fundingPath(r){
     if(approved.length) return {c:'ready',t:'Funded — '+esc(approved[0].funder_name||'')};
     return {c:'warm',t:logged.length+' application'+(logged.length===1?'':'s')+' logged — '+esc(logged[0].status||'applied')};
   }
+  const days=daysSince(r.created_at);
+  const age=(days!==null&&days>=1)?(' ('+days+' day'+(days===1?'':'s')+', no application)'):'';
   const ins=(r.insurance||'').toLowerCase();
   const active=FUNDERS.filter(f=>f.active!==false);
   if(ins==='medicaid')          return {c:'ready',t:'Medicaid — verify eligibility and level of care'};
   if(ins==='medicare')          return {c:'ready',t:'Medicare — run the benefits check'};
   if(ins==='private insurance') return {c:'ready',t:'Private insurance — run the benefits check'};
-  if(ins==='no insurance')      return {c:'hot',t:active.length?('Uninsured — '+active.length+' scholarship funder'+(active.length===1?'':'s')+' to try today'):'Uninsured — no funders on file yet'};
-  if(ins==='not sure')          return {c:'hot',t:'Insurance unconfirmed — settle it before the call ends'};
-  return {c:'hot',t:'No funding path yet — nobody is paying for this bed'};
+  if(ins==='no insurance')      return {c:'hot',t:(active.length?('Uninsured — '+active.length+' scholarship funder'+(active.length===1?'':'s')+' to try today'):'Uninsured — no funders on file yet')+age};
+  if(ins==='not sure')          return {c:'hot',t:'Insurance unconfirmed — settle it before the call ends'+age};
+  return {c:'hot',t:'No funding path yet — nobody is paying for this bed'+age};
 }
 
 function render(){

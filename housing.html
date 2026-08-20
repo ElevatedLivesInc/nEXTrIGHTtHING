@@ -693,6 +693,7 @@ function render(){
       +' &middot; '+(due?('<b'+(due.overdue?' style="color:#f0b6b6"':'')+'>'+due.text+'</b>'):'<span class="chip warn2">no follow-up set</span>')
       +(open.length?'<br><span style="opacity:.7">Open: '+esc(open.slice(0,4).map(k=>NEED_LABEL[k]).join(', '))+(open.length>4?' +'+(open.length-4)+' more':'')+'</span>'
         :'<br><span class="chip job">no open needs</span>')
+      +recoupLine(r)
       +'</div>'
       +'<div class="rbal '+(open.length?'owe':'ok')+'">'+open.length+' open</div></div>';
     }).join(''):'<div class="note">No residents to show.</div>')+'</div>';
