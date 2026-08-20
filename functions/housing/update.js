@@ -82,6 +82,7 @@ export async function onRequestPost(context) {
     let kind='note', detail=S(b.detail,2000)||'';
 
     switch(b.quick){
+      case 'talked':
       case 'talk':
         patch.last_talked=today; kind='welfare';
         detail=detail||'Checked in with resident'; break;

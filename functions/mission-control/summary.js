@@ -31,7 +31,7 @@ export async function onRequestGet(context) {
     canClient ? get('intake_requests?select=id,status,last_use,created_at&limit=1000') : none(),
     canDonor  ? get('authorizations?select=id,status,donor_value&limit=1000') : none(),
     canClient ? get('funding_applications?select=id,status,coverage_end,resident_name&limit=1000') : none(),
-    canClient ? get('residents?select=status,past_due,current_due,amount_paid,monthly_rent&limit=1000') : none(),
+    canClient ? get('residents?select=status,past_due,current_due,amount_paid,monthly_rent,move_out_date,last_talked,on_notice&limit=1000') : none(),
     // Name and dates only - the case management tile never needs a balance.
     canClient ? get('residents?select=name,status,move_out_date,last_contact,last_talked&limit=1000') : none(),
     canClient ? get('case_notes?select=resident_name,note_date,next_step,next_step_due&order=note_date.desc&limit=2000') : none()
@@ -61,6 +61,15 @@ export async function onRequestGet(context) {
     viewer: who,
     scopes,
     caseload: { active:activeClients.length, stale:staleClients.length, overdue:overdueSteps.length },
+    rounds: (function(){
+      const iso=new Date(nowT).toISOString().slice(0,10);
+      const here=(residents||[]).filter(r=>(r.status||'active')!=='open'&&!r.move_out_date);
+      return {
+        left: here.filter(r=>r.last_talked!==iso).length,
+        quiet: here.filter(r=>!r.last_talked||(nowT-new Date(r.last_talked+'T00:00:00').getTime())/DAY>14).length,
+        notice: here.filter(r=>r.on_notice).length
+      };
+    })(),
     housing: residents.length? { beds:residents.length, filled:filled.length, openBeds:openB.length,
       occupancy: Math.round(filled.length/residents.length*100), outstanding } : {},
     intake: { total:intake.length, open:openIntake.length, new:intake.filter(r=>(r.status||'new')==='new').length, urgent:hot.length, intaked:intake.filter(r=>r.status==='intaked').length },
