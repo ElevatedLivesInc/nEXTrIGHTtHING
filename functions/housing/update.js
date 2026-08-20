@@ -61,12 +61,16 @@ export async function onRequestPost(context) {
       case 'peer_meeting':
         patch.peer_meetings=pm+1; patch.last_meeting=today;
         kind='meeting'; detail=detail||'Attended peer support meeting'; break;
+      // "clean"/"dirty" describe a person; "negative"/"positive" describe a test.
+      // The old keys stay accepted so a stale browser tab cannot 400.
+      case 'ua_negative':
       case 'ua_clean':
-        patch.last_ua=today; patch.ua_result='clean';
-        kind='ua'; detail=detail||'UA clean'; break;
+        patch.last_ua=today; patch.ua_result='negative';
+        kind='ua'; detail=detail||'UA negative'; break;
+      case 'ua_positive':
       case 'ua_dirty':
-        patch.last_ua=today; patch.ua_result='dirty';
-        kind='ua'; detail=detail||'UA dirty'; break;
+        patch.last_ua=today; patch.ua_result='positive';
+        kind='ua'; detail=detail||'UA positive'; break;
       case 'warn':
         patch.warnings=(Number(cur.warnings)||0)+1;
         patch.last_warning=today; patch.last_talked=today;

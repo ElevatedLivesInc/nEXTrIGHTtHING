@@ -119,6 +119,8 @@
     <button class="tab" data-t="collect">Collection Board</button>
     <button class="tab" data-t="success">Success Records</button>
     <button class="tab" data-t="beds">Open Beds</button>
+    <button class="tab" data-t="moveouts">Move-Outs Owing</button>
+    <button class="tab" data-t="readiness">Readiness</button>
     <input id="q" placeholder="Search resident, house, room…">
     <button class="btn" onclick="window.print()">Print</button>
     <button class="btn" onclick="exportCSV()">CSV</button>
@@ -189,8 +191,8 @@
       <button class="qabtn" onclick="quick('talk',this)">Talked to</button>
       <button class="qabtn good" onclick="quick('house_meeting',this)">House meeting</button>
       <button class="qabtn good" onclick="quick('peer_meeting',this)">Peer meeting</button>
-      <button class="qabtn good" onclick="quick('ua_clean',this)">UA clean</button>
-      <button class="qabtn bad" onclick="quick('ua_dirty',this)">UA dirty</button>
+      <button class="qabtn good" onclick="quick('ua_negative',this)">UA negative</button>
+      <button class="qabtn bad" onclick="quick('ua_positive',this)">UA positive</button>
       <button class="qabtn warn" onclick="quick('warn',this)">Warning</button>
       <button class="qabtn" onclick="quick('undo_warn',this)">Undo warning</button>
       <button class="qabtn bad" id="qaNotice" onclick="quick('notice',this)">Put on notice</button>
@@ -207,7 +209,7 @@
     </div>
     <div class="three">
       <div class="fld"><label>Last UA</label><input id="r_lastua" type="date"></div>
-      <div class="fld"><label>UA result</label><select id="r_uares"><option value="">—</option><option value="clean">Clean</option><option value="dirty">Dirty</option><option value="refused">Refused</option></select></div>
+      <div class="fld"><label>UA result</label><select id="r_uares"><option value="">—</option><option value="negative">Negative</option><option value="positive">Positive</option><option value="refused">Refused</option></select></div>
       <div class="fld"><label>&nbsp;</label>
         <div class="checks" style="padding-top:.4rem">
           <label><input type="checkbox" id="r_curfew"> Curfew ok</label>
@@ -298,8 +300,34 @@ function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':
 function n(v){return Number(v)||0;}
 function money(v){return '$'+n(v).toLocaleString('en-US',{maximumFractionDigits:0});}
 function bal(r){return n(r.past_due)+n(r.current_due)-n(r.amount_paid);}
+/* "Clean" and "dirty" describe a person; "negative" and "positive" describe a
+   test. Rows saved before this change still carry the old words, so translate
+   rather than leaving two vocabularies on screen. */
+function uaWord(v){return v==='clean'?'negative':v==='dirty'?'positive':(v||'');}
 function until(d){if(!d)return null;try{return Math.ceil((new Date(d+'T00:00:00')-new Date())/86400000);}catch(_){return null;}}
 function isOpen(r){return (r.status||'')==='open';}
+
+/* The one next action for this person, chosen by what actually blocks them.
+   Ordered by consequence, not by convenience: money running out beats
+   paperwork, and paperwork beats savings, because you cannot open a bank
+   account without ID and you cannot rent your own place without a bank account.
+   Rank 0-1 is urgent, everything above is the steady climb. */
+function nextStep(r){
+  const cliff=until(r.funding_end);
+  if(cliff!==null&&cliff<=30&&cliff>=0)
+    return {rank:0,label:'Reapply for funding — coverage ends in '+cliff+' day'+(cliff===1?'':'s'),short:cliff+'d'};
+  if(cliff!==null&&cliff<0)
+    return {rank:0,label:'Funding already lapsed — find the next funder',short:'lapsed'};
+  if(!r.has_id)          return {rank:1,label:'Get a state ID — everything else is locked behind it',short:'ID'};
+  if(!r.has_ss_card)     return {rank:2,label:'Request Social Security card',short:'SS'};
+  if(!r.has_birth_cert)  return {rank:3,label:'Order birth certificate',short:'BC'};
+  if(!r.bank_account)    return {rank:4,label:'Open a second-chance bank account',short:'bank'};
+  if(!r.employed)        return {rank:5,label:'Job search — resume, applications, interview clothes',short:'job'};
+  if(!r.certifications)  return {rank:6,label:'Enroll in a certification or trade course',short:'cert'};
+  if(!n(r.savings_balance)) return {rank:7,label:'Open savings and make the first deposit',short:'save'};
+  if(n(r.savings_balance)<1000) return {rank:8,label:'Build savings toward first month plus deposit',short:money(r.savings_balance)};
+  return {rank:9,label:'Ready for independent housing — start the search',short:'ready'};
+}
 function docsDone(r){return r.has_id&&r.has_ss_card&&r.has_birth_cert;}
 function closeM(){g('mRes').classList.remove('open');}
 
@@ -343,7 +371,7 @@ function openRes(id){
   set('r_lasttalked',r.last_talked);
   set('r_hmeet',r.house_meetings==null?0:r.house_meetings);
   set('r_pmeet',r.peer_meetings==null?0:r.peer_meetings);
-  set('r_lastua',r.last_ua); g('r_uares').value=r.ua_result||'';
+  set('r_lastua',r.last_ua); g('r_uares').value=uaWord(r.ua_result);
   g('r_curfew').checked=r.curfew_ok!==false;
   g('r_chores').checked=r.chores_ok!==false;
   g('r_notice').checked=!!r.on_notice;
@@ -361,7 +389,7 @@ function stampLine(r){
   const uaN=daysAgo(r.last_ua);
   const uaCls=(uaN===null||uaN>30)?' class="stale"':'';
   let s='Last talked to <b'+talkCls+'>'+ago(r.last_talked)+'</b>'
-      + ' &middot; Last UA <b'+uaCls+'>'+ago(r.last_ua)+(r.ua_result?' ('+esc(r.ua_result)+')':'')+'</b>'
+      + ' &middot; Last UA <b'+uaCls+'>'+ago(r.last_ua)+(r.ua_result?' ('+esc(uaWord(r.ua_result))+')':'')+'</b>'
       + ' &middot; <b>'+(r.warnings||0)+'</b> warning'+((r.warnings||0)===1?'':'s')
       + ' &middot; Meetings this month: <b>'+(r.house_meetings||0)+'</b> house, <b>'+(r.peer_meetings||0)+'</b> peer';
   if(r.on_notice) s+='<br><span style="color:#f0b6b6;font-weight:700">ON NOTICE</span>'+(r.warning_reason?' &mdash; '+esc(r.warning_reason):'');
@@ -470,6 +498,55 @@ function render(){
       +'<div class="rmeta">Room '+esc(r.room||'—')+' · <span class="chip open">available</span></div>'
       +'<div class="rbal ok">'+money(r.monthly_rent||775)+'/mo</div></div>').join('')
       :'<div class="note">No open beds — every bed is filled.</div>')+'</div>';
+    return;
+  }
+
+  if(TAB==='moveouts'){
+    /* People who left still owing. They fall off every other screen the moment
+       they move out, which is exactly when the balance stops being chased. */
+    const rows=RES.filter(r=>r.move_out_date&&bal(r)>0&&match(r)).sort((a,b)=>bal(b)-bal(a));
+    const total=rows.reduce((t,r)=>t+bal(r),0);
+    v.innerHTML='<div class="rows">'
+      +(rows.length?('<div class="row" style="background:rgba(201,169,110,.08)"><div class="rname">'+rows.length+' former resident'+(rows.length===1?'':'s')+' owing</div>'
+        +'<div class="rmeta">Left with a balance. Collectable, and it follows them to the next house.</div>'
+        +'<div class="rbal owe">'+money(total)+'</div></div>'):'')
+      +(rows.length?rows.map(r=>{
+        const days=daysAgo(r.move_out_date);
+        return '<div class="row" onclick="openRes(\''+r.id+'\')">'
+        +'<div class="rname">'+esc(r.name)+'</div>'
+        +'<div class="rmeta">'+esc(r.house_name||'')+(r.room?' · '+esc(r.room):'')
+        +' · moved out '+ago(r.move_out_date)
+        +(days!==null&&days>90?' <span class="chip warn2">'+Math.floor(days/30)+' months ago</span>':'')
+        +(r.phone?'<br><span style="opacity:.78">'+esc(r.phone)+'</span>':'')
+        +'</div>'
+        +'<div class="rbal owe">'+money(bal(r))+'</div></div>';
+      }).join(''):'<div class="note">Nobody who moved out still owes. That is worth noticing.</div>')
+      +'</div>';
+    return;
+  }
+
+  if(TAB==='readiness'){
+    /* Sobriety is the floor, not the goal. Somebody can be current on rent and
+       still leave with no ID, no bank account and no way to hold a lease. This
+       screen answers one question per person: what is the next right thing?
+       Current residents only - somebody who moved out belongs on Move-Outs. */
+    const rows=RES.filter(r=>!isOpen(r)&&!r.move_out_date&&match(r)).map(r=>({r:r,gap:nextStep(r)}))
+      .sort((a,b)=>a.gap.rank-b.gap.rank);
+    v.innerHTML='<div class="rows">'+(rows.length?rows.map(x=>{
+      const r=x.r,gap=x.gap;
+      const have=[r.has_id?'ID':'',r.has_ss_card?'SS card':'',r.has_birth_cert?'birth cert':'',
+                  r.bank_account?'bank':'',r.employed?'job':'',r.certifications?'certs':''].filter(Boolean);
+      const missing=[!r.has_id?'ID':'',!r.has_ss_card?'SS card':'',!r.has_birth_cert?'birth cert':'',
+                     !r.bank_account?'bank':'',!r.employed?'job':''].filter(Boolean);
+      return '<div class="row'+(gap.rank<=1?' hot':'')+'" onclick="openRes(\''+r.id+'\')">'
+      +'<div class="rname">'+esc(r.name)+'</div>'
+      +'<div class="rmeta"><b style="color:#e8d5b0">Next: '+esc(gap.label)+'</b>'
+      +(missing.length?'<br><span style="opacity:.7">Still missing: '+esc(missing.join(', '))+'</span>':'<br><span class="chip job">fully documented</span>')
+      +(have.length?'<br><span style="opacity:.66">Has: '+esc(have.join(', '))+'</span>':'')
+      +(r.case_manager?'<br><span style="opacity:.66">CM: '+esc(r.case_manager)+'</span>':'<br><span class="chip warn2">no case manager</span>')
+      +'</div>'
+      +'<div class="rbal '+(gap.rank<=1?'owe':'ok')+'">'+gap.short+'</div></div>';
+    }).join(''):'<div class="note">No residents to show.</div>')+'</div>';
     return;
   }
 
