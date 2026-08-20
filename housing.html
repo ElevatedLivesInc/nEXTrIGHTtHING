@@ -94,6 +94,18 @@
   .btnrow{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem;}
   .note{max-width:640px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
   .note code{background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:4px;}
+  /* NEEDS & SERVICES */
+  .needgrp-title{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sand);margin:.8rem 0 .35rem;}
+  .needgrp-title:first-child{margin-top:0;}
+  .needrow{display:flex;align-items:center;gap:.6rem;padding:.28rem 0;border-bottom:1px dashed rgba(255,255,255,.08);}
+  .needrow:last-child{border-bottom:none;}
+  .needrow label{flex:1;margin:0;font-size:.72rem;text-transform:none;letter-spacing:0;color:rgba(255,255,255,.8);}
+  .needrow select{width:160px;flex:none;}
+  select.st-needed{border-color:rgba(224,120,120,.5);color:#f0b6b6;}
+  select.st-referred{border-color:rgba(224,150,90,.5);color:#f3c48f;}
+  select.st-scheduled{border-color:rgba(124,92,191,.5);color:var(--lav);}
+  select.st-done{border-color:rgba(120,200,150,.45);color:#a9e5c3;}
+  select.st-na{opacity:.55;}
   @media(max-width:640px){.two,.three{grid-template-columns:1fr;}}
   @media print{.tabs,.btn,.viewer{display:none!important}body{background:#fff;color:#000}.house,.row{border-color:#ccc}.hname,.stat .n{color:#000}}
 </style>
@@ -112,6 +124,7 @@
     <div class="stat bad"><div class="n" id="sOwed">–</div><div class="l">Total Outstanding</div></div>
     <div class="stat"><div class="n" id="sCollected">–</div><div class="l">Collected</div></div>
     <div class="stat bad"><div class="n" id="sCliff">–</div><div class="l">Funding Cliffs 30d</div></div>
+    <div class="stat bad"><div class="n" id="sCaseOverdue">–</div><div class="l">Overdue Case Follow-ups</div></div>
   </div>
 
   <div class="tabs" id="tabs" style="display:none">
@@ -121,6 +134,7 @@
     <button class="tab" data-t="beds">Open Beds</button>
     <button class="tab" data-t="moveouts">Move-Outs Owing</button>
     <button class="tab" data-t="readiness">Readiness</button>
+    <button class="tab" data-t="casemgmt">Case Management</button>
     <input id="q" placeholder="Search resident, house, room…">
     <button class="btn" onclick="window.print()">Print</button>
     <button class="btn" onclick="exportCSV()">CSV</button>
@@ -240,6 +254,14 @@
       <div class="fld"><label>Case manager</label><input id="r_cm"></div>
       <div class="fld"><label>Treatment level</label><select id="r_tl"><option value="">—</option><option>PHP</option><option>IOP</option><option>GOP</option><option>none</option></select></div>
     </div>
+    <div class="three">
+      <div class="fld"><label>Next case management contact due</label><input id="r_followup" type="date"></div>
+    </div>
+  </div>
+
+  <div class="grp"><h4>Needs &amp; Services</h4>
+    <div class="stamp" style="margin-bottom:.4rem">Everything a person needs beyond a bed and a UA. Anything left <b>Needed</b> or <b>Referred</b> is an open case.</div>
+    <div id="needsList"></div>
   </div>
 
   <div class="grp"><h4>Notes</h4>
@@ -251,7 +273,8 @@
       <div class="fld"><label>Type</label><select id="e_kind">
         <option value="payment">Payment received</option><option value="maintenance">Maintenance</option>
         <option value="welfare">Welfare check</option><option value="conflict">Conflict</option>
-        <option value="curfew">Curfew</option><option value="note">Note</option>
+        <option value="curfew">Curfew</option><option value="case_note">Case management note</option>
+        <option value="referral">Referral made</option><option value="note">Note</option>
       </select></div>
       <div class="fld"><label>Amount (if payment)</label><input id="e_amount"></div>
       <div class="fld"><label>&nbsp;</label><button class="btn solid" style="width:100%" onclick="logEvent(this)">Log it</button></div>
@@ -330,6 +353,74 @@ function nextStep(r){
 }
 function docsDone(r){return r.has_id&&r.has_ss_card&&r.has_birth_cert;}
 function closeM(){g('mRes').classList.remove('open');}
+function isCurrent(r){return !isOpen(r)&&!r.move_out_date;}
+
+/* The full wrap-around needs list. Anything not tracked here is a need that
+   quietly falls through the cracks between "housed" and "actually stable." */
+const NEEDS=[
+  {g:'Health & Insurance',items:[
+    ['health_insurance','Health insurance enrolled'],
+    ['primary_care','Primary care / medical provider'],
+    ['dental_care','Dental care'],
+    ['mental_health','Outpatient mental health / counseling'],
+    ['psychiatry','Medication management / psychiatry / MAT'],
+  ]},
+  {g:'Benefits & Income',items:[
+    ['snap','SNAP (food stamps)'],
+    ['disability','SSI / SSDI / disability benefits'],
+    ['tanf','TANF / cash assistance'],
+    ['unemployment','Unemployment benefits'],
+  ]},
+  {g:'Legal & Compliance',items:[
+    ['drivers_license',"Driver's license (get / reinstate)"],
+    ['warrants','Active warrants / court dates'],
+    ['probation','Probation / parole compliance'],
+    ['child_support','Child support / family court'],
+  ]},
+  {g:'Family & Support',items:[
+    ['family_plan','Family reunification / visitation plan'],
+    ['transportation','Transportation plan (bus pass, ride, car)'],
+    ['childcare','Childcare'],
+  ]},
+  {g:'Education & Employment',items:[
+    ['ged','GED / high school diploma'],
+    ['resume','Resume & job readiness'],
+  ]},
+  {g:'Recovery & Aftercare',items:[
+    ['sponsor','Sponsor / home group'],
+    ['aftercare_plan','Aftercare & relapse-prevention plan'],
+  ]},
+];
+const NEED_KEYS=NEEDS.flatMap(grp=>grp.items.map(i=>i[0]));
+const NEED_LABEL={}; NEEDS.forEach(grp=>grp.items.forEach(([k,l])=>{NEED_LABEL[k]=l;}));
+const STATUS_OPTS=[['','Not assessed'],['needed','Needed'],['referred','Referred'],['scheduled','Scheduled'],['done','Done'],['na','N/A']];
+
+function buildNeedsUI(){
+  g('needsList').innerHTML=NEEDS.map(grp=>
+    '<div class="needgrp-title">'+esc(grp.g)+'</div>'
+    +grp.items.map(([k,label])=>
+      '<div class="needrow"><label>'+esc(label)+'</label>'
+      +'<select id="need_'+k+'" onchange="this.className=this.value?(\'st-\'+this.value):\'\'">'
+      +STATUS_OPTS.map(([v,l])=>'<option value="'+v+'">'+esc(l)+'</option>').join('')
+      +'</select></div>'
+    ).join('')
+  ).join('');
+}
+buildNeedsUI();
+
+/* An "open" need is one that's identified but not yet resolved — needed,
+   referred, or scheduled all still require a follow-up. Done and N/A don't. */
+function openNeeds(r){
+  const needs=r.case_needs||{};
+  return NEED_KEYS.filter(k=>['needed','referred','scheduled'].includes(needs[k]));
+}
+/* Positive count = days overdue (or due today); negative = days until due. null = no date set. */
+function dueLine(d){
+  const n=daysAgo(d); if(n===null) return null;
+  if(n>0)  return {overdue:true, text:n+' day'+(n===1?'':'s')+' overdue'};
+  if(n===0) return {overdue:true, text:'due today'};
+  return {overdue:false, text:'due in '+(-n)+' day'+(-n===1?'':'s')};
+}
 
 /* Some houses came over with no room numbers. Fall back to initials so every bed is identifiable. */
 function bedLabel(r){
@@ -366,6 +457,9 @@ function openRes(id){
   g('r_bank').checked=!!r.bank_account; g('r_emp').checked=!!r.employed;
   set('r_employer',r.employer);set('r_jobstart',r.job_start_date);set('r_savings',r.savings_balance);
   set('r_certs',r.certifications);set('r_cm',r.case_manager); g('r_tl').value=r.treatment_level||'';
+  set('r_followup',r.case_followup_date);
+  { const needs=r.case_needs||{};
+    NEED_KEYS.forEach(k=>{ const el=g('need_'+k); if(!el)return; const v=needs[k]||''; el.value=v; el.className=v?('st-'+v):''; }); }
   set('r_warnings',r.warnings==null?0:r.warnings);
   set('r_lastwarn',r.last_warning);set('r_warnreason',r.warning_reason);
   set('r_lasttalked',r.last_talked);
@@ -427,6 +521,8 @@ async function saveRes(btn){
     bank_account:g('r_bank').checked,employed:g('r_emp').checked,
     employer:g('r_employer').value,job_start_date:g('r_jobstart').value,savings_balance:g('r_savings').value,
     certifications:g('r_certs').value,case_manager:g('r_cm').value,treatment_level:g('r_tl').value,notes:g('r_notes').value,
+    case_followup_date:g('r_followup').value,
+    case_needs:NEED_KEYS.reduce((o,k)=>{const v=g('need_'+k).value; if(v)o[k]=v; return o;},{}),
     warnings:g('r_warnings').value,last_warning:g('r_lastwarn').value,warning_reason:g('r_warnreason').value,
     last_talked:g('r_lasttalked').value,house_meetings:g('r_hmeet').value,peer_meetings:g('r_pmeet').value,
     last_ua:g('r_lastua').value,ua_result:g('r_uares').value,
@@ -550,6 +646,28 @@ function render(){
     return;
   }
 
+  if(TAB==='casemgmt'){
+    /* Every current resident's open needs and whether their case manager is
+       actually due to follow up — not just whether one is assigned. */
+    const rows=RES.filter(r=>isCurrent(r)&&match(r)).map(r=>{
+      const open=openNeeds(r); const due=dueLine(r.case_followup_date);
+      return {r:r,open:open,due:due};
+    }).sort((a,b)=>(b.due&&b.due.overdue?1:0)-(a.due&&a.due.overdue?1:0) || b.open.length-a.open.length);
+    v.innerHTML='<div class="rows">'+(rows.length?rows.map(x=>{
+      const r=x.r,open=x.open,due=x.due;
+      return '<div class="row'+(due&&due.overdue?' hot':'')+'" onclick="openRes(\''+r.id+'\')">'
+      +'<div class="rname">'+esc(r.name)+'</div>'
+      +'<div class="rmeta">'
+      +(r.case_manager?'<span style="opacity:.78">CM: '+esc(r.case_manager)+'</span>':'<span class="chip warn2">no case manager</span>')
+      +' &middot; '+(due?('<b'+(due.overdue?' style="color:#f0b6b6"':'')+'>'+due.text+'</b>'):'<span class="chip warn2">no follow-up set</span>')
+      +(open.length?'<br><span style="opacity:.7">Open: '+esc(open.slice(0,4).map(k=>NEED_LABEL[k]).join(', '))+(open.length>4?' +'+(open.length-4)+' more':'')+'</span>'
+        :'<br><span class="chip job">no open needs</span>')
+      +'</div>'
+      +'<div class="rbal '+(open.length?'owe':'ok')+'">'+open.length+' open</div></div>';
+    }).join(''):'<div class="note">No residents to show.</div>')+'</div>';
+    return;
+  }
+
   if(TAB==='collect'){
     const rows=RES.filter(r=>!isOpen(r)&&match(r)).sort((a,b)=>bal(b)-bal(a));
     v.innerHTML='<div class="rows">'+rows.map(r=>{
@@ -587,7 +705,7 @@ function render(){
 }
 
 function exportCSV(){
-  const cols=['name','house_name','room','status','monthly_rent','past_due','current_due','amount_paid','payer_type','funding_source','funding_end','has_id','has_ss_card','has_birth_cert','employed','employer','case_manager','notes'];
+  const cols=['name','house_name','room','status','monthly_rent','past_due','current_due','amount_paid','payer_type','funding_source','funding_end','has_id','has_ss_card','has_birth_cert','employed','employer','case_manager','case_followup_date','notes'];
   const e=v=>{v=(v==null?'':v)+'';return '"'+v.replace(/"/g,'""')+'"';};
   const csv=[cols.join(',')].concat(RES.map(r=>cols.map(c=>e(r[c])).join(','))).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
@@ -612,10 +730,11 @@ async function load(){
     const paid=filled.reduce((t,r)=>t+n(r.amount_paid),0);
     const risk=open.reduce((t,r)=>t+n(r.monthly_rent||775),0);
     const cliffs=filled.filter(r=>{const u=until(r.funding_end);return u!==null&&u<=30&&u>=0;}).length;
+    const caseOverdue=RES.filter(isCurrent).filter(r=>{const d=dueLine(r.case_followup_date);return d&&d.overdue;}).length;
     g('sOcc').textContent=RES.length?Math.round(filled.length/RES.length*100)+'%':'–';
     g('sOpen').textContent=open.length; g('sRisk').textContent=money(risk);
     g('sOwed').textContent=money(owed); g('sCollected').textContent=money(paid);
-    g('sCliff').textContent=cliffs;
+    g('sCliff').textContent=cliffs; g('sCaseOverdue').textContent=caseOverdue;
     g('stats').style.display='grid'; g('tabs').style.display='flex';
     render();
   }catch(_){note.textContent='Could not load housing. Check your connection and reload.';}

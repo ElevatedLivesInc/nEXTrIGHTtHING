@@ -2,6 +2,21 @@
 import { getAuthedEmail } from '../_lib/auth.js';
 import { allowedFor } from '../_lib/roster.js';
 
+// Case management needs & services. Kept in lockstep with the NEEDS list in housing.html.
+const NEED_KEYS=['health_insurance','primary_care','dental_care','mental_health','psychiatry',
+  'snap','disability','tanf','unemployment',
+  'drivers_license','warrants','probation','child_support',
+  'family_plan','transportation','childcare',
+  'ged','resume',
+  'sponsor','aftercare_plan'];
+const NEED_STATUSES=['needed','referred','scheduled','done','na'];
+function sanitizeNeeds(obj){
+  if(!obj||typeof obj!=='object') return undefined;
+  const out={};
+  for(const k of NEED_KEYS){ if(NEED_STATUSES.includes(obj[k])) out[k]=obj[k]; }
+  return out;
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json'}});
@@ -121,6 +136,8 @@ export async function onRequestPost(context) {
   put('case_manager',S(b.case_manager,120)); put('treatment_level',S(b.treatment_level,40));
   put('employer',S(b.employer,160)); put('job_start_date',S(b.job_start_date,20));
   put('certifications',S(b.certifications,400)); put('notes',S(b.notes,4000));
+  put('case_followup_date',S(b.case_followup_date,20));
+  if(b.case_needs!==undefined) put('case_needs',sanitizeNeeds(b.case_needs));
   // House Record
   if(b.warnings!==undefined)       put('warnings',N(b.warnings));
   if(b.house_meetings!==undefined) put('house_meetings',N(b.house_meetings));
