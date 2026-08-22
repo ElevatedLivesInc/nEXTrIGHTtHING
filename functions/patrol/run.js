@@ -4,22 +4,16 @@
 //   2) A cron service calls /patrol/run?key=YOUR_PATROL_KEY  -> sends automatically
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, PATROL_KEY (optional), RESEND_FROM (optional)
 
-const GABE = 'gabe@nextrighthing.com';
 // Gabe is on every brief on purpose - he sees exactly what each person sees,
 // so nobody has to describe a problem he can already read.
 // Every brief goes to Cate and Gabe only, on purpose. Roles are still settling,
 // and a daily email to someone who is not yet responsible for that system
 // trains them to ignore it. Widen this per-role once the roles are final.
-const CATE = 'cateo@nextrighthing.com';
-const TEAM = {
-  intake:    [CATE, GABE],
-  donations: [CATE, GABE],
-  housing:   [CATE, GABE],
-  funding:   [CATE, GABE],
-  leadership:[CATE, GABE]
-};
+// (Recipients now live in _lib/roster.js's DIGESTS, alongside every other
+// staff-access list, instead of duplicated here.)
 
 import { getAuthedEmail } from '../_lib/auth.js';
+import { DIGESTS as TEAM } from '../_lib/roster.js';
 
 export async function onRequest(context) {
   const { request, env } = context;

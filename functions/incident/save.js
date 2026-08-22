@@ -1,6 +1,6 @@
 // POST /incident/save -> file a new incident, or update an existing one
 import { getAuthedEmail } from '../_lib/auth.js';
-import { allowedFor } from '../_lib/roster.js';
+import { allowedFor, ESCALATION, LEADERSHIP_NOTIFY, LEADERSHIP_PRIMARY } from '../_lib/roster.js';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -31,12 +31,8 @@ export async function onRequestPost(context) {
   const STATUS   = ['open','under_review','corrective_action','closed'];
 
   // Who each escalation step goes to. Level 0 is the person who filed it.
-  const CHAIN = [
-    { level:0, label:'Filed',              to:null },
-    { level:1, label:'House / Program Manager', to:'rob@nextrighthing.com' },
-    { level:2, label:'Clinical & Executive',    to:'cateo@nextrighthing.com' },
-    { level:3, label:'Licensing / External',    to:'gabe@nextrighthing.com' }
-  ];
+  // (Lives in _lib/roster.js as ESCALATION, alongside every other staff list.)
+  const CHAIN = ESCALATION;
 
   // ---- escalate one step up the chain
   if (b.id && b.escalate) {
@@ -159,8 +155,8 @@ export async function onRequestPost(context) {
   if (env.RESEND_API_KEY) {
     try {
       const to = rec.critical_incident || rec.severity === 'critical' || rec.severity === 'serious'
-        ? ['gabe@nextrighthing.com','cateo@nextrighthing.com']
-        : ['gabe@nextrighthing.com'];
+        ? LEADERSHIP_NOTIFY
+        : LEADERSHIP_PRIMARY;
       const label = rec.critical_incident ? 'CRITICAL INCIDENT' : 'Incident report';
       await fetch('https://api.resend.com/emails', {
         method:'POST',

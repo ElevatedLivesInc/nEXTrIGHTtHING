@@ -1,5 +1,7 @@
 // POST /api/concern -> public, anonymous. No login. No IP stored. No cookies read.
 // Anyone - a client, a resident, a family member, a staff member - can raise a concern here.
+import { LEADERSHIP_NOTIFY } from '../_lib/roster.js';
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json = (o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json; charset=utf-8'}});
@@ -80,7 +82,7 @@ export async function onRequestPost(context) {
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.RESEND_API_KEY},
         body: JSON.stringify({
           from: env.RESEND_FROM || 'NRT Patrol <patrol@nextrighthing.com>',
-          to: ['cateo@nextrighthing.com','gabe@nextrighthing.com'],
+          to: LEADERSHIP_NOTIFY,
           subject: 'Someone used the Speak Up line &mdash; ' + (saved.case_number || ''),
           html: '<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;color:#1a2744">'
             + '<div style="border-bottom:3px solid #c9a96e;padding-bottom:.5rem;margin-bottom:1rem;font-family:Georgia,serif;font-size:1.3rem">Speak Up line</div>'

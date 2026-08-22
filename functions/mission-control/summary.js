@@ -1,5 +1,6 @@
 // GET /mission-control/summary -> cross-system counts for the hub
 import { getAuthedEmail } from '../_lib/auth.js';
+import { SCOPES } from '../_lib/roster.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -10,14 +11,7 @@ export async function onRequestGet(context) {
   // Mission Control is not all-or-nothing. Each viewer sees only the systems they own.
   // "client" = treatment-center data (residents, intake, scholarships)
   // "donor"  = nonprofit data (in-kind codes, cash gifts)
-  const ROLES = {
-    'gabe@nextrighthing.com':   ['client','donor'],
-    'cateo@nextrighthing.com':  ['client','donor'],
-    'bailey@nextrighthing.com': ['client','donor'],
-    'rob@nextrighthing.com':    ['client'],
-    'ryan@nextrighthing.com':   ['donor']
-  };
-  const scopes = ROLES[who] || [];
+  const scopes = SCOPES[who] || [];
   if (!scopes.length) return json({ error:'Your account is not set up yet. Ask Gabe to add you.' },403);
   const canClient = scopes.includes('client');
   const canDonor  = scopes.includes('donor');

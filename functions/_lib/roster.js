@@ -23,3 +23,40 @@ export const ROSTER = {
 export function allowedFor(system) {
   return ROSTER[system] || [];
 }
+
+// Who each escalated incident goes to. Level 0 is the person who filed it.
+// (Moved here from incident/save.js's local CHAIN constant - same values.)
+export const ESCALATION = [
+  { level: 0, label: 'Filed', to: null },
+  { level: 1, label: 'House / Program Manager', to: 'rob@nextrighthing.com' },
+  { level: 2, label: 'Clinical & Executive', to: 'cateo@nextrighthing.com' },
+  { level: 3, label: 'Licensing / External', to: 'gabe@nextrighthing.com' }
+];
+
+// Who gets each morning patrol brief. Every brief goes to Cate and Gabe only,
+// on purpose - see functions/patrol/run.js for why. (Moved here from that
+// file's local TEAM constant - same values.)
+export const DIGESTS = {
+  intake:     ['cateo@nextrighthing.com', 'gabe@nextrighthing.com'],
+  donations:  ['cateo@nextrighthing.com', 'gabe@nextrighthing.com'],
+  housing:    ['cateo@nextrighthing.com', 'gabe@nextrighthing.com'],
+  funding:    ['cateo@nextrighthing.com', 'gabe@nextrighthing.com'],
+  leadership: ['cateo@nextrighthing.com', 'gabe@nextrighthing.com']
+};
+
+// Mission Control scopes: which side(s) of the house each person can see.
+// "client" = treatment-center data, "donor" = nonprofit data. (Moved here
+// from mission-control/summary.js's local ROLES constant - same values.)
+export const SCOPES = {
+  'gabe@nextrighthing.com':   ['client', 'donor'],
+  'cateo@nextrighthing.com':  ['client', 'donor'],
+  'bailey@nextrighthing.com': ['client', 'donor'],
+  'rob@nextrighthing.com':    ['client'],
+  'ryan@nextrighthing.com':   ['donor']
+};
+
+// Notified on every new incident/Speak Up submission, regardless of roster
+// above - leadership sees everything that comes in. LEADERSHIP_PRIMARY is
+// the narrower list used for lower-severity incidents (see incident/save.js).
+export const LEADERSHIP_NOTIFY = ['gabe@nextrighthing.com', 'cateo@nextrighthing.com'];
+export const LEADERSHIP_PRIMARY = ['gabe@nextrighthing.com'];
