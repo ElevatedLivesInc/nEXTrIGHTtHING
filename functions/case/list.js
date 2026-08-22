@@ -14,7 +14,7 @@ import { getAuthedEmail } from '../_lib/auth.js';
 import { allowedFor } from '../_lib/roster.js';
 
 const RESIDENT_COLS = [
-  'id','name','house_name','room','status','move_in_date','move_out_date',
+  'id','client_id','name','house_name','room','status','move_in_date','move_out_date',
   'phone','email','emergency_contact',
   'has_id','has_ss_card','has_birth_cert','bank_account',
   'employed','employer','job_start_date','certifications','savings_balance',
