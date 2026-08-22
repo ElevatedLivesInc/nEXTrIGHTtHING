@@ -398,6 +398,7 @@ function openC(id){
   g('cSub').innerHTML=esc(c.house_name||'')+(c.room?' · '+esc(c.room):'')
     +' · last contact '+ago(lastTouch(c))
     +(c.funding_end?' · funding ends '+esc(c.funding_end):'')
+    +(c.client_id?' · <a href="/client?id='+encodeURIComponent(c.client_id)+'" target="_blank" rel="noopener" style="color:#c9a96e">open full client file &rarr;</a>':' · <span class="chip warn">not linked to an intake record</span>')
     +(uf.length?'<br><span class="chip ok">'+uf.length+' funder'+(uf.length===1?'':'s')+' never tried: '+esc(uf.slice(0,3).map(f=>f.name).join(', '))+'</span>':'');
   g('n_date').value=today(); g('m_date').value=today();
   g('c_followup').value=c.case_followup_date||'';
@@ -426,13 +427,13 @@ async function send(body,btn,label){
   }catch(_){btn.disabled=false;btn.textContent=old;alert('Save failed — check your connection.');return false;}
 }
 function saveNote(b){ if(!g('n_sum').value.trim())return alert('Write what happened first.');
-  send({what:'note',resident_name:CUR.name,note_date:g('n_date').value,contact_type:g('n_type').value,
+  send({what:'note',resident_name:CUR.name,client_id:CUR.client_id,note_date:g('n_date').value,contact_type:g('n_type').value,
     summary:g('n_sum').value,next_step:g('n_next').value,next_step_due:g('n_due').value},b); }
 function saveGoal(b){ if(!g('g_goal').value.trim())return alert('Write the goal first.');
-  send({what:'goal',resident_name:CUR.name,domain:g('g_dom').value,goal:g('g_goal').value,
+  send({what:'goal',resident_name:CUR.name,client_id:CUR.client_id,domain:g('g_dom').value,goal:g('g_goal').value,
     status:g('g_status').value,target_date:g('g_target').value},b); }
 function saveMeeting(b){ if(!g('m_date').value)return alert('Pick a date.');
-  send({what:'meeting',resident_name:CUR.name,house_name:CUR.house_name,kind:g('m_kind').value,
+  send({what:'meeting',resident_name:CUR.name,client_id:CUR.client_id,house_name:CUR.house_name,kind:g('m_kind').value,
     meeting_date:g('m_date').value,verified_by:g('m_by').value},b); }
 /* The file goes browser -> Supabase directly on a one-time signed URL. It
    never passes through the Worker, which keeps leases and IDs out of the
@@ -459,7 +460,7 @@ async function saveDoc(btn){
       prog.textContent='Uploaded.';
     }catch(_){prog.textContent='';return alert('Upload failed. Check your connection and try again.');}
   }
-  const okDone=await send({what:'document',resident_name:CUR.name,house_name:CUR.house_name,doc_type:g('d_type').value,
+  const okDone=await send({what:'document',resident_name:CUR.name,client_id:CUR.client_id,house_name:CUR.house_name,doc_type:g('d_type').value,
     title:g('d_title').value,signed_on:g('d_signed').value,expires_on:g('d_exp').value,
     file_path:file_path,mime_type:mime,size_bytes:size},btn);
   if(okDone){ g('d_file').value=''; prog.textContent=''; }

@@ -35,10 +35,17 @@ export async function onRequestPost(context) {
 
   const what = b.what;
 
+  // A resident admitted through /intake-queue/admit carries a client_id -
+  // pass it through so this row hangs off the same spine as everything else
+  // in their file, instead of only ever being findable by matching resident_name
+  // text. Rows from before the spine existed simply keep client_id null and
+  // still surface fine on resident_name, same as always.
+  const cid = v => (v==null||v==='') ? null : S(v,64);
+
   if (what === 'note') {
     if (!b.resident_name || !b.summary) return json({ok:false,error:'resident and summary required'},400);
     return done(await post('case_notes', {
-      resident_name:S(b.resident_name,160), note_date:S(b.note_date,20)||undefined,
+      resident_name:S(b.resident_name,160), client_id:cid(b.client_id), note_date:S(b.note_date,20)||undefined,
       contact_type:S(b.contact_type,30)||'in person', summary:S(b.summary,4000),
       next_step:S(b.next_step,1000), next_step_due:S(b.next_step_due,20), author:who
     }));
@@ -46,7 +53,7 @@ export async function onRequestPost(context) {
 
   if (what === 'goal') {
     if (b.action === 'delete') { if(!b.id) return json({ok:false,error:'id required'},400); return done(await del('client_goals', b.id)); }
-    const rec = { resident_name:S(b.resident_name,160), domain:S(b.domain,30)||'other',
+    const rec = { resident_name:S(b.resident_name,160), client_id:cid(b.client_id), domain:S(b.domain,30)||'other',
       goal:S(b.goal,1000), status:S(b.status,20)||'open', target_date:S(b.target_date,20),
       met_date:S(b.met_date,20), notes:S(b.notes,2000), updated_by:who };
     if (!rec.resident_name || !rec.goal) return json({ok:false,error:'resident and goal required'},400);
@@ -58,7 +65,7 @@ export async function onRequestPost(context) {
     if (!b.resident_name || !b.meeting_date) return json({ok:false,error:'resident and date required'},400);
     // The counter on residents stays in step with the rows, so the number on
     // the housing screen and the list of dates can never disagree.
-    const rec = { resident_name:S(b.resident_name,160), house_name:S(b.house_name,120),
+    const rec = { resident_name:S(b.resident_name,160), client_id:cid(b.client_id), house_name:S(b.house_name,120),
       kind:S(b.kind,20)||'house', meeting_date:S(b.meeting_date,20),
       verified_by:S(b.verified_by,120)||who, notes:S(b.notes,1000), created_by:who };
     const r = await post('meetings', rec);
@@ -81,7 +88,7 @@ export async function onRequestPost(context) {
     if (b.action === 'delete') { if(!b.id) return json({ok:false,error:'id required'},400); return done(await del('documents', b.id)); }
     if (!b.resident_name) return json({ok:false,error:'resident required'},400);
     return done(await post('documents', {
-      resident_name:S(b.resident_name,160), house_name:S(b.house_name,120),
+      resident_name:S(b.resident_name,160), client_id:cid(b.client_id), house_name:S(b.house_name,120),
       doc_type:S(b.doc_type,20)||'other', title:S(b.title,300), file_path:S(b.file_path,500),
       mime_type:S(b.mime_type,120), size_bytes:(b.size_bytes==null?null:Number(b.size_bytes)||null),
       signed_on:S(b.signed_on,20), expires_on:S(b.expires_on,20),
