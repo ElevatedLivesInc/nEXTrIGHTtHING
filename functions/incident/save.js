@@ -1,6 +1,7 @@
 // POST /incident/save -> file a new incident, or update an existing one
 import { getAuthedEmail } from '../_lib/auth.js';
 import { allowedFor, ESCALATION, LEADERSHIP_NOTIFY, LEADERSHIP_PRIMARY } from '../_lib/roster.js';
+import { TENANT } from '../_lib/tenant-config.js';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -69,17 +70,17 @@ export async function onRequestPost(context) {
           method:'POST',
           headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.RESEND_API_KEY},
           body: JSON.stringify({
-            from: env.RESEND_FROM || 'NRT Patrol <patrol@nextrighthing.com>',
+            from: env.RESEND_FROM || TENANT.defaultFromName+' <'+TENANT.defaultFromAddress+'>',
             to: [step.to],
             subject: 'Escalated to you &mdash; ' + (saved.case_number||'') + ' (' + (saved.incident_date||'') + ')',
-            html: '<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;color:#1a2744">'
-              + '<div style="border-bottom:3px solid #c9a96e;padding-bottom:.5rem;margin-bottom:1rem;font-family:Georgia,serif;font-size:1.3rem">Incident escalated to you</div>'
+            html: '<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;color:'+TENANT.colors.navy+'">'
+              + '<div style="border-bottom:3px solid '+TENANT.colors.sand+';padding-bottom:.5rem;margin-bottom:1rem;font-family:Georgia,serif;font-size:1.3rem">Incident escalated to you</div>'
               + '<p style="color:#333;font-size:.95rem;line-height:1.6">'
               + 'Case <b>'+(saved.case_number||'')+'</b> has been escalated to <b>'+step.label+'</b> by '+who+'. '
               + 'No details are included in this email on purpose.</p>'
               + (b.reason ? '<p style="color:#555;font-size:.9rem;font-style:italic">Reason given: '
                   + (''+b.reason).replace(/[<>]/g,'').slice(0,400) + '</p>' : '')
-              + '<p style="margin-top:1.4rem;font-size:.85rem"><a href="https://nextrighthing.com/incident-log">Read the full report &rarr;</a></p></div>'
+              + '<p style="margin-top:1.4rem;font-size:.85rem"><a href="https://'+TENANT.website+'/incident-log">Read the full report &rarr;</a></p></div>'
           })
         });
       } catch (_) {}
@@ -162,12 +163,12 @@ export async function onRequestPost(context) {
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.RESEND_API_KEY},
         body: JSON.stringify({
-          from: env.RESEND_FROM || 'NRT Patrol <patrol@nextrighthing.com>',
+          from: env.RESEND_FROM || TENANT.defaultFromName+' <'+TENANT.defaultFromAddress+'>',
           to,
           subject: label + ' filed &mdash; ' + (saved.case_number || '') + ' (' + rec.incident_date + ')',
           html: '<meta charset="utf-8">'
-            + '<div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;color:#1a2744">'
-            + '<div style="border-bottom:3px solid #c9a96e;padding-bottom:.5rem;margin-bottom:1rem;font-family:Georgia,serif;font-size:1.3rem">'
+            + '<div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;color:'+TENANT.colors.navy+'">'
+            + '<div style="border-bottom:3px solid '+TENANT.colors.sand+';padding-bottom:.5rem;margin-bottom:1rem;font-family:Georgia,serif;font-size:1.3rem">'
             + label + '</div>'
             + '<p style="color:#333;font-size:.95rem;line-height:1.6">A report has been filed. '
             + 'No details are included in this email on purpose.</p>'
@@ -180,10 +181,10 @@ export async function onRequestPost(context) {
             + '</table>'
             + (rec.critical_incident
                 ? '<p style="background:#fdf0f0;border-left:3px solid #b45454;padding:.8rem 1rem;color:#5a4444;font-size:.9rem;line-height:1.6;margin-top:1rem">'
-                  + '<b>This was marked a critical incident.</b> Utah Office of Licensing expects a report through the '
-                  + 'OL Provider Portal within one business day of the occurrence. Confirm it has been submitted and record the reference number.</p>'
+                  + '<b>This was marked a critical incident.</b> '+TENANT.licensingBody+' expects a report through '
+                  + TENANT.licensingPortalNote+' of the occurrence. Confirm it has been submitted and record the reference number.</p>'
                 : '')
-            + '<p style="margin-top:1.4rem;font-size:.85rem"><a href="https://nextrighthing.com/incident-log">Read the full report &rarr;</a></p>'
+            + '<p style="margin-top:1.4rem;font-size:.85rem"><a href="https://'+TENANT.website+'/incident-log">Read the full report &rarr;</a></p>'
             + '</div>'
         })
       });

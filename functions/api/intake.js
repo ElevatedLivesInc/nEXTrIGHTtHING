@@ -1,6 +1,8 @@
 // POST /api/intake -> saves a pre-intake request (self/family) to Supabase.
 // Uses the same env vars already configured for the car wash:
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+import { TENANT } from '../_lib/tenant-config.js';
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json' } });
@@ -57,16 +59,16 @@ export async function onRequestPost(context) {
           'Authorization': 'Bearer ' + env.RESEND_API_KEY
         },
         body: JSON.stringify({
-          from: env.RESEND_FROM || 'The Next Right Thing in Recovery <intake@nextrighthing.com>',
+          from: env.RESEND_FROM || TENANT.orgLegalName+' <intake@'+TENANT.emailDomain+'>',
           to: [record.email],
-          subject: 'We got your message — The Next Right Thing in Recovery',
-          html: '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a2744;line-height:1.7">'
+          subject: 'We got your message — '+TENANT.orgLegalName,
+          html: '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:'+TENANT.colors.navy+';line-height:1.7">'
             + '<h2 style="font-weight:400">You did it. That was the hardest part.</h2>'
             + '<p>We received your message, and a member of our intake team will personally call or text you within <strong>one business day</strong> — often sooner.</p>'
             + '<p><strong>What happens next:</strong> our intake coordinator will reach out at the time you told us works best, answer your questions, and walk you through the next steps at your pace. No pressure, no judgment.</p>'
-            + '<p>If you need to talk to someone right away, call us at <a href="tel:8018164977">(801) 816-4977</a>.</p>'
-            + '<p style="background:#f4f0e8;padding:12px 16px;border-left:3px solid #c9a96e">If you are in crisis right now, call or text <strong>988</strong> — the Suicide &amp; Crisis Lifeline is available 24/7.</p>'
-            + '<p>— The Next Right Thing in Recovery<br>8901 South 1300 West, West Jordan, UT</p>'
+            + '<p>If you need to talk to someone right away, call us at <a href="tel:'+TENANT.phoneTel+'">'+TENANT.phoneDisplay+'</a>.</p>'
+            + '<p style="background:#f4f0e8;padding:12px 16px;border-left:3px solid '+TENANT.colors.sand+'">If you are in crisis right now, call or text <strong>988</strong> — the Suicide &amp; Crisis Lifeline is available 24/7.</p>'
+            + '<p>— '+TENANT.orgLegalName+'<br>'+TENANT.address+'</p>'
             + '</div>'
         })
       });

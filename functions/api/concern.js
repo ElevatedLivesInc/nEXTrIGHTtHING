@@ -1,6 +1,7 @@
 // POST /api/concern -> public, anonymous. No login. No IP stored. No cookies read.
 // Anyone - a client, a resident, a family member, a staff member - can raise a concern here.
 import { LEADERSHIP_NOTIFY } from '../_lib/roster.js';
+import { TENANT } from '../_lib/tenant-config.js';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -37,7 +38,7 @@ export async function onRequestPost(context) {
     'Prefer':'return=representation'
   };
   const r = await fetch(env.SUPABASE_URL+'/rest/v1/concerns', { method:'POST', headers:H, body:JSON.stringify(rec) });
-  if (!r.ok) return json({ ok:false, error:'Could not save. Please call (801) 816-4977.' },500);
+  if (!r.ok) return json({ ok:false, error:'Could not save. Please call '+TENANT.phoneDisplay+'.' },500);
   const saved = (await r.json())[0] || {};
 
   // Receipt to the person who spoke up - ONLY if they gave contact and asked for a reply.
@@ -48,25 +49,25 @@ export async function onRequestPost(context) {
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.RESEND_API_KEY},
         body: JSON.stringify({
-          from: env.RESEND_FROM || 'The Next Right Thing <patrol@nextrighthing.com>',
+          from: env.RESEND_FROM || TENANT.orgName+' <'+TENANT.defaultFromAddress+'>',
           to: [rec.contact.trim()],
           subject: 'We received your message &mdash; ' + (saved.case_number || ''),
           html: '<meta charset="utf-8">'
-            + '<div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;color:#1a2744">'
-            + '<div style="border-bottom:3px solid #c9a96e;padding-bottom:.6rem;margin-bottom:1.2rem">'
+            + '<div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;color:'+TENANT.colors.navy+'">'
+            + '<div style="border-bottom:3px solid '+TENANT.colors.sand+';padding-bottom:.6rem;margin-bottom:1.2rem">'
             + '<div style="font-family:Georgia,serif;font-size:1.4rem">Thank you for speaking up.</div></div>'
             + '<p style="color:#333;font-size:.96rem;line-height:1.7">We received what you sent and someone is going to look at it. '
             + 'You asked to hear back, so you will.</p>'
-            + '<div style="background:#f4f1ea;border:1px solid #c9a96e;border-radius:8px;padding:1rem 1.2rem;margin:1.2rem 0;text-align:center">'
+            + '<div style="background:#f4f1ea;border:1px solid '+TENANT.colors.sand+';border-radius:8px;padding:1rem 1.2rem;margin:1.2rem 0;text-align:center">'
             + '<div style="font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:#8a6d3b">Your reference</div>'
-            + '<div style="font-family:Georgia,serif;font-size:1.7rem;color:#1a2744;margin-top:.2rem">'+(saved.case_number||'')+'</div></div>'
+            + '<div style="font-family:Georgia,serif;font-size:1.7rem;color:'+TENANT.colors.navy+';margin-top:.2rem">'+(saved.case_number||'')+'</div></div>'
             + '<p style="color:#555;font-size:.88rem;line-height:1.7">Keep this number if you want to follow up. '
             + 'We have not put any details of what you told us in this email, on purpose &mdash; in case someone else sees your screen.</p>'
             + '<p style="color:#555;font-size:.88rem;line-height:1.7">Nothing about raising a concern changes your care, your housing, or how you are treated. '
-            + 'If you would rather go outside the organization, the Utah Office of Licensing investigates concerns about licensed programs at (801)&nbsp;890-2007.</p>'
+            + 'If you would rather go outside the organization, the '+TENANT.licensingBody+' investigates concerns about licensed programs at '+TENANT.licensingPhone.replace(' ','&nbsp;')+'.</p>'
             + '<p style="color:#555;font-size:.88rem;line-height:1.7">If you are in danger right now, call 911. If you are struggling, call or text 988, any hour.</p>'
             + '<p style="margin-top:1.6rem;padding-top:1rem;border-top:1px solid #eee;font-size:.78rem;color:#999;line-height:1.6">'
-            + 'The Next Right Thing in Recovery &middot; 8901 South 1300 West, West Jordan, UT 84088 &middot; (801) 816-4977<br>'
+            + TENANT.orgLegalName+' &middot; '+TENANT.address+' &middot; '+TENANT.phoneDisplay+'<br>'
             + '<em style="font-family:Georgia,serif;color:#8a6d3b">"I made a difference to that one."</em></p></div>'
         })
       });
@@ -81,11 +82,11 @@ export async function onRequestPost(context) {
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.RESEND_API_KEY},
         body: JSON.stringify({
-          from: env.RESEND_FROM || 'NRT Patrol <patrol@nextrighthing.com>',
+          from: env.RESEND_FROM || TENANT.defaultFromName+' <'+TENANT.defaultFromAddress+'>',
           to: LEADERSHIP_NOTIFY,
           subject: 'Someone used the Speak Up line &mdash; ' + (saved.case_number || ''),
-          html: '<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;color:#1a2744">'
-            + '<div style="border-bottom:3px solid #c9a96e;padding-bottom:.5rem;margin-bottom:1rem;font-family:Georgia,serif;font-size:1.3rem">Speak Up line</div>'
+          html: '<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;color:'+TENANT.colors.navy+'">'
+            + '<div style="border-bottom:3px solid '+TENANT.colors.sand+';padding-bottom:.5rem;margin-bottom:1rem;font-family:Georgia,serif;font-size:1.3rem">Speak Up line</div>'
             + '<p style="color:#333;font-size:.95rem;line-height:1.6">A concern was submitted. '
             + 'The message itself is not in this email on purpose &mdash; read it in the log.</p>'
             + '<table style="font-size:.9rem;color:#333">'
@@ -93,7 +94,7 @@ export async function onRequestPost(context) {
             + '<tr><td style="padding:.2rem .8rem .2rem 0;color:#888">Type</td><td>'+(rec.concern_type||'not stated')+'</td></tr>'
             + '<tr><td style="padding:.2rem .8rem .2rem 0;color:#888">Wants a reply</td><td>'+(rec.wants_response?'Yes':'No &mdash; anonymous')+'</td></tr>'
             + '</table>'
-            + '<p style="margin-top:1.4rem;font-size:.85rem"><a href="https://nextrighthing.com/incident-log">Open the log &rarr;</a></p></div>'
+            + '<p style="margin-top:1.4rem;font-size:.85rem"><a href="https://'+TENANT.website+'/incident-log">Open the log &rarr;</a></p></div>'
         })
       });
     } catch (_) {}

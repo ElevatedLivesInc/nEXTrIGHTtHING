@@ -6,6 +6,8 @@
 //   SQUARE_LOCATION_ID   = the nonprofit's Square location id
 //   SQUARE_ENV           = production   (use 'sandbox' while testing)
 
+import { TENANT } from '../_lib/tenant-config.js';
+
 export async function onRequestPost({ request, env }) {
   const json = (o, s = 200) =>
     new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json' } });
@@ -45,12 +47,14 @@ export async function onRequestPost({ request, env }) {
     body: JSON.stringify(Object.assign({
       idempotency_key: crypto.randomUUID(),
       quick_pay: {
-        name: 'Donation to The Right Thing in Recovery',
+        name: 'Donation to ' + (TENANT.secondEntityName || TENANT.orgLegalName),
         price_money: { amount: cents, currency: 'USD' },
         location_id: env.SQUARE_LOCATION_ID
       },
       checkout_options: {
-        redirect_url: 'https://nextrighthing.com/thank-you.html?amount=' + amount + '&tier=' + encodeURIComponent(tier),
+        // Derived from the request, not hardcoded - a hardcoded domain here
+        // would send every other deployment's donors back to this one.
+        redirect_url: new URL(request.url).origin + '/thank-you.html?amount=' + amount + '&tier=' + encodeURIComponent(tier),
         ask_for_shipping_address: false
       }
     }, withNote && source ? { payment_note: source } : {}))

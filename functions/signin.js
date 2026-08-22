@@ -9,6 +9,7 @@
 // As a Function we can actually check, and either finish the trip or say
 // plainly what is wrong instead of spinning.
 import { authenticate } from './_lib/auth.js';
+import { TENANT } from './_lib/tenant-config.js';
 
 // Every staff destination that may send someone here after a 401. Anything not
 // on this list falls back to Mission Control, which is what stops ?next= from
@@ -89,17 +90,17 @@ function page(next, reason, hostname) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Sign in — The Next Right Thing</title>
+<title>Sign in — ${escapeHtml(TENANT.orgName)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;}
+  :root{--navy:${TENANT.colors.navy};--deep:${TENANT.colors.navyDeep};--sand:${TENANT.colors.sand};--sandl:${TENANT.colors.sandLight};}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.4rem;}
   .card{max-width:520px;text-align:center;}
   h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:2rem;margin-bottom:.6rem;}
   h1 em{color:var(--sandl);font-style:italic;}
   p{color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.2rem;}
-  a.btn{display:inline-block;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;padding:.85rem 1.8rem;border-radius:7px;text-decoration:none;font-size:.9rem;}
+  a.btn{display:inline-block;background:linear-gradient(145deg,var(--sandl),var(--sand));color:var(--navy);font-weight:700;padding:.85rem 1.8rem;border-radius:7px;text-decoration:none;font-size:.9rem;}
   code{background:rgba(255,255,255,.08);padding:.15rem .4rem;border-radius:4px;font-size:.82rem;color:var(--sandl);}
   .quiet{font-size:.78rem;color:rgba(255,255,255,.42);margin-top:1.6rem;line-height:1.8;}
 </style>
@@ -113,7 +114,7 @@ function page(next, reason, hostname) {
   <p class="quiet">You were sent to Cloudflare to sign in and came back without an identity. That almost always means no Cloudflare Access application covers this hostname yet, so there is nothing to log in to.</p>
   <p class="quiet">Fix: in Zero Trust &rarr; Access controls &rarr; Applications, add an application for <code>${escapeHtml(hostname)}</code> covering <code>/signin</code>, with a policy allowing your staff emails.</p>
   <div style="margin-top:1.4rem"><a class="btn" href="${escapeHtml(next)}">Try ${escapeHtml(next)} again</a></div>
-  <div class="quiet">The Next Right Thing in Recovery</div>
+  <div class="quiet">${escapeHtml(TENANT.orgLegalName)}</div>
 </div>
 </body>
 </html>`;

@@ -14,6 +14,7 @@
 
 import { getAuthedEmail } from '../_lib/auth.js';
 import { DIGESTS as TEAM } from '../_lib/roster.js';
+import { TENANT } from '../_lib/tenant-config.js';
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -125,13 +126,13 @@ export async function onRequest(context) {
   const voiceReply  = voiceNew.filter(c => c.wants_response);
 
   const li=(t)=>'<li style="margin:.3rem 0">'+t+'</li>';
-  const sec=(title,items)=> items.length? '<h3 style="font-family:Georgia,serif;color:#1a2744;margin:1.2rem 0 .4rem;font-size:1.05rem">'+title+'</h3><ul style="margin:0;padding-left:1.1rem;color:#333;font-size:.92rem">'+items.join('')+'</ul>' : '';
-  const wrap=(title,inner)=>'<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;color:#1a2744">'
-    +'<div style="border-bottom:3px solid #c9a96e;padding-bottom:.6rem;margin-bottom:1rem">'
+  const sec=(title,items)=> items.length? '<h3 style="font-family:Georgia,serif;color:'+TENANT.colors.navy+';margin:1.2rem 0 .4rem;font-size:1.05rem">'+title+'</h3><ul style="margin:0;padding-left:1.1rem;color:#333;font-size:.92rem">'+items.join('')+'</ul>' : '';
+  const wrap=(title,inner)=>'<meta charset="utf-8"><div style="font-family:Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;color:'+TENANT.colors.navy+'">'
+    +'<div style="border-bottom:3px solid '+TENANT.colors.sand+';padding-bottom:.6rem;margin-bottom:1rem">'
     +'<div style="font-family:Georgia,serif;font-size:1.5rem">'+title+'</div>'
-    +'<div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#888">The Next Right Thing &middot; '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+'</div></div>'
+    +'<div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#888">'+TENANT.orgName+' &middot; '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+'</div></div>'
     + (inner || '<p style="color:#555">Nothing needs attention today. Queues are clear.</p>')
-    +'<p style="margin-top:1.6rem;font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:.8rem">Open Mission Control: <a href="https://nextrighthing.com/mission-control">nextrighthing.com/mission-control</a></p></div>';
+    +'<p style="margin-top:1.6rem;font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:.8rem">Open Mission Control: <a href="https://'+TENANT.website+'/mission-control">'+TENANT.website+'/mission-control</a></p></div>';
 
   const intakeBody = wrap('Intake Brief',
     sec('Reach out today', urgentStale.map(r=>li('<b>'+(r.first_name||'')+' '+(r.last_name||'')+'</b> &mdash; recent use, still marked New'+(r.phone?' &middot; '+r.phone:'')))) +
@@ -180,7 +181,7 @@ export async function onRequest(context) {
       li('In-kind codes pending redemption: '+inkind.filter(r=>(r.status||'issued')==='issued').length),
       li('Total declared in-kind value: $'+inkind.reduce((t,r)=>t+(Number(r.donor_value)||0),0).toLocaleString('en-US'))
     ])
-    + (owing2.length? ('<div style="background:#fdf6ef;border-left:4px solid #c9a96e;padding:.9rem 1.1rem;margin:1.2rem 0;border-radius:4px">'
+    + (owing2.length? ('<div style="background:#fdf6ef;border-left:4px solid '+TENANT.colors.sand+';padding:.9rem 1.1rem;margin:1.2rem 0;border-radius:4px">'
       +'<div style="font-family:Georgia,serif;color:#8a6a2f;font-size:1.05rem;margin-bottom:.15rem">Money On The Table</div>'
       +'<div style="color:#6b5836;font-size:.86rem;margin-bottom:.6rem">$'+Math.round(totalOwed).toLocaleString('en-US')+' outstanding across '+owing2.length+' residents'
       + (emptyBeds? (' &nbsp;·&nbsp; plus '+emptyBeds+' empty beds worth about $'+Math.round(bedRevenue).toLocaleString('en-US')+'/month'):'')+'</div>'
@@ -189,8 +190,8 @@ export async function onRequest(context) {
           +(r.house_name?(' &nbsp;<span style="color:#8a7a5c">'+r.house_name+'</span>'):'')
           +'<br><span style="color:#6b5836;font-size:.84rem">'+offerFor(r)+'</span></li>').join('')
       +'</ul></div>') : '')
-    + '<div style="background:#f4f6fb;border-left:4px solid #1a2744;padding:.9rem 1.1rem;margin:1.1rem 0;border-radius:4px">'
-      +'<div style="font-family:Georgia,serif;color:#1a2744;font-size:1.05rem;margin-bottom:.45rem">Do These Three Things</div>'
+    + '<div style="background:#f4f6fb;border-left:4px solid '+TENANT.colors.navy+';padding:.9rem 1.1rem;margin:1.1rem 0;border-radius:4px">'
+      +'<div style="font-family:Georgia,serif;color:'+TENANT.colors.navy+';font-size:1.05rem;margin-bottom:.45rem">Do These Three Things</div>'
       +'<ol style="margin:0;padding-left:1.2rem;color:#33436a;font-size:.9rem">'
       + [
           (emptyBeds? '<li style="margin:.4rem 0"><b>Fill beds before chasing balances.</b> '+emptyBeds+' open beds are worth about $'+Math.round(bedRevenue).toLocaleString('en-US')+'/month &mdash; more than most of what is owed, and it costs nobody their dignity. Check the intake queue for anyone who flagged &ldquo;housing needed.&rdquo;</li>':''),
@@ -250,7 +251,7 @@ export async function onRequest(context) {
   // Insurance, licences and registrations do not announce themselves when they
   // lapse. They are fine right up until somebody asks for proof. Sixty days is
   // enough notice to renew without paying a rush fee or pausing work.
-  const ENTITY={treatment_center:'Treatment Center',nonprofit:'Nonprofit (501c3)',rent_a_husband:'Rent A Husband',other:'Other'};
+  const ENTITY={treatment_center:'Treatment Center',nonprofit:'Nonprofit (501c3)',rent_a_husband:TENANT.programs.workCrew.label,other:'Other'};
   const compLive=(compliance||[]).filter(c=>c.status!=='cancelled'&&c.status!=='not_required');
   const compExpired=compLive.filter(c=>c.expires_on&&until(c.expires_on)<0);
   const compSoon=compLive.filter(c=>c.expires_on&&until(c.expires_on)>=0&&until(c.expires_on)<=60)
@@ -275,12 +276,12 @@ export async function onRequest(context) {
   const complianceBody = wrap('Checks &amp; Balances',
     (rahItems.length
       ? '<div style="border-left:4px solid '+(rahOk?'#2f7d4f':'#b23a3a')+';background:'+(rahOk?'#f2f8f4':'#fdf2f2')+';padding:.7rem 1rem;margin-bottom:1rem;font-size:.92rem">'
-        +'<b>Rent A Husband:</b> '+(rahOk
+        +'<b>'+TENANT.programs.workCrew.label+':</b> '+(rahOk
           ? 'all '+rahItems.length+' item'+(rahItems.length===1?'':'s')+' current. Crews are clear to work.'
           : rahBad.length+' item'+(rahBad.length===1?' is':'s are')+' not current &mdash; '+rahBad.map(c=>c.name).join(', ')+'. Decide before crews go out.')
         +'</div>'
-      : '<div style="border-left:4px solid #c9a96e;background:#fdfaf4;padding:.7rem 1rem;margin-bottom:1rem;font-size:.92rem">'
-        +'<b>Rent A Husband:</b> nothing on file yet. Add the LLC registration, the liability policy and any licence so this can be verified rather than assumed.</div>') +
+      : '<div style="border-left:4px solid '+TENANT.colors.sand+';background:#fdfaf4;padding:.7rem 1rem;margin-bottom:1rem;font-size:.92rem">'
+        +'<b>'+TENANT.programs.workCrew.label+':</b> nothing on file yet. Add the LLC registration, the liability policy and any licence so this can be verified rather than assumed.</div>') +
     sec('EXPIRED &mdash; act today', compExpired.map(c=>li('<b>'+(ENTITY[c.entity]||c.entity)+'</b> &mdash; '+c.name+(c.provider?' ('+c.provider+')':'')+' expired '+c.expires_on+', '+Math.abs(until(c.expires_on))+' days ago'))) +
     sec('Expiring within 60 days', compSoon.map(c=>li('<b>'+(ENTITY[c.entity]||c.entity)+'</b> &mdash; '+c.name+' expires '+c.expires_on+' ('+until(c.expires_on)+' days)'+(c.policy_number?' &middot; #'+c.policy_number:'')))) +
     sec('Marked pending or lapsed', compLapsed.map(c=>li((ENTITY[c.entity]||c.entity)+' &mdash; '+c.name+' is '+c.status))) +
@@ -298,7 +299,7 @@ export async function onRequest(context) {
     { to:TEAM.funding, subject:'Funding Brief &mdash; '+expiring.length+' coverage'+(expiring.length===1?'':'s')+' ending within 30 days', html:fundingBody },
     { to:TEAM.leadership, subject:'Incident & Compliance Brief &mdash; '+incCritOpen.length+' critical unreported, '+voiceNew.length+' Speak Up', html:incidentBody },
     { to:TEAM.leadership, subject:'Checks &amp; Balances &mdash; '+(compExpired.length+docExpired.length)+' expired, '+compSoon.length+' expiring within 60 days', html:complianceBody },
-    { to:TEAM.leadership, subject:'Daily Command Brief &mdash; The Next Right Thing', html:leadershipBody }
+    { to:TEAM.leadership, subject:'Daily Command Brief &mdash; '+TENANT.orgName, html:leadershipBody }
   ];
 
   // Preview renders resident names and balances, so it requires a signed-in human.
@@ -323,7 +324,7 @@ export async function onRequest(context) {
     try{
       const r=await fetch('https://api.resend.com/emails',{method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.RESEND_API_KEY},
-        body:JSON.stringify({ from: env.RESEND_FROM || 'NRT Patrol <patrol@nextrighthing.com>', to:m.to, subject:m.subject, html:m.html })});
+        body:JSON.stringify({ from: env.RESEND_FROM || TENANT.defaultFromName+' <'+TENANT.defaultFromAddress+'>', to:m.to, subject:m.subject, html:m.html })});
       sent.push({ to:m.to, ok:r.ok, status:r.status });
     }catch(e){ sent.push({ to:m.to, ok:false, error:String(e) }); }
   }
