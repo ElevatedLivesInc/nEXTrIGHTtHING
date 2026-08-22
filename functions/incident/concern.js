@@ -1,16 +1,12 @@
 // POST /incident/concern -> staff review of a Speak Up submission
 import { getAuthedEmail } from '../_lib/auth.js';
+import { allowedFor } from '../_lib/roster.js';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json = (o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json; charset=utf-8'}});
 
-  const ALLOWED = [
-    'gabe@nextrighthing.com',
-    'cateo@nextrighthing.com',
-    'rob@nextrighthing.com',
-    'bailey@nextrighthing.com'
-  ];
+  const ALLOWED = allowedFor('incident');
   const who = await getAuthedEmail(request, env);
   if (!who) return json({ ok:false, error:'not signed in' },401);
   if (!ALLOWED.includes(who)) return json({ ok:false, error:'no access' },403);

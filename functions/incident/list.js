@@ -1,16 +1,12 @@
 // GET /incident/list -> all incident reports, newest occurrence first
 import { getAuthedEmail } from '../_lib/auth.js';
+import { allowedFor } from '../_lib/roster.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
   const json = (o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json; charset=utf-8'}});
 
-  const ALLOWED = [
-    'gabe@nextrighthing.com',
-    'cateo@nextrighthing.com',
-    'rob@nextrighthing.com',
-    'bailey@nextrighthing.com'
-  ];
+  const ALLOWED = allowedFor('incident');
   const who = await getAuthedEmail(request, env);
   if (!who) return json({ error:'not signed in' },401);
   if (!ALLOWED.includes(who)) return json({ error:'Your account does not have access to incident reports.' },403);

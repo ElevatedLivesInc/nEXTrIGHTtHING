@@ -1,19 +1,15 @@
 // POST /incident/save -> file a new incident, or update an existing one
 import { getAuthedEmail } from '../_lib/auth.js';
+import { allowedFor } from '../_lib/roster.js';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json = (o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json; charset=utf-8'}});
 
   // Client-side operations data. Nonprofit-only staff must NOT be on this list.
-  // To add someone: add their @nextrighthing.com address here AND to the
-  // "Allowed admins" policy in Cloudflare Zero Trust.
-  const ALLOWED = [
-    'gabe@nextrighthing.com',
-    'cateo@nextrighthing.com',
-    'rob@nextrighthing.com',
-    'bailey@nextrighthing.com'
-  ];
+  // To add someone: add their @nextrighthing.com address to _lib/roster.js AND
+  // to the "Allowed admins" policy in Cloudflare Zero Trust.
+  const ALLOWED = allowedFor('incident');
   const who = await getAuthedEmail(request, env);
   if (!who) return json({ ok:false, error:'not signed in' },401);
   if (!ALLOWED.includes(who)) return json({ ok:false, error:'Your account does not have access to incident reports.' },403);
