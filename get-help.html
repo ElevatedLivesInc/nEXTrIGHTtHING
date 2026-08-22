@@ -261,6 +261,10 @@
             <option>This month</option><option>Over a month ago</option>
           </select></div>
         </div>
+        <div class="fg"><label>Employment status</label><select id="f_employment">
+          <option value="">Prefer not to say</option><option>Employed full-time</option>
+          <option>Employed part-time</option><option>Unemployed</option><option>Unable to work</option>
+        </select></div>
         <div class="fg"><label>What's making you reach out right now?</label><input id="f_mot" placeholder="In your own words — short is fine"></div>
         <div class="fg"><label>Anything else we should know</label><textarea id="f_msg"></textarea></div>
         <input type="hidden" id="f_source" value="get-help-page">
@@ -324,6 +328,7 @@ async function submitForm(e){
     first_name:g('f_first'), last_name:g('f_last'), phone:g('f_phone'), email:g('f_email'),
     reaching_as:g('f_as'), insurance:g('f_ins'), insurance_company:g('f_inscomp'),
     needs_housing:g('f_house'), probation_parole:g('f_prob'), primary_substance:g('f_sub'),
+    employment_status:g('f_employment'),
     last_use:g('f_use'), motivation:g('f_mot'), best_time:g('f_time'), message:g('f_msg'),
     source:g('f_source')
   };

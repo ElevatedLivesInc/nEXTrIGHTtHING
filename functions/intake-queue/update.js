@@ -27,6 +27,7 @@ export async function onRequestPost(context) {
       reaching_as:S(body.reaching_as,20)||'self',
       insurance:S(body.insurance,60), insurance_company:S(body.insurance_company,120),
       needs_housing:S(body.needs_housing,20), probation_parole:S(body.probation_parole,30),
+      employment_status:S(body.employment_status,30),
       primary_substance:S(body.primary_substance,120), last_use:S(body.last_use,40),
       motivation:S(body.motivation,500), best_time:S(body.best_time,20),
       message:S(body.message,2000), source:S(body.source,40)||'phone',

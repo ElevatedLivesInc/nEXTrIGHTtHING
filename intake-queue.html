@@ -124,6 +124,7 @@
       <div class="nf"><label>Housing needed?</label><select id="n_house"><option value="">&mdash;</option><option>Yes</option><option>No</option><option>Not sure</option></select></div>
       <div class="nf"><label>Probation / parole?</label><select id="n_prob"><option value="">&mdash;</option><option>Yes</option><option>No</option><option>Prefer not to say</option></select></div>
     </div>
+    <div class="nf"><label>Employment status</label><select id="n_employment"><option value="">&mdash;</option><option>Employed full-time</option><option>Employed part-time</option><option>Unemployed</option><option>Unable to work</option></select></div>
     <div class="nf2">
       <div class="nf"><label>Primary substance</label><input id="n_sub"></div>
       <div class="nf"><label>Last use</label><select id="n_use"><option value="">&mdash;</option><option>Today</option><option>This week</option><option>This month</option><option>Over a month ago</option><option>Prefer not to say</option></select></div>
@@ -179,6 +180,7 @@ async function saveNew(btn){
   const body={create:true,first_name:v('n_first'),last_name:v('n_last'),phone:v('n_phone'),email:v('n_email'),
     source:v('n_source'),referred_by:v('n_ref'),reaching_as:v('n_as'),insurance:v('n_ins'),
     needs_housing:v('n_house'),probation_parole:v('n_prob'),primary_substance:v('n_sub'),
+    employment_status:v('n_employment'),
     last_use:v('n_use'),best_time:v('n_time'),message:v('n_msg')};
   if(!body.first_name&&!body.phone){alert('Add at least a name or a phone number');return;}
   btn.textContent='Adding…';
@@ -238,6 +240,7 @@ function copySummary(id,btn){
   if(r.insurance)L.push('Insurance: '+r.insurance+(r.insurance_company?(' — '+r.insurance_company):''));
   if(r.needs_housing)L.push('Housing needed: '+r.needs_housing);
   if(r.probation_parole)L.push('Probation/parole: '+r.probation_parole);
+  if(r.employment_status)L.push('Employment: '+r.employment_status);
   if(r.primary_substance)L.push('Primary substance: '+r.primary_substance);
   if(r.last_use)L.push('Last use: '+r.last_use);
   if(r.best_time)L.push('Best time: '+r.best_time);
@@ -337,6 +340,7 @@ function render(){
       +line('Insurance', [r.insurance,r.insurance_company].filter(Boolean).join(' — '))
       +line('Housing needed', r.needs_housing)
       +line('Probation / parole', r.probation_parole)
+      +line('Employment', r.employment_status)
       +line('Primary substance', r.primary_substance)
       +line('Last use', r.last_use)
       +line('Best time to call', r.best_time)

@@ -81,6 +81,7 @@ export async function onRequestPost(context) {
     ir.last_use ? 'Last use at intake: '+ir.last_use : null,
     ir.probation_parole ? 'Probation / parole: '+ir.probation_parole : null,
     ir.needs_housing ? 'Needed housing: '+ir.needs_housing : null,
+    ir.employment_status ? 'Employment at intake: '+ir.employment_status : null,
     ir.motivation ? 'In their words: '+ir.motivation : null,
     ir.message ? 'Message left: '+ir.message : null
   ].filter(Boolean);

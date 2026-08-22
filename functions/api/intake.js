@@ -22,6 +22,7 @@ export async function onRequestPost(context) {
     insurance_company: clean(body.insurance_company, 120),
     needs_housing:     clean(body.needs_housing, 20),
     probation_parole:  clean(body.probation_parole, 30),
+    employment_status: clean(body.employment_status, 30),
     primary_substance: clean(body.primary_substance, 120),
     last_use:          clean(body.last_use, 40),
     motivation:        clean(body.motivation, 500),
