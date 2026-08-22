@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Client File — The Next Right Thing</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;--line:rgba(201,169,110,.22);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;padding-bottom:4rem;}
+  .top{background:var(--navy);border-bottom:1px solid var(--line);padding:1.2rem 1.4rem;}
+  .ti{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:2rem;}
+  h1 em{color:var(--sandl);font-style:italic;}
+  .meta{font-size:.8rem;color:rgba(255,255,255,.6);margin-top:.3rem;line-height:1.7;}
+  .btn{background:linear-gradient(145deg,var(--sandl),var(--sand));color:var(--navy);font-weight:700;border:none;
+       border-radius:7px;padding:.6rem 1.2rem;cursor:pointer;font-family:'Raleway',sans-serif;font-size:.8rem;text-decoration:none;display:inline-block;}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:rgba(255,255,255,.7);font-weight:400;}
+  .wrap{max-width:900px;margin:0 auto;padding:1.4rem;}
+  .scope{border:1px solid var(--line);background:rgba(201,169,110,.06);border-radius:8px;padding:.7rem 1rem;
+         font-size:.78rem;color:rgba(255,255,255,.62);line-height:1.6;margin-bottom:1.4rem;}
+  section{border:1px solid var(--line);border-radius:10px;padding:1.2rem 1.3rem;margin-bottom:1rem;background:rgba(255,255,255,.02);}
+  h2{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);margin-bottom:.9rem;}
+  .kv{display:grid;grid-template-columns:170px 1fr;gap:.4rem 1rem;font-size:.88rem;line-height:1.7;}
+  .kv b{color:rgba(255,255,255,.5);font-weight:400;font-size:.8rem;}
+  .item{border-left:2px solid var(--line);padding:.45rem 0 .45rem .85rem;margin-bottom:.6rem;font-size:.87rem;
+        color:rgba(255,255,255,.82);line-height:1.7;white-space:pre-wrap;}
+  .when{font-size:.72rem;color:rgba(255,255,255,.45);white-space:normal;}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;}
+  th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);
+     font-weight:400;padding:.35rem .5rem .35rem 0;border-bottom:1px solid var(--line);}
+  td{padding:.45rem .5rem .45rem 0;border-bottom:1px solid rgba(201,169,110,.1);vertical-align:top;}
+  .right{text-align:right;}
+  .chip{display:inline-block;font-size:.63rem;letter-spacing:.07em;text-transform:uppercase;padding:.15rem .5rem;
+        border-radius:50px;border:1px solid;}
+  .ok{color:#9fd8b0;border-color:rgba(159,216,176,.45);}
+  .warn{color:#f0d9a0;border-color:rgba(240,217,160,.45);}
+  .bad{color:#f0b6b6;border-color:rgba(240,182,182,.5);}
+  .empty{color:rgba(255,255,255,.4);font-size:.85rem;font-style:italic;}
+  .note{border:1px dashed var(--line);border-radius:10px;padding:2.5rem 1rem;text-align:center;color:rgba(255,255,255,.55);}
+  a{color:var(--sand);}
+  @media print{
+    body{background:#fff;color:#111;padding:0;}
+    .top{background:#fff;border-color:#999;} h1,h1 em{color:#111;} .meta,.scope{color:#444;}
+    .btn,.noprint{display:none!important;}
+    section{border-color:#ccc;background:#fff;page-break-inside:avoid;}
+    h2{color:#666;} .kv b,.when{color:#666;} .item{color:#111;border-color:#ccc;}
+    td,th{color:#111;border-color:#ddd;} .chip{color:#333!important;border-color:#999!important;}
+  }
+  @media(max-width:680px){.kv{grid-template-columns:1fr;gap:.1rem 0;}.kv b{margin-top:.5rem;}}
+</style>
+</head>
+<body>
+<div class="top"><div class="ti">
+  <div><h1 id="nm">Client <em>File</em></h1><div class="meta" id="sub"></div></div>
+  <div class="noprint" style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <button class="btn" onclick="window.print()">Print</button>
+    <a class="btn ghost" href="/mission-control">&larr; Mission Control</a>
+  </div>
+</div></div>
+<div class="wrap"><div id="body"><div class="note">Loading…</div></div></div>
+
+<script>
+const q=new URLSearchParams(location.search).get('id');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const n=v=>Number(v)||0;
+const money=v=>'$'+n(v).toLocaleString('en-US',{maximumFractionDigits:2});
+const d=v=>v?esc(String(v).slice(0,10)):'—';
+function daysAgo(x){if(!x)return null;try{return Math.floor((new Date()-new Date(String(x).slice(0,10)+'T00:00:00'))/86400000);}catch(_){return null;}}
+
+function kv(pairs){return '<div class="kv">'+pairs.filter(p=>p[1]!=null&&p[1]!=='').map(p=>'<b>'+esc(p[0])+'</b><span>'+p[1]+'</span>').join('')+'</div>';}
+function sec(title,inner,emptyMsg){
+  return '<section><h2>'+esc(title)+'</h2>'+(inner||'<div class="empty">'+esc(emptyMsg||'Nothing recorded.')+'</div>')+'</section>';
+}
+
+function render(D){
+  const c=D.client, r=D.resident, s=D.scope;
+  document.getElementById('nm').innerHTML=esc(c.name||'Client')+' <em>file</em>';
+  document.getElementById('sub').innerHTML=
+    '<span class="chip '+(c.status==='active'?'ok':(c.status==='discharged'?'bad':'warn'))+'">'+esc(c.status||'')+'</span> &nbsp;'
+    +(r&&r.house_name?esc(r.house_name)+(r.room?' · Room '+esc(r.room):'')+' &middot; ':'')
+    +'admitted '+d(c.admitted_on)
+    +(c.discharged_on?' &middot; discharged '+d(c.discharged_on):'')
+    +'<br>Printed '+new Date().toLocaleString('en-US')+' for '+esc(D.viewer);
+
+  let h='';
+  h+='<div class="scope noprint">You are seeing '
+    +(s.money&&s.clinical?'the complete file.':(s.clinical?'the clinical sections. Rent, balances and payment history are not loaded for your account.':'the housing and financial sections. Case notes, goals and documents are not loaded for your account.'))
+    +' Sections you cannot see are not hidden on this page &mdash; they were never sent to it.</div>';
+
+  h+=sec('Identity',kv([
+    ['Name',esc(c.name)],['Phone',esc(c.phone||(r&&r.phone)||'')],['Email',esc(c.email||(r&&r.email)||'')],
+    ['Date of birth',c.date_of_birth?d(c.date_of_birth):''],
+    ['Client ID','<span style="font-size:.75rem;opacity:.6">'+esc(c.id)+'</span>'],
+    ['Emergency contact',r?esc(r.emergency_contact||''):''],
+    ['Case manager',r?esc(r.case_manager||'')||'<span class="chip warn">unassigned</span>':''],
+    ['Level of care',r?esc(r.treatment_level||''):'']
+  ]));
+
+  if(D.intake){
+    const i=D.intake;
+    h+=sec('How they came to us',kv([
+      ['Reached out',d(i.created_at)],
+      ['As',i.reaching_as==='family'?'A family member':'Themselves'],
+      ['Source',esc([i.source,i.referred_by].filter(Boolean).join(' — '))],
+      ['Insurance at intake',esc([i.insurance,i.insurance_company].filter(Boolean).join(' — '))],
+      ['Primary substance',esc(i.primary_substance||'')],
+      ['Last use at intake',esc(i.last_use||'')],
+      ['Probation / parole',esc(i.probation_parole||'')],
+      ['In their words',i.motivation?'<em>&ldquo;'+esc(i.motivation)+'&rdquo;</em>':'']
+    ]));
+  }
+
+  if(r) h+=sec('Housing',kv([
+    ['House',esc(r.house_name||'')],['Room',esc(r.room||'')],
+    ['Moved in',d(r.move_in_date)],['Moved out',r.move_out_date?d(r.move_out_date):''],
+    ['Status',esc(r.status||'')+(r.on_notice?' <span class="chip bad">on notice</span>':'')],
+    ['Warnings',n(r.warnings)?String(r.warnings)+(r.warning_reason?' — '+esc(r.warning_reason):''):'0'],
+    ['Last talked to',r.last_talked?d(r.last_talked)+' ('+daysAgo(r.last_talked)+' days ago)':'never'],
+    ['Last UA',r.last_ua?d(r.last_ua)+(r.ua_result?' — '+esc(r.ua_result==='clean'?'negative':r.ua_result==='dirty'?'positive':r.ua_result):''):'none on record'],
+    s.money?['Monthly rent',money(r.monthly_rent)]:null,
+    s.money?['Balance',money(n(r.past_due)+n(r.current_due)-n(r.amount_paid))]:null,
+    s.money?['Paid to date',money(r.amount_paid)]:null,
+    ['Payer',esc(r.payer_type||'')],['Funding source',esc(r.funding_source||'')],
+    ['Funding ends',r.funding_end?d(r.funding_end):'']
+  ].filter(Boolean)));
+
+  if(r) h+=sec('Readiness',kv([
+    ['State ID',r.has_id?'<span class="chip ok">yes</span>':'<span class="chip warn">no</span>'],
+    ['SS card',r.has_ss_card?'<span class="chip ok">yes</span>':'<span class="chip warn">no</span>'],
+    ['Birth certificate',r.has_birth_cert?'<span class="chip ok">yes</span>':'<span class="chip warn">no</span>'],
+    ['Bank account',r.bank_account?'<span class="chip ok">yes</span>':'<span class="chip warn">no</span>'],
+    ['Employed',r.employed?'<span class="chip ok">yes</span>'+(r.employer?' — '+esc(r.employer):''):'<span class="chip warn">no</span>'],
+    ['Certifications',esc(String(r.certifications||'').split('|').filter(Boolean).join(', '))],
+    ['Savings',s.money||r.savings_balance!=null?money(r.savings_balance):'']
+  ]));
+
+  // Meetings — this is the attendance record a funder or a surveyor asks for,
+  // and nobody had to fill anything in to produce it.
+  h+=sec('Meeting attendance ('+D.meetings.length+' on record)',
+    D.meetings.length?'<table><tr><th>Date</th><th>Type</th><th>Verified by</th></tr>'
+      +D.meetings.map(m=>'<tr><td>'+d(m.meeting_date)+'</td><td>'+esc(m.kind||'')+'</td><td>'+esc(m.verified_by||'—')+'</td></tr>').join('')
+      +'</table>':'', 'No meetings logged. Anything Rob taps on Rounds lands here with its own date.');
+
+  if(s.clinical){
+    h+=sec('Case notes ('+D.notes.length+')',
+      D.notes.map(x=>'<div class="item"><span class="when">'+d(x.note_date)+' · '+esc(x.contact_type||'')+' · '+esc(x.author||'')+'</span>\n'
+        +esc(x.summary||'')+(x.next_step?'\n▸ Next: '+esc(x.next_step)+(x.next_step_due?' (by '+d(x.next_step_due)+')':''):'')+'</div>').join(''),
+      'No contact notes yet.');
+
+    h+=sec('Goals',
+      D.goals.length?'<table><tr><th>Domain</th><th>Goal</th><th>Status</th><th>Target</th></tr>'
+        +D.goals.map(x=>'<tr><td>'+esc(x.domain||'')+'</td><td>'+esc(x.goal||'')+'</td><td><span class="chip '+(x.status==='met'?'ok':'warn')+'">'+esc(x.status||'')+'</span></td><td>'+d(x.target_date)+'</td></tr>').join('')
+        +'</table>':'', 'No goals set.');
+
+    const needs=r&&r.case_needs?Object.entries(r.case_needs).filter(([k,v])=>v&&v!=='na'):[];
+    h+=sec('Needs & services',
+      needs.length?'<table><tr><th>Need</th><th>Status</th></tr>'
+        +needs.map(([k,v])=>'<tr><td>'+esc(k.replace(/_/g,' '))+'</td><td><span class="chip '+(v==='done'?'ok':'warn')+'">'+esc(v)+'</span></td></tr>').join('')
+        +'</table>':'', 'Nothing assessed yet.');
+
+    h+=sec('Documents',
+      D.documents.length?'<table><tr><th>Type</th><th>Title</th><th>Signed</th><th>Expires</th><th></th></tr>'
+        +D.documents.map(x=>'<tr><td>'+esc(x.doc_type||'')+'</td><td>'+esc(x.title||'')+'</td><td>'+d(x.signed_on)+'</td><td>'+d(x.expires_on)+'</td>'
+          +'<td class="noprint">'+(x.file_path?'<a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener">open</a>':'')+'</td></tr>').join('')
+        +'</table>':'', 'No documents on file.');
+
+    if(D.incidents.length) h+=sec('Incidents',
+      '<table><tr><th>Date</th><th>Type</th><th>Severity</th><th>Status</th></tr>'
+      +D.incidents.map(x=>'<tr><td>'+d(x.incident_date)+'</td><td>'+esc(x.incident_type||'')+'</td><td>'+esc(x.severity||'')+'</td><td>'+esc(x.status||'')+'</td></tr>').join('')+'</table>');
+  }
+
+  if(s.funding) h+=sec('Funding',
+    D.applications.length?'<table><tr><th>Funder</th><th>Status</th><th>Applied</th><th>Coverage</th><th class="right">Amount</th></tr>'
+      +D.applications.map(a=>'<tr><td>'+esc(a.funder_name||'')+'</td><td><span class="chip '+(a.status==='approved'?'ok':(a.status==='denied'?'bad':'warn'))+'">'+esc(a.status||'')+'</span></td>'
+        +'<td>'+d(a.applied_date)+'</td><td>'+d(a.coverage_start)+' → '+d(a.coverage_end)+'</td><td class="right">'+money(a.amount)+'</td></tr>').join('')
+      +'</table>':'', 'No funding applications. Check the Funding Navigator for funders they have never been put in front of.');
+
+  if(s.money){
+    const tot=D.payments.filter(p=>!p.voided).reduce((t,p)=>t+n(p.amount),0);
+    h+=sec('Payment ledger ('+D.payments.length+' entries)',
+      D.payments.length?'<table><tr><th>Date</th><th>Kind</th><th>How</th><th>Taken by</th><th class="right">Amount</th></tr>'
+        +D.payments.map(p=>'<tr><td>'+d(p.paid_on)+'</td><td>'+esc(p.kind||'')+'</td><td>'+esc(p.method||'—')+'</td><td>'+esc(p.taken_by||'—')+'</td><td class="right">'+money(p.amount)+'</td></tr>').join('')
+        +'<tr><td colspan="4"><b>Total recorded</b></td><td class="right"><b>'+money(tot)+'</b></td></tr></table>':'',
+      'No payments recorded.');
+  }
+
+  if(D.work.length) h+=sec('Work — Rent A Husband',
+    '<table><tr><th>Signed up</th><th>Status</th><th>Background</th><th>Skills</th></tr>'
+    +D.work.map(w=>'<tr><td>'+d(w.created_at)+'</td><td><span class="chip '+(w.status==='placed'?'ok':'warn')+'">'+esc(w.status||'')+'</span></td>'
+      +'<td>'+esc(w.background_ok||'unknown')+'</td><td>'+esc(w.skills||'')+'</td></tr>').join('')+'</table>');
+
+  h+='<div class="scope" style="margin-top:1.4rem">This file was assembled from the work as it happened &mdash; every meeting Rob logged on rounds, every note a case manager wrote, every payment taken. Nobody filled out a form to produce it.</div>';
+  document.getElementById('body').innerHTML=h;
+}
+
+(async function(){
+  if(!q){document.getElementById('body').innerHTML='<div class="note">No client specified. Open a file from the Intake Queue, Housing or Case Management.</div>';return;}
+  try{
+    const res=await fetch('/client/file?id='+encodeURIComponent(q));
+    if(res.status===401||res.status===403){
+      document.getElementById('body').innerHTML='<div class="note">'
+        +(res.status===403?'Your account does not have access to client files.'
+          :'<a class="btn" href="/signin?next='+encodeURIComponent('/client?id='+q)+'">Sign in to view this file</a>')+'</div>';return;}
+    const D=await res.json();
+    if(D.error){document.getElementById('body').innerHTML='<div class="note">'+esc(D.error)+'</div>';return;}
+    render(D);
+  }catch(_){ document.getElementById('body').innerHTML='<div class="note">Could not load. Check your connection and reload.</div>'; }
+})();
+</script>
+</body>
+</html>

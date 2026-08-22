@@ -94,6 +94,18 @@
   .btnrow{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem;}
   .note{max-width:640px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
   .note code{background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:4px;}
+  /* NEEDS & SERVICES */
+  .needgrp-title{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sand);margin:.8rem 0 .35rem;}
+  .needgrp-title:first-child{margin-top:0;}
+  .needrow{display:flex;align-items:center;gap:.6rem;padding:.28rem 0;border-bottom:1px dashed rgba(255,255,255,.08);}
+  .needrow:last-child{border-bottom:none;}
+  .needrow label{flex:1;margin:0;font-size:.72rem;text-transform:none;letter-spacing:0;color:rgba(255,255,255,.8);}
+  .needrow select{width:160px;flex:none;}
+  select.st-needed{border-color:rgba(224,120,120,.5);color:#f0b6b6;}
+  select.st-referred{border-color:rgba(224,150,90,.5);color:#f3c48f;}
+  select.st-scheduled{border-color:rgba(124,92,191,.5);color:var(--lav);}
+  select.st-done{border-color:rgba(120,200,150,.45);color:#a9e5c3;}
+  select.st-na{opacity:.55;}
   @media(max-width:640px){.two,.three{grid-template-columns:1fr;}}
   @media print{.tabs,.btn,.viewer{display:none!important}body{background:#fff;color:#000}.house,.row{border-color:#ccc}.hname,.stat .n{color:#000}}
 </style>
@@ -112,6 +124,7 @@
     <div class="stat bad"><div class="n" id="sOwed">–</div><div class="l">Total Outstanding</div></div>
     <div class="stat"><div class="n" id="sCollected">–</div><div class="l">Collected</div></div>
     <div class="stat bad"><div class="n" id="sCliff">–</div><div class="l">Funding Cliffs 30d</div></div>
+    <div class="stat bad"><div class="n" id="sCaseOverdue">–</div><div class="l">Overdue Case Follow-ups</div></div>
   </div>
 
   <div class="tabs" id="tabs" style="display:none">
@@ -119,6 +132,10 @@
     <button class="tab" data-t="collect">Collection Board</button>
     <button class="tab" data-t="success">Success Records</button>
     <button class="tab" data-t="beds">Open Beds</button>
+    <button class="tab" data-t="moveouts">Move-Outs Owing</button>
+    <button class="tab" data-t="readiness">Readiness</button>
+    <button class="tab" data-t="ledger">Ledger</button>
+    <button class="tab" data-t="casemgmt">Case Management</button>
     <input id="q" placeholder="Search resident, house, room…">
     <button class="btn" onclick="window.print()">Print</button>
     <button class="btn" onclick="exportCSV()">CSV</button>
@@ -189,8 +206,8 @@
       <button class="qabtn" onclick="quick('talk',this)">Talked to</button>
       <button class="qabtn good" onclick="quick('house_meeting',this)">House meeting</button>
       <button class="qabtn good" onclick="quick('peer_meeting',this)">Peer meeting</button>
-      <button class="qabtn good" onclick="quick('ua_clean',this)">UA clean</button>
-      <button class="qabtn bad" onclick="quick('ua_dirty',this)">UA dirty</button>
+      <button class="qabtn good" onclick="quick('ua_negative',this)">UA negative</button>
+      <button class="qabtn bad" onclick="quick('ua_positive',this)">UA positive</button>
       <button class="qabtn warn" onclick="quick('warn',this)">Warning</button>
       <button class="qabtn" onclick="quick('undo_warn',this)">Undo warning</button>
       <button class="qabtn bad" id="qaNotice" onclick="quick('notice',this)">Put on notice</button>
@@ -207,7 +224,7 @@
     </div>
     <div class="three">
       <div class="fld"><label>Last UA</label><input id="r_lastua" type="date"></div>
-      <div class="fld"><label>UA result</label><select id="r_uares"><option value="">—</option><option value="clean">Clean</option><option value="dirty">Dirty</option><option value="refused">Refused</option></select></div>
+      <div class="fld"><label>UA result</label><select id="r_uares"><option value="">—</option><option value="negative">Negative</option><option value="positive">Positive</option><option value="refused">Refused</option></select></div>
       <div class="fld"><label>&nbsp;</label>
         <div class="checks" style="padding-top:.4rem">
           <label><input type="checkbox" id="r_curfew"> Curfew ok</label>
@@ -238,6 +255,14 @@
       <div class="fld"><label>Case manager</label><input id="r_cm"></div>
       <div class="fld"><label>Treatment level</label><select id="r_tl"><option value="">—</option><option>PHP</option><option>IOP</option><option>GOP</option><option>none</option></select></div>
     </div>
+    <div class="three">
+      <div class="fld"><label>Next case management contact due</label><input id="r_followup" type="date"></div>
+    </div>
+  </div>
+
+  <div class="grp"><h4>Needs &amp; Services</h4>
+    <div class="stamp" style="margin-bottom:.4rem">Everything a person needs beyond a bed and a UA. Anything left <b>Needed</b> or <b>Referred</b> is an open case.</div>
+    <div id="needsList"></div>
   </div>
 
   <div class="grp"><h4>Notes</h4>
@@ -249,12 +274,23 @@
       <div class="fld"><label>Type</label><select id="e_kind">
         <option value="payment">Payment received</option><option value="maintenance">Maintenance</option>
         <option value="welfare">Welfare check</option><option value="conflict">Conflict</option>
-        <option value="curfew">Curfew</option><option value="note">Note</option>
+        <option value="curfew">Curfew</option><option value="case_note">Case management note</option>
+        <option value="referral">Referral made</option><option value="note">Note</option>
       </select></div>
       <div class="fld"><label>Amount (if payment)</label><input id="e_amount"></div>
       <div class="fld"><label>&nbsp;</label><button class="btn solid" style="width:100%" onclick="logEvent(this)">Log it</button></div>
     </div>
+    <div class="three">
+      <div class="fld"><label>Date taken</label><input id="e_paidon" type="date"></div>
+      <div class="fld"><label>How</label><select id="e_method">
+        <option value="">&mdash;</option><option value="cash">Cash</option><option value="card">Card</option>
+        <option value="check">Check</option><option value="money order">Money order</option>
+        <option value="transfer">Transfer</option><option value="funder">Paid by funder</option>
+        <option value="credit">Credit</option><option value="adjustment">Adjustment</option></select></div>
+      <div class="fld"><label>Taken by</label><input id="e_takenby" placeholder="defaults to you"></div>
+    </div>
     <div class="fld"><label>Detail</label><input id="e_detail"></div>
+    <div style="margin-top:1rem"><h4 style="font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#c9a96e;margin-bottom:.5rem">Payment ledger</h4><div id="ledger"></div></div>
   </div>
 
   <div class="btnrow">
@@ -292,16 +328,156 @@ function showWelcome(title, blurb, status){
     + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
     + '</div>';
 }
-let HOUSES=[],RES=[],EVENTS=[],TAB='map',Q='';
+let HOUSES=[],RES=[],EVENTS=[],FUNDERS=[],APPS=[],PAY=[],TAB='map',Q='';
 const g=id=>document.getElementById(id);
 function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
 function n(v){return Number(v)||0;}
 function money(v){return '$'+n(v).toLocaleString('en-US',{maximumFractionDigits:0});}
 function bal(r){return n(r.past_due)+n(r.current_due)-n(r.amount_paid);}
+/* "Clean" and "dirty" describe a person; "negative" and "positive" describe a
+   test. Rows saved before this change still carry the old words, so translate
+   rather than leaving two vocabularies on screen. */
+function uaWord(v){return v==='clean'?'negative':v==='dirty'?'positive':(v||'');}
 function until(d){if(!d)return null;try{return Math.ceil((new Date(d+'T00:00:00')-new Date())/86400000);}catch(_){return null;}}
 function isOpen(r){return (r.status||'')==='open';}
+
+/* The one next action for this person, chosen by what actually blocks them.
+   Ordered by consequence, not by convenience: money running out beats
+   paperwork, and paperwork beats savings, because you cannot open a bank
+   account without ID and you cannot rent your own place without a bank account.
+   Rank 0-1 is urgent, everything above is the steady climb. */
+function nextStep(r){
+  const cliff=until(r.funding_end);
+  if(cliff!==null&&cliff<=30&&cliff>=0)
+    return {rank:0,label:'Reapply for funding — coverage ends in '+cliff+' day'+(cliff===1?'':'s'),short:cliff+'d'};
+  if(cliff!==null&&cliff<0)
+    return {rank:0,label:'Funding already lapsed — find the next funder',short:'lapsed'};
+  if(!r.has_id)          return {rank:1,label:'Get a state ID — everything else is locked behind it',short:'ID'};
+  if(!r.has_ss_card)     return {rank:2,label:'Request Social Security card',short:'SS'};
+  if(!r.has_birth_cert)  return {rank:3,label:'Order birth certificate',short:'BC'};
+  if(!r.bank_account)    return {rank:4,label:'Open a second-chance bank account',short:'bank'};
+  if(!r.employed)        return {rank:5,label:'Job search — resume, applications, interview clothes',short:'job'};
+  if(!r.certifications)  return {rank:6,label:'Enroll in a certification or trade course',short:'cert'};
+  if(!n(r.savings_balance)) return {rank:7,label:'Open savings and make the first deposit',short:'save'};
+  if(n(r.savings_balance)<1000) return {rank:8,label:'Build savings toward first month plus deposit',short:money(r.savings_balance)};
+  return {rank:9,label:'Ready for independent housing — start the search',short:'ready'};
+}
+
+/* Money that can still come back.
+   A balance does not stop being collectable when somebody moves out, and a
+   funder does not stop existing. Most scholarships are once per client, so a
+   person who never used one is still eligible for it - including for a stay
+   that already happened, if the funder backdates. This works out what is left
+   on the table for one person. */
+function recoup(r){
+  const mine=APPS.filter(a=>(a.resident_name||'').trim().toLowerCase()===(r.name||'').trim().toLowerCase());
+  const touched=new Set(mine.map(a=>a.funder_name));
+  const spent=new Set(mine.filter(a=>['approved','expired'].includes(a.status)).map(a=>a.funder_name));
+  const untried=FUNDERS.filter(f=>f.active!==false && !touched.has(f.name) && !(f.once_per_client&&spent.has(f.name)));
+  const pending=mine.filter(a=>a.status==='applied');
+  const denied=mine.filter(a=>a.status==='denied');
+  const chips=[];
+  if(r.employed) chips.push({c:'job',t:'Employed'+(r.employer?' — '+r.employer:'')+' · wage plan'});
+  if(pending.length) chips.push({c:'cliff',t:pending.length+' application'+(pending.length===1?'':'s')+' still pending'});
+  if(untried.length) chips.push({c:'job',t:untried.length+' funder'+(untried.length===1?'':'s')+' never tried'});
+  if(!untried.length&&!pending.length&&denied.length) chips.push({c:'warn2',t:'every funder exhausted'});
+  return {chips:chips,untried:untried,pending:pending};
+}
+function recoupLine(r){
+  const x=recoup(r);
+  let out='';
+  if(x.chips.length) out+='<br>'+x.chips.map(c=>'<span class="chip '+c.c+'">'+esc(c.t)+'</span>').join(' ');
+  if(x.untried.length) out+='<br><span style="opacity:.78">Still eligible: '+esc(x.untried.slice(0,3).map(f=>f.name).join(', '))+(x.untried.length>3?' +'+(x.untried.length-3)+' more':'')+'</span>';
+  if(!x.chips.length&&!x.untried.length) out+='<br><span style="opacity:.6">No funder list loaded — add funders in the Funding Navigator</span>';
+  return out;
+}
+/* Every payment for one person, newest first. This is the answer to "what did
+   she pay on the 14th and who took it" - a question a running total can never
+   answer, and the one that comes up when somebody disputes a balance. */
+function ledgerFor(r){
+  return PAY.filter(p=>!p.voided&&(p.resident_name||'').trim().toLowerCase()===(r.name||'').trim().toLowerCase());
+}
+function ledgerHtml(r){
+  const rows=ledgerFor(r).slice(0,20);
+  if(!rows.length) return '<div style="opacity:.55;font-size:.85rem">No payments recorded yet. Anything logged here from now on keeps its date, method and who took it.</div>';
+  const total=ledgerFor(r).reduce((t,p)=>t+(Number(p.amount)||0),0);
+  return '<div style="font-size:.85rem;line-height:1.7">'
+    +rows.map(p=>'<div style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid rgba(201,169,110,.15);padding:.3rem 0">'
+      +'<span>'+esc(p.paid_on||'')+' &middot; '+esc(p.kind||'rent')+(p.method?' &middot; '+esc(p.method):'')
+      +'<br><span style="opacity:.6;font-size:.9em">taken by '+esc(p.taken_by||'—')+(p.note?' &middot; '+esc(p.note):'')+'</span></span>'
+      +'<b style="color:#9fd8b0;white-space:nowrap">'+money(p.amount)+'</b></div>').join('')
+    +'<div style="display:flex;justify-content:space-between;padding-top:.5rem;font-weight:700"><span>Recorded total</span><span>'+money(total)+'</span></div></div>';
+}
 function docsDone(r){return r.has_id&&r.has_ss_card&&r.has_birth_cert;}
 function closeM(){g('mRes').classList.remove('open');}
+function isCurrent(r){return !isOpen(r)&&!r.move_out_date;}
+
+/* The full wrap-around needs list. Anything not tracked here is a need that
+   quietly falls through the cracks between "housed" and "actually stable." */
+const NEEDS=[
+  {g:'Health & Insurance',items:[
+    ['health_insurance','Health insurance enrolled'],
+    ['primary_care','Primary care / medical provider'],
+    ['dental_care','Dental care'],
+    ['mental_health','Outpatient mental health / counseling'],
+    ['psychiatry','Medication management / psychiatry / MAT'],
+  ]},
+  {g:'Benefits & Income',items:[
+    ['snap','SNAP (food stamps)'],
+    ['disability','SSI / SSDI / disability benefits'],
+    ['tanf','TANF / cash assistance'],
+    ['unemployment','Unemployment benefits'],
+  ]},
+  {g:'Legal & Compliance',items:[
+    ['drivers_license',"Driver's license (get / reinstate)"],
+    ['warrants','Active warrants / court dates'],
+    ['probation','Probation / parole compliance'],
+    ['child_support','Child support / family court'],
+  ]},
+  {g:'Family & Support',items:[
+    ['family_plan','Family reunification / visitation plan'],
+    ['transportation','Transportation plan (bus pass, ride, car)'],
+    ['childcare','Childcare'],
+  ]},
+  {g:'Education & Employment',items:[
+    ['ged','GED / high school diploma'],
+    ['resume','Resume & job readiness'],
+  ]},
+  {g:'Recovery & Aftercare',items:[
+    ['sponsor','Sponsor / home group'],
+    ['aftercare_plan','Aftercare & relapse-prevention plan'],
+  ]},
+];
+const NEED_KEYS=NEEDS.flatMap(grp=>grp.items.map(i=>i[0]));
+const NEED_LABEL={}; NEEDS.forEach(grp=>grp.items.forEach(([k,l])=>{NEED_LABEL[k]=l;}));
+const STATUS_OPTS=[['','Not assessed'],['needed','Needed'],['referred','Referred'],['scheduled','Scheduled'],['done','Done'],['na','N/A']];
+
+function buildNeedsUI(){
+  g('needsList').innerHTML=NEEDS.map(grp=>
+    '<div class="needgrp-title">'+esc(grp.g)+'</div>'
+    +grp.items.map(([k,label])=>
+      '<div class="needrow"><label>'+esc(label)+'</label>'
+      +'<select id="need_'+k+'" onchange="this.className=this.value?(\'st-\'+this.value):\'\'">'
+      +STATUS_OPTS.map(([v,l])=>'<option value="'+v+'">'+esc(l)+'</option>').join('')
+      +'</select></div>'
+    ).join('')
+  ).join('');
+}
+buildNeedsUI();
+
+/* An "open" need is one that's identified but not yet resolved — needed,
+   referred, or scheduled all still require a follow-up. Done and N/A don't. */
+function openNeeds(r){
+  const needs=r.case_needs||{};
+  return NEED_KEYS.filter(k=>['needed','referred','scheduled'].includes(needs[k]));
+}
+/* Positive count = days overdue (or due today); negative = days until due. null = no date set. */
+function dueLine(d){
+  const n=daysAgo(d); if(n===null) return null;
+  if(n>0)  return {overdue:true, text:n+' day'+(n===1?'':'s')+' overdue'};
+  if(n===0) return {overdue:true, text:'due today'};
+  return {overdue:false, text:'due in '+(-n)+' day'+(-n===1?'':'s')};
+}
 
 /* Some houses came over with no room numbers. Fall back to initials so every bed is identifiable. */
 function bedLabel(r){
@@ -338,12 +514,15 @@ function openRes(id){
   g('r_bank').checked=!!r.bank_account; g('r_emp').checked=!!r.employed;
   set('r_employer',r.employer);set('r_jobstart',r.job_start_date);set('r_savings',r.savings_balance);
   set('r_certs',r.certifications);set('r_cm',r.case_manager); g('r_tl').value=r.treatment_level||'';
+  set('r_followup',r.case_followup_date);
+  { const needs=r.case_needs||{};
+    NEED_KEYS.forEach(k=>{ const el=g('need_'+k); if(!el)return; const v=needs[k]||''; el.value=v; el.className=v?('st-'+v):''; }); }
   set('r_warnings',r.warnings==null?0:r.warnings);
   set('r_lastwarn',r.last_warning);set('r_warnreason',r.warning_reason);
   set('r_lasttalked',r.last_talked);
   set('r_hmeet',r.house_meetings==null?0:r.house_meetings);
   set('r_pmeet',r.peer_meetings==null?0:r.peer_meetings);
-  set('r_lastua',r.last_ua); g('r_uares').value=r.ua_result||'';
+  set('r_lastua',r.last_ua); g('r_uares').value=uaWord(r.ua_result);
   g('r_curfew').checked=r.curfew_ok!==false;
   g('r_chores').checked=r.chores_ok!==false;
   g('r_notice').checked=!!r.on_notice;
@@ -351,6 +530,8 @@ function openRes(id){
   g('rStamp').innerHTML=stampLine(r);
   set('r_notes',r.notes);
   g('e_amount').value=''; g('e_detail').value='';
+  g('e_paidon').value=new Date().toISOString().slice(0,10); g('e_method').value=''; g('e_takenby').value='';
+  { const el=g('ledger'); if(el) el.innerHTML=ledgerHtml(r); }
   g('mRes').classList.add('open');
 }
 
@@ -361,7 +542,7 @@ function stampLine(r){
   const uaN=daysAgo(r.last_ua);
   const uaCls=(uaN===null||uaN>30)?' class="stale"':'';
   let s='Last talked to <b'+talkCls+'>'+ago(r.last_talked)+'</b>'
-      + ' &middot; Last UA <b'+uaCls+'>'+ago(r.last_ua)+(r.ua_result?' ('+esc(r.ua_result)+')':'')+'</b>'
+      + ' &middot; Last UA <b'+uaCls+'>'+ago(r.last_ua)+(r.ua_result?' ('+esc(uaWord(r.ua_result))+')':'')+'</b>'
       + ' &middot; <b>'+(r.warnings||0)+'</b> warning'+((r.warnings||0)===1?'':'s')
       + ' &middot; Meetings this month: <b>'+(r.house_meetings||0)+'</b> house, <b>'+(r.peer_meetings||0)+'</b> peer';
   if(r.on_notice) s+='<br><span style="color:#f0b6b6;font-weight:700">ON NOTICE</span>'+(r.warning_reason?' &mdash; '+esc(r.warning_reason):'');
@@ -399,6 +580,8 @@ async function saveRes(btn){
     bank_account:g('r_bank').checked,employed:g('r_emp').checked,
     employer:g('r_employer').value,job_start_date:g('r_jobstart').value,savings_balance:g('r_savings').value,
     certifications:g('r_certs').value,case_manager:g('r_cm').value,treatment_level:g('r_tl').value,notes:g('r_notes').value,
+    case_followup_date:g('r_followup').value,
+    case_needs:NEED_KEYS.reduce((o,k)=>{const v=g('need_'+k).value; if(v)o[k]=v; return o;},{}),
     warnings:g('r_warnings').value,last_warning:g('r_lastwarn').value,warning_reason:g('r_warnreason').value,
     last_talked:g('r_lasttalked').value,house_meetings:g('r_hmeet').value,peer_meetings:g('r_pmeet').value,
     last_ua:g('r_lastua').value,ua_result:g('r_uares').value,
@@ -411,7 +594,8 @@ async function saveRes(btn){
 async function logEvent(btn){
   const id=g('r_id').value; const res=RES.find(x=>x.id===id)||{};
   const b={event:true,resident_id:id,resident_name:res.name,house_name:res.house_name,
-    kind:g('e_kind').value,amount:g('e_amount').value,detail:g('e_detail').value};
+    kind:g('e_kind').value,amount:g('e_amount').value,detail:g('e_detail').value,
+    paid_on:g('e_paidon').value,method:g('e_method').value,taken_by:g('e_takenby').value};
   if(!b.detail&&!b.amount){alert('Add an amount or a detail');return;}
   btn.textContent='…';
   const r=await fetch('/housing/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
@@ -473,6 +657,104 @@ function render(){
     return;
   }
 
+  if(TAB==='ledger'){
+    /* Every payment across every house, newest first. Corrections are new
+       rows, never edits, so this list is the record rather than a summary of
+       one. Voided rows are excluded but still exist. */
+    const rows=PAY.filter(p=>!p.voided&&(!Q||((p.resident_name||'')+' '+(p.house_name||'')+' '+(p.method||'')).toLowerCase().includes(Q.toLowerCase())));
+    const total=rows.reduce((t,p)=>t+(Number(p.amount)||0),0);
+    const now=new Date(), mStart=new Date(now.getFullYear(),now.getMonth(),1).toISOString().slice(0,10);
+    const thisMonth=rows.filter(p=>(p.paid_on||'')>=mStart).reduce((t,p)=>t+(Number(p.amount)||0),0);
+    v.innerHTML='<div class="rows">'
+      +'<div class="row" style="background:rgba(201,169,110,.08)"><div class="rname">'+rows.length+' payment'+(rows.length===1?'':'s')+' recorded</div>'
+      +'<div class="rmeta">This month: <b>'+money(thisMonth)+'</b>. Each row keeps its own date, method and who took it &mdash; which is what makes a balance defensible when somebody disputes it.</div>'
+      +'<div class="rbal ok">'+money(total)+'</div></div>'
+      +(rows.length?rows.slice(0,300).map(p=>
+        '<div class="row"><div class="rname">'+esc(p.resident_name||'')+'</div>'
+        +'<div class="rmeta">'+esc(p.paid_on||'')+' &middot; <span class="chip job">'+esc(p.kind||'rent')+'</span>'
+        +(p.method?' <span class="chip quiet">'+esc(p.method)+'</span>':'')
+        +(p.house_name?' &middot; '+esc(p.house_name):'')
+        +'<br><span style="opacity:.7">taken by '+esc(p.taken_by||'—')+(p.note?' &middot; '+esc(p.note):'')+'</span></div>'
+        +'<div class="rbal ok">'+money(p.amount)+'</div></div>').join('')
+        :'<div class="note">No payments recorded yet. Log one from any resident and it lands here with its date and method.</div>')
+      +'</div>';
+    return;
+  }
+
+  if(TAB==='moveouts'){
+    /* People who left still owing. They fall off every other screen the moment
+       they move out, which is exactly when the balance stops being chased. */
+    const rows=RES.filter(r=>r.move_out_date&&bal(r)>0&&match(r)).sort((a,b)=>bal(b)-bal(a));
+    const total=rows.reduce((t,r)=>t+bal(r),0);
+    v.innerHTML='<div class="rows">'
+      +(rows.length?('<div class="row" style="background:rgba(201,169,110,.08)"><div class="rname">'+rows.length+' former resident'+(rows.length===1?'':'s')+' owing</div>'
+        +'<div class="rmeta">Left with a balance. Collectable, and it follows them to the next house.<br>Check each one for a funder they never applied to before writing the money off.</div>'
+        +'<div class="rbal owe">'+money(total)+'</div></div>'):'')
+      +(rows.length?rows.map(r=>{
+        const days=daysAgo(r.move_out_date);
+        return '<div class="row" onclick="openRes(\''+r.id+'\')">'
+        +'<div class="rname">'+esc(r.name)+'</div>'
+        +'<div class="rmeta">'+esc(r.house_name||'')+(r.room?' · '+esc(r.room):'')
+        +' · moved out '+ago(r.move_out_date)
+        +(days!==null&&days>90?' <span class="chip warn2">'+Math.floor(days/30)+' months ago</span>':'')
+        +(r.phone?'<br><span style="opacity:.78">'+esc(r.phone)+'</span>':'')
+        +recoupLine(r)
+        +'</div>'
+        +'<div class="rbal owe">'+money(bal(r))+'</div></div>';
+      }).join(''):'<div class="note">Nobody who moved out still owes. That is worth noticing.</div>')
+      +'</div>';
+    return;
+  }
+
+  if(TAB==='readiness'){
+    /* Sobriety is the floor, not the goal. Somebody can be current on rent and
+       still leave with no ID, no bank account and no way to hold a lease. This
+       screen answers one question per person: what is the next right thing?
+       Current residents only - somebody who moved out belongs on Move-Outs. */
+    const rows=RES.filter(r=>!isOpen(r)&&!r.move_out_date&&match(r)).map(r=>({r:r,gap:nextStep(r)}))
+      .sort((a,b)=>a.gap.rank-b.gap.rank);
+    v.innerHTML='<div class="rows">'+(rows.length?rows.map(x=>{
+      const r=x.r,gap=x.gap;
+      const have=[r.has_id?'ID':'',r.has_ss_card?'SS card':'',r.has_birth_cert?'birth cert':'',
+                  r.bank_account?'bank':'',r.employed?'job':'',r.certifications?'certs':''].filter(Boolean);
+      const missing=[!r.has_id?'ID':'',!r.has_ss_card?'SS card':'',!r.has_birth_cert?'birth cert':'',
+                     !r.bank_account?'bank':'',!r.employed?'job':''].filter(Boolean);
+      return '<div class="row'+(gap.rank<=1?' hot':'')+'" onclick="openRes(\''+r.id+'\')">'
+      +'<div class="rname">'+esc(r.name)+'</div>'
+      +'<div class="rmeta"><b style="color:#e8d5b0">Next: '+esc(gap.label)+'</b>'
+      +(missing.length?'<br><span style="opacity:.7">Still missing: '+esc(missing.join(', '))+'</span>':'<br><span class="chip job">fully documented</span>')
+      +(have.length?'<br><span style="opacity:.66">Has: '+esc(have.join(', '))+'</span>':'')
+      +(r.case_manager?'<br><span style="opacity:.66">CM: '+esc(r.case_manager)+'</span>':'<br><span class="chip warn2">no case manager</span>')
+      +recoupLine(r)
+      +'</div>'
+      +'<div class="rbal '+(gap.rank<=1?'owe':'ok')+'">'+gap.short+'</div></div>';
+    }).join(''):'<div class="note">No residents to show.</div>')+'</div>';
+    return;
+  }
+
+  if(TAB==='casemgmt'){
+    /* Every current resident's open needs and whether their case manager is
+       actually due to follow up — not just whether one is assigned. */
+    const rows=RES.filter(r=>isCurrent(r)&&match(r)).map(r=>{
+      const open=openNeeds(r); const due=dueLine(r.case_followup_date);
+      return {r:r,open:open,due:due};
+    }).sort((a,b)=>(b.due&&b.due.overdue?1:0)-(a.due&&a.due.overdue?1:0) || b.open.length-a.open.length);
+    v.innerHTML='<div class="rows">'+(rows.length?rows.map(x=>{
+      const r=x.r,open=x.open,due=x.due;
+      return '<div class="row'+(due&&due.overdue?' hot':'')+'" onclick="openRes(\''+r.id+'\')">'
+      +'<div class="rname">'+esc(r.name)+'</div>'
+      +'<div class="rmeta">'
+      +(r.case_manager?'<span style="opacity:.78">CM: '+esc(r.case_manager)+'</span>':'<span class="chip warn2">no case manager</span>')
+      +' &middot; '+(due?('<b'+(due.overdue?' style="color:#f0b6b6"':'')+'>'+due.text+'</b>'):'<span class="chip warn2">no follow-up set</span>')
+      +(open.length?'<br><span style="opacity:.7">Open: '+esc(open.slice(0,4).map(k=>NEED_LABEL[k]).join(', '))+(open.length>4?' +'+(open.length-4)+' more':'')+'</span>'
+        :'<br><span class="chip job">no open needs</span>')
+      +recoupLine(r)
+      +'</div>'
+      +'<div class="rbal '+(open.length?'owe':'ok')+'">'+open.length+' open</div></div>';
+    }).join(''):'<div class="note">No residents to show.</div>')+'</div>';
+    return;
+  }
+
   if(TAB==='collect'){
     const rows=RES.filter(r=>!isOpen(r)&&match(r)).sort((a,b)=>bal(b)-bal(a));
     v.innerHTML='<div class="rows">'+rows.map(r=>{
@@ -510,7 +792,7 @@ function render(){
 }
 
 function exportCSV(){
-  const cols=['name','house_name','room','status','monthly_rent','past_due','current_due','amount_paid','payer_type','funding_source','funding_end','has_id','has_ss_card','has_birth_cert','employed','employer','case_manager','notes'];
+  const cols=['name','house_name','room','status','monthly_rent','past_due','current_due','amount_paid','payer_type','funding_source','funding_end','has_id','has_ss_card','has_birth_cert','employed','employer','case_manager','case_followup_date','notes'];
   const e=v=>{v=(v==null?'':v)+'';return '"'+v.replace(/"/g,'""')+'"';};
   const csv=[cols.join(',')].concat(RES.map(r=>cols.map(c=>e(r[c])).join(','))).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
@@ -529,16 +811,18 @@ async function load(){
     if(res.status===401||res.status===403){showWelcome('Housing Command', 'Six houses, every bed, every balance, and each resident&rsquo;s house record &mdash; on one screen. Sign in and it is all here.', res.status); return;}
     if(d.error){note.innerHTML='Error: '+esc(d.error)+'<br><br>If this says the table is missing, run <code>1-housing-schema.sql</code> then <code>2-housing-import.sql</code> in Supabase.';return;}
     HOUSES=d.houses||[];RES=d.residents||[];EVENTS=d.events||[];
+    FUNDERS=d.funders||[];APPS=d.applications||[];PAY=d.payments||[];
     g('viewer').textContent='Signed in as '+(d.viewer||'');
     const filled=RES.filter(r=>!isOpen(r)),open=RES.filter(isOpen);
     const owed=filled.reduce((t,r)=>t+Math.max(bal(r),0),0);
     const paid=filled.reduce((t,r)=>t+n(r.amount_paid),0);
     const risk=open.reduce((t,r)=>t+n(r.monthly_rent||775),0);
     const cliffs=filled.filter(r=>{const u=until(r.funding_end);return u!==null&&u<=30&&u>=0;}).length;
+    const caseOverdue=RES.filter(isCurrent).filter(r=>{const d=dueLine(r.case_followup_date);return d&&d.overdue;}).length;
     g('sOcc').textContent=RES.length?Math.round(filled.length/RES.length*100)+'%':'–';
     g('sOpen').textContent=open.length; g('sRisk').textContent=money(risk);
     g('sOwed').textContent=money(owed); g('sCollected').textContent=money(paid);
-    g('sCliff').textContent=cliffs;
+    g('sCliff').textContent=cliffs; g('sCaseOverdue').textContent=caseOverdue;
     g('stats').style.display='grid'; g('tabs').style.display='flex';
     render();
   }catch(_){note.textContent='Could not load housing. Check your connection and reload.';}

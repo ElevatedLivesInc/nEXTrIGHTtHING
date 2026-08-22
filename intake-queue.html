@@ -52,12 +52,16 @@
   .qstat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:.8rem 1rem;text-align:center;}
   .qstat .n{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--sand-light);}
   .qstat .l{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.2rem;}
+  .qstat.bad{border-color:rgba(224,120,120,.5);} .qstat.bad .n{color:#f0b6b6;}
   .nf{margin-bottom:.65rem;}
   .nf label{display:block;font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.22rem;}
   .nf input,.nf select,.nf textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;padding:.48rem .65rem;}
   .nf2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
   @media(max-width:600px){.nf2{grid-template-columns:1fr;}}
   .delbtn{margin-left:auto;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(224,120,120,.35);background:transparent;color:#f0b6b6;cursor:pointer;font-family:'Raleway',sans-serif;}
+  .admitbtn{width:100%;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;
+    border:none;border-radius:7px;padding:.7rem;font-size:.82rem;font-family:'Raleway',sans-serif;cursor:pointer;}
+  .admitbtn:active{transform:scale(.98);}
 </style>
 </head>
 <body>
@@ -72,6 +76,7 @@
     <div class="qstat"><div class="n" id="qHot">0</div><div class="l">Reach Out 24h</div></div>
     <div class="qstat"><div class="n" id="qReady">0</div><div class="l">Ready For Intake</div></div>
     <div class="qstat"><div class="n" id="qIntaked">0</div><div class="l">Intaked</div></div>
+    <div class="qstat bad"><div class="n" id="qUnfunded">0</div><div class="l">No Funding Path</div></div>
   </div>
   <div class="bar" id="filters" style="display:none">
     <button class="fbtn active" data-f="open">Open</button>
@@ -158,6 +163,7 @@ function showWelcome(title, blurb, status){
     + '</div>';
 }
 let DATA=[], FILTER='open';
+let FUNDERS=[], APPS=[];
 const STATUSES=['new','contacted','scheduled','intaked','closed'];
 const CHECKS=['Insurance verified','Callback made','Assessment scheduled','ROI signed','Docs collected'];
 
@@ -216,6 +222,7 @@ function updateStats(){
   document.getElementById('qHot').textContent=open.filter(r=>triage(r).some(x=>x.c==='hot')).length;
   document.getElementById('qReady').textContent=open.filter(r=>isReady(r)&&(r.status||'new')!=='intaked').length;
   document.getElementById('qIntaked').textContent=DATA.filter(r=>(r.status||'new')==='intaked').length;
+  document.getElementById('qUnfunded').textContent=open.filter(r=>fundingPath(r).c==='hot').length;
   document.getElementById('qstats').style.display='grid';
 }
 function copySummary(id,btn){
@@ -264,6 +271,35 @@ function triage(r){
   return f;
 }
 
+function daysSince(iso){ if(!iso) return null; try{ return Math.floor((new Date()-new Date(iso))/86400000); }catch(_){ return null; } }
+
+/* The funding conversation belongs on the first call, not after admission.
+   By the time somebody is in a bed, the question "who is paying" has usually
+   already been answered badly. This turns what they told the form into the
+   next concrete step. Every "hot" reason also carries how long it's been
+   sitting there — a gap that's invisible today, since a person with no
+   application logged just disappears into the queue until someone opens
+   their card and thinks to check. */
+function fundingPath(r){
+  const name=((r.first_name||'')+' '+(r.last_name||'')).trim().toLowerCase();
+  const logged=APPS.filter(a=>(a.resident_name||'').trim().toLowerCase()===name);
+  if(logged.length){
+    const approved=logged.filter(a=>a.status==='approved');
+    if(approved.length) return {c:'ready',t:'Funded — '+esc(approved[0].funder_name||'')};
+    return {c:'warm',t:logged.length+' application'+(logged.length===1?'':'s')+' logged — '+esc(logged[0].status||'applied')};
+  }
+  const days=daysSince(r.created_at);
+  const age=(days!==null&&days>=1)?(' ('+days+' day'+(days===1?'':'s')+', no application)'):'';
+  const ins=(r.insurance||'').toLowerCase();
+  const active=FUNDERS.filter(f=>f.active!==false);
+  if(ins==='medicaid')          return {c:'ready',t:'Medicaid — verify eligibility and level of care'};
+  if(ins==='medicare')          return {c:'ready',t:'Medicare — run the benefits check'};
+  if(ins==='private insurance') return {c:'ready',t:'Private insurance — run the benefits check'};
+  if(ins==='no insurance')      return {c:'hot',t:(active.length?('Uninsured — '+active.length+' scholarship funder'+(active.length===1?'':'s')+' to try today'):'Uninsured — no funders on file yet')+age};
+  if(ins==='not sure')          return {c:'hot',t:'Insurance unconfirmed — settle it before the call ends'+age};
+  return {c:'hot',t:'No funding path yet — nobody is paying for this bed'+age};
+}
+
 function render(){
   try{updateStats();}catch(_){}
   const grid=document.getElementById('grid');
@@ -287,6 +323,8 @@ function render(){
       +'<div class="pbar" title="'+done+' of '+CHECKS.length+' steps done"><i style="width:'+pct+'%"></i></div>'
       +((ready&&(r.status||'new')!=='intaked')?'<div class="flags"><span class="flag ready">&#10003; Ready for intake</span></div>':'')
       +(flags.length?'<div class="flags">'+flags.map(x=>'<span class="flag '+x.c+'">'+esc(x.t)+'</span>').join('')+'</div>':'')
+      +(function(){const fp=fundingPath(r);return '<div class="flags"><span class="flag '+fp.c+'">$ '+fp.t+'</span>'
+        +'<a href="/funding" style="font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:#c9a96e;text-decoration:none;align-self:center;margin-left:.3rem">Funding Navigator &rarr;</a></div>';})()
       +'<div class="rows">'
       +line('Phone', r.phone?null:null)
       +(r.phone?('<div><b>Phone:</b> <a href="tel:'+esc(r.phone.replace(/[^0-9+]/g,''))+'">'+esc(r.phone)+'</a></div>'):'')
@@ -311,11 +349,38 @@ function render(){
       +'<button class="notesave" onclick="saveNotes(\''+r.id+'\',this)">Save note</button>'
       +'<button class="delbtn" onclick="delRow(\''+r.id+'\',this)">Delete</button>'
       +'</div>'
+      +(r.client_id
+        ? '<div class="flags"><span class="flag ready">&#10003; Admitted &mdash; <a href="/client?id='+encodeURIComponent(r.client_id)+'" style="color:inherit;text-decoration:underline">open their file</a></span></div>'
+        : '<div style="margin:.5rem 0"><button class="admitbtn" onclick="admit(\''+r.id+'\')">Admit &rarr; create client, bed and case file</button></div>')
       +'<div class="status-row">'+STATUSES.map(st=>
         '<button class="sbtn'+((r.status||'new')===st?' on':'')+'" onclick="setStatus(\''+r.id+'\',\''+st+'\',this)">'+st+'</button>'
       ).join('')+'</div>'
       +'</div>';
   }).join('');
+}
+
+/* One action instead of three people retyping the same name into three
+   screens. Everything downstream hangs off the client id this returns, so a
+   misspelling can no longer detach somebody's funding from their housing. */
+async function admit(id){
+  const r=DATA.find(x=>x.id===id)||{};
+  const who=((r.first_name||'')+' '+(r.last_name||'')).trim()||'this person';
+  const house=prompt('Admitting '+who+'.\n\nWhich house?','');
+  if(house===null)return;
+  const room=prompt('Room? (leave blank if not assigned yet)','')||'';
+  const rent=prompt('Monthly rent?','775')||'';
+  const cm=prompt('Case manager? (leave blank to assign later)','')||'';
+  if(!confirm('This will create '+who+' as a client, give them a bed in '+(house||'no house')+', and open their case file with everything from this intake.\n\nGo ahead?'))return;
+  try{
+    const res=await fetch('/intake-queue/admit',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({intake_id:id,house_name:house,room:room,monthly_rent:rent,case_manager:cm})});
+    const d=await res.json().catch(()=>({}));
+    if(!res.ok||d.ok===false){alert('Could not admit: '+(d.error||'unknown error'));return;}
+    if(confirm(who+' is admitted.\n\nTheir case file is open with everything they told us at intake. Open it now?')){
+      location.href='/client?id='+encodeURIComponent(d.client_id); return;
+    }
+    location.reload();
+  }catch(_){ alert('Could not admit — check your connection.'); }
 }
 
 async function setStatus(id,status,btn){
@@ -342,6 +407,7 @@ document.getElementById('filters').addEventListener('click',e=>{
     const data=await res.json();
     if(data.error){note.textContent='Error: '+data.error;return;}
     DATA=data.requests||[];
+    FUNDERS=data.funders||[];APPS=data.applications||[];
     document.getElementById('viewer').textContent='Signed in as '+(data.viewer||'');
     document.getElementById('filters').style.display='flex';
     render();

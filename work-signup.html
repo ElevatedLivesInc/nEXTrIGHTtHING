@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Put Your Name Down — Rent A Husband Crew</title>
+<meta name="description" content="Sign up to join the Rent A Husband crew. Paid handyman work in the Salt Lake Valley for people in recovery.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;--line:rgba(201,169,110,.22);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;padding:0 0 4rem;}
+  .top{background:var(--navy);border-bottom:1px solid var(--line);padding:2.4rem 1.4rem;text-align:center;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.9rem,5vw,2.7rem);}
+  h1 em{color:var(--sandl);font-style:italic;}
+  .sub{max-width:600px;margin:.8rem auto 0;color:rgba(255,255,255,.75);font-weight:300;line-height:1.85;font-size:.95rem;}
+  .wrap{max-width:640px;margin:0 auto;padding:2rem 1.4rem;}
+  .card{border:1px solid var(--line);border-radius:10px;padding:1.6rem;background:rgba(255,255,255,.02);}
+  .fld{margin-bottom:1rem;}
+  label{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.35rem;}
+  input,select,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:6px;color:#fff;padding:.7rem .85rem;font-family:'Raleway',sans-serif;font-size:.92rem;}
+  textarea{min-height:90px;resize:vertical;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+  .checks{display:flex;gap:1.4rem;flex-wrap:wrap;margin:.2rem 0 1rem;}
+  .checks label{display:flex;align-items:center;gap:.45rem;text-transform:none;letter-spacing:0;font-size:.9rem;color:rgba(255,255,255,.82);}
+  .checks input{width:auto;}
+  .btn{width:100%;background:linear-gradient(145deg,var(--sandl),var(--sand));color:var(--navy);font-weight:700;border:none;border-radius:7px;padding:.95rem;cursor:pointer;font-family:'Raleway',sans-serif;font-size:.95rem;}
+  .why{margin-top:1.6rem;font-size:.85rem;color:rgba(255,255,255,.62);line-height:1.85;}
+  .why b{color:var(--sandl);font-weight:600;}
+  .hp{position:absolute;left:-9999px;}
+  .done{display:none;text-align:center;padding:2rem 0;}
+  .done h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.8rem;color:var(--sandl);margin-bottom:.6rem;}
+  .quiet{font-size:.78rem;color:rgba(255,255,255,.45);margin-top:2rem;text-align:center;line-height:1.8;}
+  a{color:var(--sand);}
+  @media(max-width:600px){.two{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>Put your name <em>down</em></h1>
+  <p class="sub">Rent A Husband is a handyman crew working across the Salt Lake Valley. It was not started as a company that happens to hire people in recovery &mdash; it was started so people in recovery would have somewhere to work.</p>
+</div>
+
+<div class="wrap">
+  <div class="card" id="form">
+    <div class="fld"><label>Your name</label><input id="f_name" autocomplete="name"></div>
+    <div class="two">
+      <div class="fld"><label>Phone</label><input id="f_phone" type="tel" autocomplete="tel"></div>
+      <div class="fld"><label>Email (optional)</label><input id="f_email" type="email" autocomplete="email"></div>
+    </div>
+    <div class="fld"><label>Which house are you at? (optional)</label><input id="f_house" placeholder="Leave blank if this doesn't apply"></div>
+    <div class="fld"><label>What can you do?</label><textarea id="f_skills" placeholder="Anything counts — painting, hauling, yard work, demo, cleanup, framing, drywall. Never done any of it? Say that. Willing to learn is a skill."></textarea></div>
+    <div class="two">
+      <div class="fld"><label>When can you work?</label><select id="f_avail">
+        <option value="">&mdash;</option><option>Weekdays</option><option>Weekends</option><option>Evenings</option><option>Anytime</option></select></div>
+      <div class="fld"><label>How many hours a week?</label><select id="f_hours">
+        <option value="">&mdash;</option><option>A few hours</option><option>10–20</option><option>20–30</option><option>Full time</option></select></div>
+    </div>
+    <div class="checks">
+      <label><input type="checkbox" id="f_transport"> I have a way to get there</label>
+      <label><input type="checkbox" id="f_tools"> I have some tools</label>
+    </div>
+    <div class="fld"><label>Anything we should know</label><textarea id="f_notes" placeholder="Court dates, an ankle monitor, a schedule you have to work around, a licence you're getting back. None of it disqualifies you. It just helps us plan."></textarea></div>
+    <input class="hp" id="f_website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button class="btn" onclick="go(this)">Put my name down</button>
+    <div class="why">
+      <b>Neither tools nor experience is required.</b> Crews go out two to four people at a time with a lead who knows the work, so nobody is sent somewhere alone to figure it out.
+      <br><br><b>A background check is part of it</b>, and a record does not automatically rule you out. That is rather the point &mdash; this exists because most places do rule you out.
+      <br><br>Run by Koby. Licensed, insured, and an LLC, backed by a recovery center.
+    </div>
+  </div>
+
+  <div class="done" id="done">
+    <h2>Your name is <em>down</em>.</h2>
+    <p class="sub">Somebody will call you. If you are in one of the houses, tell your case manager you signed up &mdash; it goes on your record as employment progress, which matters for funding and for the day you go to rent your own place.</p>
+    <p class="quiet"><a href="https://rent-a-husband.netlify.app/" target="_blank" rel="noopener">See what the crews actually do &rarr;</a></p>
+  </div>
+
+  <div class="quiet">
+    Need help of a different kind? <a href="/get-help">Start here</a>.
+  </div>
+</div>
+
+<script>
+const g=id=>document.getElementById(id);
+async function go(btn){
+  const b={ name:g('f_name').value, phone:g('f_phone').value, email:g('f_email').value,
+    house_name:g('f_house').value, skills:g('f_skills').value, availability:g('f_avail').value,
+    hours_wanted:g('f_hours').value, has_transport:g('f_transport').checked,
+    has_tools:g('f_tools').checked, notes:g('f_notes').value, website:g('f_website').value };
+  if(!b.name.trim()) return alert('We need your name.');
+  if(!b.phone.trim() && !b.email.trim()) return alert('Leave a phone number or an email so we can reach you.');
+  const old=btn.textContent; btn.textContent='Sending…'; btn.disabled=true;
+  try{
+    const r=await fetch('/work/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||d.ok===false){ btn.textContent=old; btn.disabled=false; return alert(d.error||'That did not go through. Try again in a minute.'); }
+    g('form').style.display='none'; g('done').style.display='block'; window.scrollTo(0,0);
+  }catch(_){ btn.textContent=old; btn.disabled=false; alert('That did not go through. Check your connection and try again.'); }
+}
+</script>
+</body>
+</html>

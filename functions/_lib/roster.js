@@ -13,7 +13,11 @@ export const ROSTER = {
   'intake-queue':     ['gabe@nextrighthing.com','bailey@nextrighthing.com','cateo@nextrighthing.com'],
   'in-kind-report':   ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
   'donations-report': ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
-  'incident':         ['gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com']
+  'incident':         ['gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'],
+  // Case management is the clinical side. Rob is deliberately absent: he runs
+  // the houses and the rent, and Cate's rule is that those two roles do not
+  // see each other's data.
+  'case-management':  ['gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com']
 };
 
 export function allowedFor(system) {

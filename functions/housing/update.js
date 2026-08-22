@@ -2,6 +2,21 @@
 import { getAuthedEmail } from '../_lib/auth.js';
 import { allowedFor } from '../_lib/roster.js';
 
+// Case management needs & services. Kept in lockstep with the NEEDS list in housing.html.
+const NEED_KEYS=['health_insurance','primary_care','dental_care','mental_health','psychiatry',
+  'snap','disability','tanf','unemployment',
+  'drivers_license','warrants','probation','child_support',
+  'family_plan','transportation','childcare',
+  'ged','resume',
+  'sponsor','aftercare_plan'];
+const NEED_STATUSES=['needed','referred','scheduled','done','na'];
+function sanitizeNeeds(obj){
+  if(!obj||typeof obj!=='object') return undefined;
+  const out={};
+  for(const k of NEED_KEYS){ if(NEED_STATUSES.includes(obj[k])) out[k]=obj[k]; }
+  return out;
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   const json=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json'}});
@@ -23,6 +38,21 @@ export async function onRequestPost(context) {
       kind:S(b.kind,40)||'note', amount:N(b.amount), detail:S(b.detail,2000), logged_by:who };
     const r=await fetch(env.SUPABASE_URL+'/rest/v1/house_events',{method:'POST',headers:H,body:JSON.stringify(rec)});
     if(!r.ok){const d=await r.text();return json({ok:false,error:'log failed',detail:d},500);}
+    // A payment gets a proper ledger row as well as an activity entry.
+    // house_events is the feed; payments is the record. Cate asked to see
+    // "each payment made, and by who" - a feed entry cannot carry the method,
+    // the date it was actually taken, or survive a correction, and a running
+    // total on residents cannot be audited at all.
+    if (rec.kind==='payment' && rec.amount) {
+      await fetch(env.SUPABASE_URL+'/rest/v1/payments',{method:'POST',headers:H,body:JSON.stringify({
+        resident_name: rec.resident_name, house_name: rec.house_name,
+        amount: rec.amount,
+        paid_on: S(b.paid_on,20) || new Date().toISOString().slice(0,10),
+        method: S(b.method,30), kind: S(b.pay_kind,20) || 'rent',
+        taken_by: S(b.taken_by,120) || who,
+        reference: S(b.reference,120), note: rec.detail, created_by: who
+      })});
+    }
     // a logged payment also reduces the balance
     if (rec.kind==='payment' && b.resident_id && rec.amount) {
       const g=await fetch(env.SUPABASE_URL+'/rest/v1/residents?id=eq.'+encodeURIComponent(b.resident_id)+'&select=amount_paid',{headers:H});
@@ -52,6 +82,7 @@ export async function onRequestPost(context) {
     let kind='note', detail=S(b.detail,2000)||'';
 
     switch(b.quick){
+      case 'talked':
       case 'talk':
         patch.last_talked=today; kind='welfare';
         detail=detail||'Checked in with resident'; break;
@@ -61,12 +92,16 @@ export async function onRequestPost(context) {
       case 'peer_meeting':
         patch.peer_meetings=pm+1; patch.last_meeting=today;
         kind='meeting'; detail=detail||'Attended peer support meeting'; break;
+      // "clean"/"dirty" describe a person; "negative"/"positive" describe a test.
+      // The old keys stay accepted so a stale browser tab cannot 400.
+      case 'ua_negative':
       case 'ua_clean':
-        patch.last_ua=today; patch.ua_result='clean';
-        kind='ua'; detail=detail||'UA clean'; break;
+        patch.last_ua=today; patch.ua_result='negative';
+        kind='ua'; detail=detail||'UA negative'; break;
+      case 'ua_positive':
       case 'ua_dirty':
-        patch.last_ua=today; patch.ua_result='dirty';
-        kind='ua'; detail=detail||'UA dirty'; break;
+        patch.last_ua=today; patch.ua_result='positive';
+        kind='ua'; detail=detail||'UA positive'; break;
       case 'warn':
         patch.warnings=(Number(cur.warnings)||0)+1;
         patch.last_warning=today; patch.last_talked=today;
@@ -117,6 +152,8 @@ export async function onRequestPost(context) {
   put('case_manager',S(b.case_manager,120)); put('treatment_level',S(b.treatment_level,40));
   put('employer',S(b.employer,160)); put('job_start_date',S(b.job_start_date,20));
   put('certifications',S(b.certifications,400)); put('notes',S(b.notes,4000));
+  put('case_followup_date',S(b.case_followup_date,20));
+  if(b.case_needs!==undefined) put('case_needs',sanitizeNeeds(b.case_needs));
   // House Record
   if(b.warnings!==undefined)       put('warnings',N(b.warnings));
   if(b.house_meetings!==undefined) put('house_meetings',N(b.house_meetings));

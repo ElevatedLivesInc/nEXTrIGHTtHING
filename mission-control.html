@@ -108,6 +108,26 @@
       <div class="nums"><div class="num"><b>New</b><span>Donation</span></div></div>
     </a>
 
+    <a class="tile" href="/rounds">
+      <h3>Rounds <span style="font-size:.6rem;letter-spacing:.14em;color:#c9a96e;vertical-align:middle;border:1px solid rgba(201,169,110,.5);border-radius:50px;padding:.15rem .5rem;margin-left:.4rem">PHONE</span></h3>
+      <p>Walk the houses with one thumb. Every resident, one tap each &mdash; talked to, meeting, UA, warning, payment. Built for a hallway, not a desk.</p>
+      <div class="nums">
+        <div class="num"><b id="rdLeft">&ndash;</b><span>Left To See</span></div>
+        <div class="num flag"><b id="rdQuiet">&ndash;</b><span>Quiet 14d+</span></div>
+        <div class="num flag"><b id="rdNotice">&ndash;</b><span>On Notice</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/case-management">
+      <h3>Case Management</h3>
+      <p>Every client, every contact, every goal, and every meeting with a real date on it. Rent and balances are not loaded here &mdash; on purpose.</p>
+      <div class="nums">
+        <div class="num"><b id="cmActive">&ndash;</b><span>Active Clients</span></div>
+        <div class="num flag"><b id="cmStale">&ndash;</b><span>Not Talked To 7d</span></div>
+        <div class="num flag"><b id="cmDue">&ndash;</b><span>Follow-Ups Overdue</span></div>
+      </div>
+    </a>
+
     <a class="tile" href="/housing">
       <h3>Housing Command</h3>
       <p>Six houses, every bed — occupancy, balances, funding cliffs, and each resident's success record.</p>
@@ -206,7 +226,7 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     const scopes=d.scopes||[], canClient=scopes.indexOf('client')>-1, canDonor=scopes.indexOf('donor')>-1;
     document.getElementById('viewer').innerHTML='Signed in as '+esc(d.viewer||'')+'<br><span style="opacity:.7">'+(canClient&&canDonor?'Full access':(canClient?'Treatment-center access':'Nonprofit access'))+'</span>';
     // Hide systems this person doesn't own. Two entities, separate records.
-    const CLIENT_TILES=['/intake-queue','/funding','/housing','/payment-options'];
+    const CLIENT_TILES=['/intake-queue','/funding','/housing','/payment-options','/case-management','/rounds'];
     const DONOR_TILES=['/in-kind-report','/donations-report','/admin-issue','/carwash-report'];
     document.querySelectorAll('#tiles .tile').forEach(function(el){
       const href=el.getAttribute('href')||'';
@@ -220,6 +240,14 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     set('fApproved',F.approved??0); set('fPending',F.pending??0); set('fExpiring',F.expiringSoon??0);
     const H=d.housing||{};
     set('hOcc',H.occupancy!=null?H.occupancy+'%':'–');
+    const RD=d.rounds||{};
+    set('rdLeft',RD.left!=null?RD.left:'–');
+    set('rdQuiet',RD.quiet!=null?RD.quiet:'–');
+    set('rdNotice',RD.notice!=null?RD.notice:'–');
+    const CM=d.caseload||{};
+    set('cmActive',CM.active!=null?CM.active:'–');
+    set('cmStale',CM.stale!=null?CM.stale:'–');
+    set('cmDue',CM.overdue!=null?CM.overdue:'–');
     set('hOpen',H.openBeds??'–');
     set('hOwed',H.outstanding!=null?money(H.outstanding):'–');
 
