@@ -59,6 +59,9 @@
   .nf2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
   @media(max-width:600px){.nf2{grid-template-columns:1fr;}}
   .delbtn{margin-left:auto;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(224,120,120,.35);background:transparent;color:#f0b6b6;cursor:pointer;font-family:'Raleway',sans-serif;}
+  .admitbtn{width:100%;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;
+    border:none;border-radius:7px;padding:.7rem;font-size:.82rem;font-family:'Raleway',sans-serif;cursor:pointer;}
+  .admitbtn:active{transform:scale(.98);}
 </style>
 </head>
 <body>
@@ -346,11 +349,38 @@ function render(){
       +'<button class="notesave" onclick="saveNotes(\''+r.id+'\',this)">Save note</button>'
       +'<button class="delbtn" onclick="delRow(\''+r.id+'\',this)">Delete</button>'
       +'</div>'
+      +(r.client_id
+        ? '<div class="flags"><span class="flag ready">&#10003; Admitted &mdash; <a href="/client?id='+encodeURIComponent(r.client_id)+'" style="color:inherit;text-decoration:underline">open their file</a></span></div>'
+        : '<div style="margin:.5rem 0"><button class="admitbtn" onclick="admit(\''+r.id+'\')">Admit &rarr; create client, bed and case file</button></div>')
       +'<div class="status-row">'+STATUSES.map(st=>
         '<button class="sbtn'+((r.status||'new')===st?' on':'')+'" onclick="setStatus(\''+r.id+'\',\''+st+'\',this)">'+st+'</button>'
       ).join('')+'</div>'
       +'</div>';
   }).join('');
+}
+
+/* One action instead of three people retyping the same name into three
+   screens. Everything downstream hangs off the client id this returns, so a
+   misspelling can no longer detach somebody's funding from their housing. */
+async function admit(id){
+  const r=DATA.find(x=>x.id===id)||{};
+  const who=((r.first_name||'')+' '+(r.last_name||'')).trim()||'this person';
+  const house=prompt('Admitting '+who+'.\n\nWhich house?','');
+  if(house===null)return;
+  const room=prompt('Room? (leave blank if not assigned yet)','')||'';
+  const rent=prompt('Monthly rent?','775')||'';
+  const cm=prompt('Case manager? (leave blank to assign later)','')||'';
+  if(!confirm('This will create '+who+' as a client, give them a bed in '+(house||'no house')+', and open their case file with everything from this intake.\n\nGo ahead?'))return;
+  try{
+    const res=await fetch('/intake-queue/admit',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({intake_id:id,house_name:house,room:room,monthly_rent:rent,case_manager:cm})});
+    const d=await res.json().catch(()=>({}));
+    if(!res.ok||d.ok===false){alert('Could not admit: '+(d.error||'unknown error'));return;}
+    if(confirm(who+' is admitted.\n\nTheir case file is open with everything they told us at intake. Open it now?')){
+      location.href='/client?id='+encodeURIComponent(d.client_id); return;
+    }
+    location.reload();
+  }catch(_){ alert('Could not admit — check your connection.'); }
 }
 
 async function setStatus(id,status,btn){
