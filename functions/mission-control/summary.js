@@ -28,7 +28,7 @@ export async function onRequestGet(context) {
 
   const none = async ()=>[];
   const [intake, inkind, apps, residents, caseRes, notes] = await Promise.all([
-    canClient ? get('intake_requests?select=id,status,last_use,created_at&limit=1000') : none(),
+    canClient ? get('intake_requests?select=id,status,last_use,created_at,source,checks&limit=1000') : none(),
     canDonor  ? get('authorizations?select=id,status,donor_value&limit=1000') : none(),
     canClient ? get('funding_applications?select=id,status,coverage_end,resident_name&limit=1000') : none(),
     canClient ? get('residents?select=status,past_due,current_due,amount_paid,monthly_rent,move_out_date,last_talked,on_notice&limit=1000') : none(),
@@ -39,6 +39,16 @@ export async function onRequestGet(context) {
 
   const openIntake = intake.filter(r=>(r.status||'new')!=='closed');
   const hot = openIntake.filter(r=>['today','this week'].includes((r.last_use||'').toLowerCase()));
+  // Same "ready" rule as the Intake Queue screen: insurance verified and an
+  // assessment on the calendar. This is the honest answer to "how many people
+  // do we need" - not the whole pipeline, just who could move in today.
+  const isReady = r => (r.checks||'').indexOf('Insurance verified')>-1 && (r.checks||'').indexOf('Assessment scheduled')>-1;
+  const readyNow = openIntake.filter(r=>isReady(r) && r.status!=='intaked');
+  // Where the pipeline is actually coming from, so a marketing decision has
+  // something under it besides a guess. Every intake, not just open ones -
+  // an intaked or closed request still tells you which channel produced it.
+  const bySource = {};
+  intake.forEach(r=>{ const s=r.source||'unspecified'; bySource[s]=(bySource[s]||0)+1; });
   const soon = new Date(Date.now()+30*24*3600*1000);
   const expiring = apps.filter(a=>a.status==='approved' && a.coverage_end && new Date(a.coverage_end) <= soon && new Date(a.coverage_end) >= new Date());
 
@@ -72,7 +82,8 @@ export async function onRequestGet(context) {
     })(),
     housing: residents.length? { beds:residents.length, filled:filled.length, openBeds:openB.length,
       occupancy: Math.round(filled.length/residents.length*100), outstanding } : {},
-    intake: { total:intake.length, open:openIntake.length, new:intake.filter(r=>(r.status||'new')==='new').length, urgent:hot.length, intaked:intake.filter(r=>r.status==='intaked').length },
+    intake: { total:intake.length, open:openIntake.length, new:intake.filter(r=>(r.status||'new')==='new').length, urgent:hot.length, intaked:intake.filter(r=>r.status==='intaked').length,
+      ready:readyNow.length, bySource },
     inkind: { total:inkind.length, redeemed:inkind.filter(r=>(r.status||'')==='redeemed').length, pending:inkind.filter(r=>(r.status||'issued')==='issued').length, value:inkind.reduce((t,r)=>t+(Number(r.donor_value)||0),0) },
     funding: { applications:apps.length, approved:apps.filter(a=>a.status==='approved').length, pending:apps.filter(a=>a.status==='applied').length, denied:apps.filter(a=>a.status==='denied').length, expiringSoon:expiring.length, expiringList:expiring.slice(0,8).map(a=>({name:a.resident_name,end:a.coverage_end})) }
   });

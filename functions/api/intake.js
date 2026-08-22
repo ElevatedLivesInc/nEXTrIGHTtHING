@@ -25,6 +25,11 @@ export async function onRequestPost(context) {
     motivation:        clean(body.motivation, 500),
     best_time:         clean(body.best_time, 20),
     message:           clean(body.message, 2000),
+    // Which door they actually came through - get-help.html and index.html
+    // both build this client-side (which "door" was clicked, or a utm_source
+    // tag on the link that brought them here). Was being collected and
+    // thrown away here; this is the only place it gets saved.
+    source:            clean(body.source, 160),
     status:            'new'
   };
   if (!record.first_name && !record.email && !record.phone) return json({ ok: false, error: 'empty' }, 400);

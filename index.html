@@ -2102,6 +2102,10 @@ async function handleContact(e){
     try{
       const payload={};
       ['first_name','last_name','email','phone','reaching_as','insurance','insurance_company','needs_housing','probation_parole','primary_substance','last_use','motivation','best_time','message'].forEach(k=>payload[k]=(fd.get(k)||'')+'');
+      // Same utm_source capture as get-help.html, so a tagged link shows up
+      // in the same source breakdown no matter which page someone lands on.
+      const p=new URLSearchParams(location.search), utm=p.get('utm_source');
+      payload.source = utm ? 'utm:'+[utm,p.get('utm_medium'),p.get('utm_campaign')].filter(Boolean).join('/') : 'main-site-contact-form';
       fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     }catch(_){}
   }

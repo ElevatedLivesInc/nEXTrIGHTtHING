@@ -288,12 +288,29 @@
 </footer>
 
 <script>
+/* If a link was tagged (?utm_source=instagram&utm_medium=social&utm_campaign=...),
+   that is a real answer to "did the ad work" - record it over the generic
+   door value so it survives all the way to the source breakdown on Mission
+   Control. No tag present is the common case (organic, direct, word of
+   mouth) and falls back to which door they clicked, same as before. */
+var UTM_SOURCE='';
+(function(){
+  var p=new URLSearchParams(location.search);
+  var src=p.get('utm_source');
+  if(src){
+    var parts=[src,p.get('utm_medium'),p.get('utm_campaign')].filter(Boolean);
+    UTM_SOURCE='utm:'+parts.join('/');
+    document.getElementById('f_source').value=UTM_SOURCE;
+  }
+})();
 function pick(val,label){
   var ins=document.getElementById('f_ins');
   for(var i=0;i<ins.options.length;i++){ if(ins.options[i].text===label||ins.options[i].value===label){ins.selectedIndex=i;break;} }
   if(val==='family'){document.getElementById('f_as').value='family';}
   if(val==='court'){for(var j=0;j<ins.options.length;j++){if(ins.options[j].text.indexOf('Court')>-1){ins.selectedIndex=j;break;}}}
-  document.getElementById('f_source').value='get-help:'+val;
+  // A UTM tag on the link is the more valuable fact - keep it, and append
+  // which door they picked rather than losing the tag to it.
+  document.getElementById('f_source').value=(UTM_SOURCE?UTM_SOURCE+' + ':'')+'get-help:'+val;
   document.getElementById('helpForm').scrollIntoView({behavior:'smooth',block:'center'});
   setTimeout(function(){document.getElementById('f_first').focus();},600);
 }

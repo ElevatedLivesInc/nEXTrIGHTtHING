@@ -63,6 +63,26 @@
     <div class="alerts" id="alerts"></div>
   </div>
 
+  <div id="capwrap" style="display:none">
+    <div class="sec">Beds &amp; Where People Come From</div>
+    <div class="tiles" style="margin-bottom:.5rem">
+      <div class="tile" style="cursor:default">
+        <h3>Beds vs. Pipeline</h3>
+        <p id="capLine">&nbsp;</p>
+        <div class="nums">
+          <div class="num flag"><b id="capOpen">–</b><span>Open Beds</span></div>
+          <div class="num"><b id="capPipeline">–</b><span>In Pipeline</span></div>
+          <div class="num"><b id="capReady">–</b><span>Ready Now</span></div>
+        </div>
+      </div>
+      <div class="tile" style="cursor:default">
+        <h3>Where Intakes Come From</h3>
+        <p>Every request on file, by how they reached us. Not creative direction &mdash; just which doors are actually being used, as a starting point for that conversation.</p>
+        <div id="sourceBreak" style="font-size:.8rem;line-height:1.75;color:rgba(255,255,255,.8)"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="sec">Systems</div>
   <div class="tiles" id="tiles">
     <a class="tile" href="/intake-queue">
@@ -250,6 +270,33 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     set('cmDue',CM.overdue!=null?CM.overdue:'–');
     set('hOpen',H.openBeds??'–');
     set('hOwed',H.outstanding!=null?money(H.outstanding):'–');
+
+    if(canClient && H.openBeds!=null){
+      const openBeds=H.openBeds, pipeline=I.open??0, ready=I.ready??0;
+      set('capOpen',openBeds); set('capPipeline',pipeline); set('capReady',ready);
+      document.getElementById('capLine').textContent = openBeds
+        ? (ready>=openBeds
+            ? ready+' ready to move in now covers all '+openBeds+' open bed'+(openBeds===1?'':'s')+'.'
+            : 'Need '+(openBeds-ready)+' more ready-to-admit to fill '+openBeds+' open bed'+(openBeds===1?'':'s')+' — '+pipeline+' total in the pipeline.')
+        : 'No open beds right now.';
+      const LABELS={'unspecified':'Not recorded','get-help-page':'Get Help page (no door picked)','phone':'Phone','walk-in':'Walk-in',
+        'professional':'Professional referral','court':'Court / probation','hospital':'Hospital / detox discharge',
+        'alumni':'Alumni / word of mouth','other':'Other','main-site-contact-form':'Main site contact form'};
+      const label=k=>{
+        if(LABELS[k])return LABELS[k];
+        if(k.indexOf('utm:')===0)return 'Tagged link — '+k.slice(4);
+        if(k.indexOf('get-help:')===0)return 'Get Help — '+k.slice(9);
+        return k;
+      };
+      const src=I.bySource||{};
+      const rows=Object.keys(src).sort((a,b)=>src[b]-src[a]);
+      const total=rows.reduce((t,k)=>t+src[k],0)||1;
+      document.getElementById('sourceBreak').innerHTML = rows.length ? rows.map(k=>{
+        const pct=Math.round(src[k]/total*100);
+        return '<div style="display:flex;justify-content:space-between;gap:.6rem"><span>'+esc(label(k))+'</span><span style="white-space:nowrap;opacity:.7">'+src[k]+' &middot; '+pct+'%</span></div>';
+      }).join('') : '<span style="opacity:.6">No intake requests yet.</span>';
+      document.getElementById('capwrap').style.display='block';
+    }
 
     if(canClient){
       try{
