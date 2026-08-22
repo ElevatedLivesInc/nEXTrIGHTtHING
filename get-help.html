@@ -376,6 +376,9 @@ function goToStep(n){
   // Enter on step 1/2 can never skip past the questions still unanswered.
   sub.disabled=(n!==3);
 }
+function scrollToFormTop(){
+  document.querySelector('.formwrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
 function stepNext(){
   if(STEP===1){
     var first=document.getElementById('f_first').value.trim();
@@ -385,12 +388,22 @@ function stepNext(){
     if(!phone&&!email){alert('A phone number or email so someone can reach you.');document.getElementById('f_phone').focus();return;}
   }
   goToStep(Math.min(3,STEP+1));
-  document.querySelector('.formwrap').scrollIntoView({behavior:'smooth',block:'start'});
+  scrollToFormTop();
 }
 function stepBack(){
   goToStep(Math.max(1,STEP-1));
-  document.querySelector('.formwrap').scrollIntoView({behavior:'smooth',block:'start'});
+  scrollToFormTop();
 }
+// With the submit button disabled/hidden on steps 1-2, pressing Enter in a
+// text field used to do nothing at all (no advance, no error) - a dead end
+// for anyone used to hitting Enter to move a form along. Route it through
+// the same validation stepNext() already does instead of silently eating it.
+document.getElementById('helpForm').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target.tagName==='INPUT'&&STEP<3){
+    e.preventDefault();
+    stepNext();
+  }
+});
 
 async function submitForm(e){
   e.preventDefault();
