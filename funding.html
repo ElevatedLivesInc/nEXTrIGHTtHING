@@ -274,7 +274,7 @@ function render(){
       +'<button class="btn danger" onclick="del(\'funders\',\''+f.id+'\')">Delete</button></div></div>';
     }).join('');
   } else {
-    const rows=APPS.filter(a=>!q||((a.resident_name||'')+' '+(a.funder_name||'')+' '+(a.status||'')).toLowerCase().includes(q));
+    const rows=APPS.filter(a=>!q||((a.resident_name||'')+' '+(a.funder_name||'')+' '+(a.status||'')+' '+(a.case_manager||'')).toLowerCase().includes(q));
     if(!rows.length){grid.innerHTML='';note.style.display='block';note.textContent='No applications logged yet.';return;}
     html=rows.map(a=>{
       const d=daysUntil(a.coverage_end);
@@ -286,6 +286,7 @@ function render(){
       +(soon?'<span class="chip expsoon">Coverage ends in '+d+'d</span>':'')+'</div>'
       +'<div class="rows">'
       +'<div><b>Funder:</b> '+esc(a.funder_name)+'</div>'
+      +'<div><b>Case manager:</b> '+(a.case_manager?esc(a.case_manager):'<span style="opacity:.6">Not assigned yet</span>')+'</div>'
       +(a.amount?'<div><b>Amount:</b> $'+Number(a.amount).toLocaleString('en-US')+'</div>':'')
       +(a.applied_date?'<div><b>Applied:</b> '+fmtD(a.applied_date)+'</div>':'')
       +(a.decision_date?'<div><b>Decision:</b> '+fmtD(a.decision_date)+'</div>':'')
