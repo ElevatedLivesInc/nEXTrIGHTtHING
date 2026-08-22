@@ -58,7 +58,16 @@
   .fg input,.fg select,.fg textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.9rem;padding:.65rem .8rem;}
   .fg textarea{min-height:90px;resize:vertical;}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
-  .submit{width:100%;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;font-size:.95rem;padding:.95rem;border:none;border-radius:6px;cursor:pointer;font-family:'Raleway',sans-serif;letter-spacing:.02em;margin-top:.5rem;}
+  .submit{width:100%;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:var(--navy);font-weight:700;font-size:.95rem;padding:.95rem;border:none;border-radius:6px;cursor:pointer;font-family:'Raleway',sans-serif;letter-spacing:.02em;margin-top:.5rem;}
+  /* STEPPED FORM */
+  .stepbar{display:flex;gap:.4rem;margin-bottom:.9rem;}
+  .stepdot{flex:1;height:4px;border-radius:3px;background:rgba(255,255,255,.12);}
+  .stepdot.done,.stepdot.active{background:var(--sand);}
+  .steplabel{font-size:.78rem;color:rgba(255,255,255,.6);text-align:center;margin-bottom:1.3rem;font-weight:300;}
+  .stepnav{display:flex;gap:.7rem;margin-top:.5rem;}
+  .navbtn{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(201,169,110,.4);color:var(--sand-light);font-weight:700;font-size:.85rem;padding:.85rem;border-radius:6px;cursor:pointer;font-family:'Raleway',sans-serif;letter-spacing:.02em;}
+  .navbtn.next{background:linear-gradient(145deg,#e8d5b0,var(--sand));color:var(--navy);}
+  .navbtn.ghost{flex:0 0 auto;padding:.85rem 1.3rem;background:transparent;}
   .privacy{font-size:.74rem;color:rgba(255,255,255,.45);margin-top:1rem;text-align:center;font-weight:300;}
   .success{display:none;text-align:center;padding:2rem 1rem;}
   .success h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--sand-light);font-weight:300;margin-bottom:.7rem;}
@@ -131,7 +140,7 @@
           <li>Some cover months of housing and therapy</li>
         </ul>
         <div class="cost">Being broke is not a disqualifier here. Ask anyway.</div>
-        <button class="pbtn" onclick="pick('scholarship','No insurance — need scholarship')">Ask about a scholarship</button>
+        <button class="pbtn" onclick="pick('scholarship','No insurance')">Ask about a scholarship</button>
       </div>
 
       <div class="path">
@@ -144,7 +153,7 @@
           <li>Documentation for employers or boards</li>
         </ul>
         <div class="cost">Your payment also keeps a scholarship bed open for someone who has nothing.</div>
-        <button class="pbtn" onclick="pick('private','Private pay')">See private options</button>
+        <button class="pbtn" onclick="pick('private','Paying myself')">See private options</button>
       </div>
 
       <div class="path">
@@ -221,54 +230,73 @@
     <p class="lede">Every question is optional except how to reach you. The more you share, the less you'll have to repeat on the phone.</p>
 
     <div class="formwrap">
+      <div class="stepbar">
+        <div class="stepdot active" id="dot1"></div><div class="stepdot" id="dot2"></div><div class="stepdot" id="dot3"></div>
+      </div>
+      <p class="steplabel" id="stepLabel">Step 1 of 3 — about a minute total. A real person replies within one business day.</p>
+
       <form id="helpForm" onsubmit="return submitForm(event)">
-        <div class="two">
-          <div class="fg"><label>First name</label><input id="f_first" required></div>
-          <div class="fg"><label>Last name</label><input id="f_last"></div>
+        <div class="fstep" data-step="1">
+          <div class="two">
+            <div class="fg"><label>First name</label><input id="f_first" required></div>
+            <div class="fg"><label>Last name</label><input id="f_last"></div>
+          </div>
+          <div class="two">
+            <div class="fg"><label>Phone</label><input id="f_phone" type="tel" placeholder="(801) 555-0000"></div>
+            <div class="fg"><label>Email</label><input id="f_email" type="email"></div>
+          </div>
+          <div class="two">
+            <div class="fg"><label>This is for</label><select id="f_as">
+              <option value="self">Myself</option><option value="family">Someone I love</option>
+            </select></div>
+            <div class="fg"><label>Best time to reach you</label><select id="f_time">
+              <option value="">Any time</option><option>Morning</option><option>Afternoon</option><option>Evening</option>
+            </select></div>
+          </div>
         </div>
-        <div class="two">
-          <div class="fg"><label>Phone</label><input id="f_phone" type="tel" placeholder="(801) 555-0000"></div>
-          <div class="fg"><label>Email</label><input id="f_email" type="email"></div>
-        </div>
-        <div class="two">
-          <div class="fg"><label>This is for</label><select id="f_as">
-            <option value="self">Myself</option><option value="family">Someone I love</option>
-          </select></div>
-          <div class="fg"><label>Best time to reach you</label><select id="f_time">
-            <option value="">Any time</option><option>Morning</option><option>Afternoon</option><option>Evening</option>
-          </select></div>
-        </div>
-        <div class="two">
-          <div class="fg"><label>How would this be paid for?</label><select id="f_ins">
-            <option value="">Not sure yet</option>
-            <option>Medicaid</option><option>Medicare</option><option>Private insurance</option>
-            <option>No insurance</option><option>Paying myself</option><option>Court / probation ordered</option>
-          </select></div>
-          <div class="fg"><label>Insurance company (if known)</label><input id="f_inscomp"></div>
-        </div>
-        <div class="two">
-          <div class="fg"><label>Do you need housing?</label><select id="f_house">
-            <option value="">Not sure</option><option>Yes</option><option>No</option>
-          </select></div>
-          <div class="fg"><label>On probation or parole?</label><select id="f_prob">
-            <option value="">Prefer not to say</option><option>Yes</option><option>No</option>
+
+        <div class="fstep" data-step="2" hidden>
+          <div class="two">
+            <div class="fg"><label>How would this be paid for?</label><select id="f_ins">
+              <option value="">Not sure yet</option>
+              <option>Medicaid</option><option>Medicare</option><option>Private insurance</option>
+              <option>No insurance</option><option>Paying myself</option><option>Court / probation ordered</option>
+            </select></div>
+            <div class="fg"><label>Insurance company (if known)</label><input id="f_inscomp"></div>
+          </div>
+          <div class="two">
+            <div class="fg"><label>Do you need housing?</label><select id="f_house">
+              <option value="">Not sure</option><option>Yes</option><option>No</option>
+            </select></div>
+            <div class="fg"><label>On probation or parole?</label><select id="f_prob">
+              <option value="">Prefer not to say</option><option>Yes</option><option>No</option>
+            </select></div>
+          </div>
+          <div class="fg"><label>Employment status</label><select id="f_employment">
+            <option value="">Prefer not to say</option><option>Employed full-time</option>
+            <option>Employed part-time</option><option>Unemployed</option><option>Unable to work</option>
           </select></div>
         </div>
-        <div class="two">
-          <div class="fg"><label>Primary substance</label><input id="f_sub" placeholder="Optional"></div>
-          <div class="fg"><label>Last use</label><select id="f_use">
-            <option value="">Prefer not to say</option><option>Today</option><option>This week</option>
-            <option>This month</option><option>Over a month ago</option>
-          </select></div>
+
+        <div class="fstep" data-step="3" hidden>
+          <div class="two">
+            <div class="fg"><label>Primary substance</label><input id="f_sub" placeholder="Optional"></div>
+            <div class="fg"><label>Last use</label><select id="f_use">
+              <option value="">Prefer not to say</option><option>Today</option><option>This week</option>
+              <option>This month</option><option>Over a month ago</option>
+            </select></div>
+          </div>
+          <div class="fg"><label>What's making you reach out right now?</label><input id="f_mot" placeholder="In your own words — short is fine"></div>
+          <div class="fg"><label>Anything else we should know</label><textarea id="f_msg"></textarea></div>
         </div>
-        <div class="fg"><label>Employment status</label><select id="f_employment">
-          <option value="">Prefer not to say</option><option>Employed full-time</option>
-          <option>Employed part-time</option><option>Unemployed</option><option>Unable to work</option>
-        </select></div>
-        <div class="fg"><label>What's making you reach out right now?</label><input id="f_mot" placeholder="In your own words — short is fine"></div>
-        <div class="fg"><label>Anything else we should know</label><textarea id="f_msg"></textarea></div>
+
         <input type="hidden" id="f_source" value="get-help-page">
-        <button type="submit" class="submit" id="subBtn">Send this to our intake team</button>
+
+        <div class="stepnav">
+          <button type="button" class="navbtn ghost" id="backBtn" onclick="stepBack()" style="display:none">Back</button>
+          <button type="button" class="navbtn next" id="nextBtn" onclick="stepNext()">Continue</button>
+          <button type="submit" class="submit" id="subBtn" style="display:none" disabled>Send this to our intake team</button>
+        </div>
         <p class="privacy">This goes straight to our intake coordinator — not a call center, not a lead broker. We don't sell or share your information.</p>
       </form>
 
@@ -315,8 +343,53 @@ function pick(val,label){
   // A UTM tag on the link is the more valuable fact - keep it, and append
   // which door they picked rather than losing the tag to it.
   document.getElementById('f_source').value=(UTM_SOURCE?UTM_SOURCE+' + ':'')+'get-help:'+val;
+  goToStep(1);
   document.getElementById('helpForm').scrollIntoView({behavior:'smooth',block:'center'});
   setTimeout(function(){document.getElementById('f_first').focus();},600);
+}
+
+/* Three short steps instead of one long form. The first step is just "how do
+   we reach you" - the lowest-friction possible ask - so nobody bails before
+   we even have a phone number. Everything after that is optional, same as
+   before; this only changes how many questions are visible at once. */
+var STEP=1;
+var STEP_LABELS=[
+  'Step 1 of 3 — about a minute total. A real person replies within one business day.',
+  'Step 2 of 3 — how this gets paid for. "Not sure yet" is a fine answer.',
+  'Step 3 of 3 — optional, but it means less to repeat on the phone.'
+];
+function goToStep(n){
+  STEP=n;
+  document.querySelectorAll('.fstep').forEach(function(el){el.hidden=(Number(el.dataset.step)!==n);});
+  for(var i=1;i<=3;i++){
+    var dot=document.getElementById('dot'+i);
+    dot.classList.toggle('active',i===n);
+    dot.classList.toggle('done',i<n);
+  }
+  document.getElementById('stepLabel').textContent=STEP_LABELS[n-1];
+  document.getElementById('backBtn').style.display=(n===1?'none':'inline-block');
+  document.getElementById('nextBtn').style.display=(n===3?'none':'block');
+  var sub=document.getElementById('subBtn');
+  sub.style.display=(n===3?'block':'none');
+  // Belt-and-suspenders: some browsers treat a hidden submit button as the
+  // form's implicit submit target on Enter. Disabling it too means pressing
+  // Enter on step 1/2 can never skip past the questions still unanswered.
+  sub.disabled=(n!==3);
+}
+function stepNext(){
+  if(STEP===1){
+    var first=document.getElementById('f_first').value.trim();
+    var phone=document.getElementById('f_phone').value.trim();
+    var email=document.getElementById('f_email').value.trim();
+    if(!first){alert('Your first name is all we need to start.');document.getElementById('f_first').focus();return;}
+    if(!phone&&!email){alert('A phone number or email so someone can reach you.');document.getElementById('f_phone').focus();return;}
+  }
+  goToStep(Math.min(3,STEP+1));
+  document.querySelector('.formwrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function stepBack(){
+  goToStep(Math.max(1,STEP-1));
+  document.querySelector('.formwrap').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 async function submitForm(e){
