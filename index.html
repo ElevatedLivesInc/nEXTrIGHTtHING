@@ -2149,7 +2149,35 @@ function updateDonateBtn(){
 }
 document.addEventListener('input',e=>{if(e.target.id==='customAmount'){selectedAmt=e.target.value;updateDonateBtn();}});
 const NRT_SQUARE_LINKS={'25':'https://square.link/u/JYdXMYbn','50':'https://square.link/u/k4o9usgH','100':'https://square.link/u/XNIrcIBu','250':'https://square.link/u/uDddv7RB','500':'https://square.link/u/DUalu33k','other':'https://square.link/u/RxyJqllF'};
-function handleDonate(e){e.preventDefault();var amt=(selectedAmt||'').toString().trim();if(NRT_SQUARE_LINKS[amt]){window.location.href=NRT_SQUARE_LINKS[amt];return;}var custom=document.getElementById('customAmount');var val=custom&&custom.value?parseFloat(custom.value):NaN;var t=document.getElementById('donateBtnText');if(!isNaN(val)&&val>=1){var prev=t?t.textContent:'';if(t)t.textContent='Preparing checkout…';fetch('/api/custom-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:val})}).then(function(r){return r.json();}).then(function(d){if(d&&d.url){window.location.href=d.url;}else{throw new Error('nourl');}}).catch(function(){if(t)t.textContent=prev;window.location.href=NRT_SQUARE_LINKS['other'];});return;}window.location.href=NRT_SQUARE_LINKS['other'];}
+/* Which channel actually brought a donor here, so a cash gift can be traced
+   back the same way an intake now can be. Tag a link with utm_source (a
+   Facebook post, an email, a text) and it rides along into Square as the
+   payment's note - the static per-amount links below carry nothing on their
+   own, which is why every donation now routes through the dynamic checkout
+   first and only falls back to a static link if that call fails. */
+const DONATE_SOURCE=(function(){
+  var p=new URLSearchParams(location.search), utm=p.get('utm_source');
+  return utm ? 'utm:'+[utm,p.get('utm_medium'),p.get('utm_campaign')].filter(Boolean).join('/') : 'site-donate-page';
+})();
+function goToSquare(amt,tier,fallbackUrl){
+  var t=document.getElementById('donateBtnText');
+  var prev=t?t.textContent:'';
+  if(t)t.textContent='Preparing checkout…';
+  fetch('/api/custom-checkout',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({amount:amt,tier:tier,source:DONATE_SOURCE})})
+    .then(function(r){return r.json();})
+    .then(function(d){if(d&&d.url){window.location.href=d.url;}else{throw new Error('nourl');}})
+    .catch(function(){if(t)t.textContent=prev;window.location.href=fallbackUrl;});
+}
+function handleDonate(e){
+  e.preventDefault();
+  var amt=(selectedAmt||'').toString().trim();
+  if(NRT_SQUARE_LINKS[amt]){ goToSquare(Number(amt),amt,NRT_SQUARE_LINKS[amt]); return; }
+  var custom=document.getElementById('customAmount');
+  var val=custom&&custom.value?parseFloat(custom.value):NaN;
+  if(!isNaN(val)&&val>=1){ goToSquare(val,'custom',NRT_SQUARE_LINKS['other']); return; }
+  window.location.href=NRT_SQUARE_LINKS['other'];
+}
 
 // Legal modals
 const LEGAL={

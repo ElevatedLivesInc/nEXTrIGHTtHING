@@ -52,6 +52,11 @@
     <div class="stat"><div class="n" id="sAvg">$0</div><div class="l">Average Gift</div></div>
     <div class="stat"><div class="n" id="sMonth">$0</div><div class="l">This Month</div></div>
   </div>
+  <div id="chanwrap" style="display:none;margin-bottom:1.4rem">
+    <div style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sand);margin-bottom:.6rem">Which Channel Brings In The Money</div>
+    <div style="font-size:.76rem;color:rgba(255,255,255,.5);margin-bottom:.8rem;line-height:1.6">Only donations made through the site's Donate button since August 22, 2026 carry this — every gift before that, and every gift someone hands over another way, shows as <b>not tagged</b>.</div>
+    <div id="chanBreak" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.9rem 1.1rem;font-size:.82rem;line-height:1.9"></div>
+  </div>
   <div class="bar" id="filters" style="display:none">
     <button class="fbtn" id="groupBtn" onclick="GROUP=!GROUP;this.classList.toggle('active',GROUP);render()">Monthly</button>
     <button class="fbtn" onclick="exportCSV()">Download CSV</button>
@@ -146,6 +151,30 @@ function exportCSV(){
 }
 document.getElementById('search').addEventListener('input',e=>{Q=e.target.value.trim();render();});
 
+/* Every payment before this landed with no tag at all - the buttons only
+   started sending one once the checkout flow was wired to /api/custom-checkout
+   with a source. Group by what actually got recorded rather than guessing at
+   the untagged ones. */
+function channelOf(note){
+  note=(note||'').trim();
+  if(!note) return 'Not tagged';
+  if(note.indexOf('utm:')===0) return 'Tagged link — '+note.slice(4);
+  if(note==='site-donate-page') return 'Site donate button (no link tag)';
+  return note;
+}
+function renderChannels(){
+  const groups={};
+  DATA.forEach(r=>{const k=channelOf(r.note);(groups[k]=groups[k]||{amt:0,n:0}); groups[k].amt+=Number(r.amount)||0; groups[k].n++;});
+  const keys=Object.keys(groups).sort((a,b)=>groups[b].amt-groups[a].amt);
+  const total=DATA.reduce((t,r)=>t+(Number(r.amount)||0),0)||1;
+  document.getElementById('chanBreak').innerHTML = keys.length ? keys.map(k=>{
+    const g=groups[k], pct=Math.round(g.amt/total*100);
+    return '<div style="display:flex;justify-content:space-between;gap:1rem"><span>'+esc(k)+'</span>'
+      +'<span style="white-space:nowrap;opacity:.8">'+money(g.amt)+' &middot; '+g.n+' gift'+(g.n===1?'':'s')+' &middot; '+pct+'%</span></div>';
+  }).join('') : '<span style="opacity:.6">No donations yet.</span>';
+  document.getElementById('chanwrap').style.display='block';
+}
+
 (async function(){
   const note=document.getElementById('note');
   try{
@@ -165,6 +194,7 @@ document.getElementById('search').addEventListener('input',e=>{Q=e.target.value.
     document.getElementById('stats').style.display='grid';
     document.getElementById('filters').style.display='flex';
     document.getElementById('tblwrap').style.display='';
+    renderChannels();
     render();
   }catch(_){note.textContent='Could not load donations. Check your connection and reload.';}
 })();
