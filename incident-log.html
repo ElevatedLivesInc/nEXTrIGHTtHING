@@ -57,6 +57,9 @@
   .step{flex:1;min-width:96px;padding:.45rem .4rem;border-radius:6px;text-align:center;font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12);}
   .step.on{background:rgba(124,92,191,.22);color:var(--lav);border-color:rgba(124,92,191,.55);}
   textarea,input,select{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.85rem;padding:.55rem .7rem;}
+  /* Without this, the open dropdown list falls back to each browser's own
+     colors instead of the select's - often white text on a white popup. */
+  select option{background:var(--deep);color:#fff;}
   textarea{min-height:70px;resize:vertical;line-height:1.6;}
   label{display:block;font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5);margin:.7rem 0 .25rem;}
   .btn{font-size:.63rem;letter-spacing:.06em;text-transform:uppercase;padding:.5rem 1rem;border-radius:6px;border:1px solid rgba(201,169,110,.45);background:transparent;color:var(--sandl);cursor:pointer;font-family:'Raleway',sans-serif;font-weight:600;}

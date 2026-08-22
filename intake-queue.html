@@ -56,6 +56,9 @@
   .nf{margin-bottom:.65rem;}
   .nf label{display:block;font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.22rem;}
   .nf input,.nf select,.nf textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;padding:.48rem .65rem;}
+  /* Without this, the open dropdown list falls back to each browser's own
+     colors instead of the select's - often white text on a white popup. */
+  select option{background:var(--navy-deep);color:#fff;}
   .nf2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
   @media(max-width:600px){.nf2{grid-template-columns:1fr;}}
   .delbtn{margin-left:auto;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(224,120,120,.35);background:transparent;color:#f0b6b6;cursor:pointer;font-family:'Raleway',sans-serif;}

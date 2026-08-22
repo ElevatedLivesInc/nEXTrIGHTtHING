@@ -26,6 +26,9 @@
   .tab{padding:.45rem 1.1rem;border-radius:50px;border:1px solid rgba(201,169,110,.35);background:transparent;color:rgba(255,255,255,.7);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Raleway',sans-serif;}
   .tab.active{background:rgba(201,169,110,.2);color:#fff;}
   input,select,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:6px;color:#fff;padding:.6rem .8rem;font-family:'Raleway',sans-serif;font-size:.88rem;}
+  /* Without this, the open dropdown list falls back to each browser's own
+     colors instead of the select's - often white text on a white popup. */
+  select option{background:var(--deep);color:#fff;}
   textarea{min-height:80px;resize:vertical;}
   .rows{display:flex;flex-direction:column;gap:.5rem;}
   .row{display:grid;grid-template-columns:190px 1fr auto;gap:1rem;align-items:start;border:1px solid var(--line);border-radius:8px;padding:.85rem 1rem;background:rgba(255,255,255,.02);cursor:pointer;}

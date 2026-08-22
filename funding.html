@@ -47,6 +47,9 @@
   .btnrow{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:auto;padding-top:.4rem;}
   .bar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;}
   input,select,textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;padding:.5rem .7rem;width:100%;}
+  /* Without this, the open dropdown list falls back to each browser's own
+     colors instead of the select's - often white text on a white popup. */
+  select option{background:var(--navy-deep);color:#fff;}
   textarea{min-height:60px;resize:vertical;}
   label{display:block;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.25rem;}
   .fld{margin-bottom:.7rem;}
