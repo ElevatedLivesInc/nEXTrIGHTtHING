@@ -77,9 +77,18 @@ async function verifyToken(token, env) {
     return { email: null, reason: REASON.COOKIE_MALFORMED };
   }
 
+  // ACCESS_TEAM_DOMAIN may be set as either the bare team name ("mycompany")
+  // or the full domain ("mycompany.cloudflareaccess.com") - signin.js accepts
+  // both forms when building the login URL, so this must normalize the same
+  // way or a bare team name here rejects every legitimately signed-in token.
+  const expectedIssuer = env && env.ACCESS_TEAM_DOMAIN
+    ? 'https://' + (env.ACCESS_TEAM_DOMAIN.endsWith('.cloudflareaccess.com')
+        ? env.ACCESS_TEAM_DOMAIN
+        : env.ACCESS_TEAM_DOMAIN + '.cloudflareaccess.com')
+    : null;
   const issuerOk = typeof payload.iss === 'string'
     && /^https:\/\/[a-z0-9][a-z0-9-]*\.cloudflareaccess\.com$/.test(payload.iss)
-    && (!env || !env.ACCESS_TEAM_DOMAIN || payload.iss === 'https://' + env.ACCESS_TEAM_DOMAIN);
+    && (!expectedIssuer || payload.iss === expectedIssuer);
   if (!issuerOk) return { email: null, reason: REASON.BAD_ISSUER, claims: safeClaims(payload) };
 
   const now = Date.now() / 1000;
