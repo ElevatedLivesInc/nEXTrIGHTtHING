@@ -7,7 +7,7 @@
 <title>Housing Command — Staff Only</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;--good:#78c896;--bad:#e07878;--warn:#e0965a;}
+  :root{--navy:{{COLOR_NAVY}};--navy-deep:{{COLOR_NAVY_DEEP}};--sand:{{COLOR_SAND}};--sand-light:{{COLOR_SAND_LIGHT}};--lav:#c9b6f0;--good:#78c896;--bad:#e07878;--warn:#e0965a;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
   .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.3rem 1.5rem;}
@@ -146,7 +146,7 @@
 
   <div class="legend" id="legend" style="display:none">
     <span><i style="background:#78c896"></i>Paid in full</span>
-    <span><i style="background:#c9a96e"></i>Partial</span>
+    <span><i style="background:{{COLOR_SAND}}"></i>Partial</span>
     <span><i style="background:#e07878"></i>Owing</span>
     <span><i style="background:rgba(255,255,255,.12);border:1px solid rgba(201,169,110,.5)"></i>Open bed</span>
   </div>
@@ -293,7 +293,7 @@
       <div class="fld"><label>Taken by</label><input id="e_takenby" placeholder="defaults to you"></div>
     </div>
     <div class="fld"><label>Detail</label><input id="e_detail"></div>
-    <div style="margin-top:1rem"><h4 style="font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#c9a96e;margin-bottom:.5rem">Payment ledger</h4><div id="ledger"></div></div>
+    <div style="margin-top:1rem"><h4 style="font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:{{COLOR_SAND}};margin-bottom:.5rem">Payment ledger</h4><div id="ledger"></div></div>
   </div>
 
   <div class="btnrow">
@@ -314,7 +314,7 @@ function showWelcome(title, blurb, status){
   el.style.display = 'block';
   el.innerHTML =
     '<div style="max-width:520px;margin:3rem auto;text-align:center">'
-    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:#e8d5b0;font-weight:300;margin-bottom:.6rem">'
+    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:{{COLOR_SAND_LIGHT}};font-weight:300;margin-bottom:.6rem">'
     + (forbidden ? 'This one is not yours' : 'Welcome to ' + title)
     + '</div>'
     + '<p style="color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.5rem">'
@@ -323,12 +323,12 @@ function showWelcome(title, blurb, status){
         : blurb)
     + '</p>'
     + (forbidden ? '' :
-        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
+        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},{{COLOR_SAND}});color:{{COLOR_NAVY}};font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
       + '<div style="font-size:.8rem;color:rgba(255,255,255,.45);margin-top:1.3rem;line-height:1.8">'
       + 'No password. You will get a 6-digit code by email &mdash; type it in and you are back here.<br>'
-      + 'Use your <b style="color:rgba(255,255,255,.7)">@nextrighthing.com</b> address.'
+      + 'Use your <b style="color:rgba(255,255,255,.7)">@{{EMAIL_DOMAIN}}</b> address.'
       + '</div>')
-    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
+    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:{{COLOR_SAND}};font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
     + '</div>';
 }
 let HOUSES=[],RES=[],EVENTS=[],FUNDERS=[],APPS=[],PAY=[],TAB='map',Q='';
@@ -724,7 +724,7 @@ function render(){
                      !r.bank_account?'bank':'',!r.employed?'job':''].filter(Boolean);
       return '<div class="row'+(gap.rank<=1?' hot':'')+'" onclick="openRes(\''+r.id+'\')">'
       +'<div class="rname">'+esc(r.name)+'</div>'
-      +'<div class="rmeta"><b style="color:#e8d5b0">Next: '+esc(gap.label)+'</b>'
+      +'<div class="rmeta"><b style="color:{{COLOR_SAND_LIGHT}}">Next: '+esc(gap.label)+'</b>'
       +(missing.length?'<br><span style="opacity:.7">Still missing: '+esc(missing.join(', '))+'</span>':'<br><span class="chip job">fully documented</span>')
       +(have.length?'<br><span style="opacity:.66">Has: '+esc(have.join(', '))+'</span>':'')
       +(r.case_manager?'<br><span style="opacity:.66">CM: '+esc(r.case_manager)+'</span>':'<br><span class="chip warn2">no case manager</span>')

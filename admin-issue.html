@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Issue In-Kind Code | The Right Thing in Recovery</title>
+<title>Issue In-Kind Code | {{ORG_SECOND_ENTITY}}</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,10 +38,10 @@
 <body>
 <div class="wrap">
   <div class="banner">Staff only &middot; protected by Cloudflare Access</div>
-  <div style="margin:-.4rem 0 1rem"><a href="/mission-control" class="mcback" style="display:inline-block;font-size:.72rem;letter-spacing:.04em;color:#1a2744;text-decoration:none;border:1px solid rgba(26,39,68,.3);border-radius:50px;padding:.3rem .85rem">&larr; Mission Control</a></div>
+  <div style="margin:-.4rem 0 1rem"><a href="/mission-control" class="mcback" style="display:inline-block;font-size:.72rem;letter-spacing:.04em;color:{{COLOR_NAVY}};text-decoration:none;border:1px solid rgba(26,39,68,.3);border-radius:50px;padding:.3rem .85rem">&larr; Mission Control</a></div>
   <div class="card">
     <div id="form">
-      <div class="eyebrow">The Right Thing in Recovery</div>
+      <div class="eyebrow">{{ORG_SECOND_ENTITY}}</div>
       <h1>Issue an In-Kind Code</h1>
       <p class="hint">Lock the agreed donation to a one-time code. Give the code to the donor; they redeem it on the site.</p>
 
@@ -98,8 +98,8 @@
       if(!res.ok) throw (data.error||'Could not create code.');
       document.getElementById('code').textContent=data.code;
       document.getElementById('script').innerHTML=
-        'Thank you so much for your donation to The Right Thing in Recovery. '
-        +'To get your tax receipt, go to <b>nextrighthing.com/in-kind-receipt</b> and enter this code: <b>'+data.code+'</b>. '
+        'Thank you so much for your donation to {{ORG_SECOND_ENTITY}}. '
+        +'To get your tax receipt, go to <b>{{EMAIL_DOMAIN}}/in-kind-receipt</b> and enter this code: <b>'+data.code+'</b>. '
         +'Your official receipt will generate instantly.';
       document.getElementById('form').style.display='none';
       document.getElementById('out').style.display='block';

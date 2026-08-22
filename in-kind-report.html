@@ -7,7 +7,7 @@
 <title>In-Kind Donations Report — Staff Only</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;}
+  :root{--navy:{{COLOR_NAVY}};--navy-deep:{{COLOR_NAVY_DEEP}};--sand:{{COLOR_SAND}};--sand-light:{{COLOR_SAND_LIGHT}};--lav:#c9b6f0;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
   .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.4rem 1.5rem;}
@@ -46,7 +46,7 @@
 <body>
 <div class="top"><div class="top-inner">
   <h1>In-Kind Donations <em>Report</em></h1>
-  <div style="display:flex;align-items:center;gap:.2rem;flex-wrap:wrap"><span class="viewer" id="viewer"></span><a href="/mission-control" class="mcback" style="display:inline-block;font-size:.72rem;letter-spacing:.04em;color:#e8d5b0;text-decoration:none;border:1px solid rgba(201,169,110,.45);border-radius:50px;padding:.3rem .85rem;white-space:nowrap;margin-left:1rem">&larr; Mission Control</a></div>
+  <div style="display:flex;align-items:center;gap:.2rem;flex-wrap:wrap"><span class="viewer" id="viewer"></span><a href="/mission-control" class="mcback" style="display:inline-block;font-size:.72rem;letter-spacing:.04em;color:{{COLOR_SAND_LIGHT}};text-decoration:none;border:1px solid rgba(201,169,110,.45);border-radius:50px;padding:.3rem .85rem;white-space:nowrap;margin-left:1rem">&larr; Mission Control</a></div>
 </div></div>
 
 <div class="wrap">
@@ -85,7 +85,7 @@ function showWelcome(title, blurb, status){
   el.style.display = 'block';
   el.innerHTML =
     '<div style="max-width:520px;margin:3rem auto;text-align:center">'
-    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:#e8d5b0;font-weight:300;margin-bottom:.6rem">'
+    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:{{COLOR_SAND_LIGHT}};font-weight:300;margin-bottom:.6rem">'
     + (forbidden ? 'This one is not yours' : 'Welcome to ' + title)
     + '</div>'
     + '<p style="color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.5rem">'
@@ -94,12 +94,12 @@ function showWelcome(title, blurb, status){
         : blurb)
     + '</p>'
     + (forbidden ? '' :
-        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
+        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},{{COLOR_SAND}});color:{{COLOR_NAVY}};font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
       + '<div style="font-size:.8rem;color:rgba(255,255,255,.45);margin-top:1.3rem;line-height:1.8">'
       + 'No password. You will get a 6-digit code by email &mdash; type it in and you are back here.<br>'
-      + 'Use your <b style="color:rgba(255,255,255,.7)">@nextrighthing.com</b> address.'
+      + 'Use your <b style="color:rgba(255,255,255,.7)">@{{EMAIL_DOMAIN}}</b> address.'
       + '</div>')
-    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
+    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:{{COLOR_SAND}};font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
     + '</div>';
 }
 let DATA=[], FILTER='all', Q='';
@@ -176,8 +176,8 @@ function rowHtml(r){
 function hasEmail(c){return c&&(c+'').indexOf('@')>-1;}
 function thankMailto(r){
   const em=((r.donor_contact||'').match(/[^\s,;]+@[^\s,;]+/)||[''])[0];
-  const sub=encodeURIComponent('Thank you for your donation — The Right Thing in Recovery');
-  const bod=encodeURIComponent('Dear '+(r.donor_name||'friend')+',\n\nThank you so much for your generous in-kind donation'+(r.description?(' of '+r.description):'')+'. Your support directly helps people rebuilding their lives in recovery.\n\nYour receipt'+(r.serial?(' (No. '+r.serial+')'):'')+' is available anytime at nextrighthing.com/verify.\n\nWith gratitude,\nThe Right Thing in Recovery');
+  const sub=encodeURIComponent('Thank you for your donation — {{ORG_SECOND_ENTITY}}');
+  const bod=encodeURIComponent('Dear '+(r.donor_name||'friend')+',\n\nThank you so much for your generous in-kind donation'+(r.description?(' of '+r.description):'')+'. Your support directly helps people rebuilding their lives in recovery.\n\nYour receipt'+(r.serial?(' (No. '+r.serial+')'):'')+' is available anytime at {{EMAIL_DOMAIN}}/verify.\n\nWith gratitude,\n{{ORG_SECOND_ENTITY}}');
   return 'mailto:'+em+'?subject='+sub+'&body='+bod;
 }
 async function doAction(id,action,btn){

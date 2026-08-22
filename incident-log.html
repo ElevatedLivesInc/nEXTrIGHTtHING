@@ -7,7 +7,7 @@
 <title>Incident Log — Staff Only</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;--good:#78c896;--bad:#e07878;--warn:#e0965a;--lav:#c9b6f0;}
+  :root{--navy:{{COLOR_NAVY}};--deep:{{COLOR_NAVY_DEEP}};--sand:{{COLOR_SAND}};--sandl:{{COLOR_SAND_LIGHT}};--good:#78c896;--bad:#e07878;--warn:#e0965a;--lav:#c9b6f0;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
   .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.3rem 1.5rem;}
@@ -71,7 +71,7 @@
   @media print{
     body{background:#fff;color:#000;} .top,.bar,.stats,.btnrow,.viewer,.foot{display:none!important;}
     .modal{position:static;background:#fff;padding:0;} .sheet{border:none;background:#fff;max-width:100%;}
-    .sheet h2,.sec{color:#1a2744;} .val,.kv dd{color:#000;} .kv dt{color:#555;}
+    .sheet h2,.sec{color:{{COLOR_NAVY}};} .val,.kv dd{color:#000;} .kv dt{color:#555;}
     .sub{color:#555;} .step{color:#000;border-color:#999;}
   }
 </style>
@@ -276,7 +276,7 @@ async function load(){
     if(r.status===401){location.href='/signin?next='+encodeURIComponent('/incident-log');return;}
     const d=await r.json();
     if(r.status===403||d.error){
-      g('note').innerHTML='<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.8rem;color:#e8d5b0">This one is not yours</div>'
+      g('note').innerHTML='<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.8rem;color:{{COLOR_SAND_LIGHT}}">This one is not yours</div>'
         +'<p style="margin-top:.8rem">You are signed in, but your account is not set up for incident reports. Text Gabe — two-minute fix.</p>';
       return;
     }

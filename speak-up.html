@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Speak Up — The Next Right Thing in Recovery</title>
+<title>Speak Up — {{ORG_LEGAL_NAME}}</title>
 <meta name="description" content="Raise a concern about your care or your housing. You can do it anonymously.">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--deep:#0d1424;--sand:#c9a96e;--sandl:#e8d5b0;--good:#78c896;}
+  :root{--navy:{{COLOR_NAVY}};--deep:#0d1424;--sand:{{COLOR_SAND}};--sandl:{{COLOR_SAND_LIGHT}};--good:#78c896;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;line-height:1.7;}
   .top{background:var(--navy);border-bottom:3px solid var(--sand);padding:2.6rem 1.4rem;text-align:center;}
@@ -30,8 +30,8 @@
   @media(max-width:600px){.two{grid-template-columns:1fr;}}
   .hint{font-size:.78rem;color:rgba(255,255,255,.42);font-weight:300;margin-top:.3rem;line-height:1.6;}
   .checks label{display:flex;align-items:center;gap:.45rem;font-size:.9rem;text-transform:none;letter-spacing:0;color:rgba(255,255,255,.85);cursor:pointer;}
-  .checks input{width:auto;accent-color:#c9a96e;}
-  .cta{display:block;width:100%;text-align:center;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;padding:1rem;border:0;border-radius:8px;font-size:1rem;font-family:'Raleway',sans-serif;cursor:pointer;margin-top:.5rem;}
+  .checks input{width:auto;accent-color:{{COLOR_SAND}};}
+  .cta{display:block;width:100%;text-align:center;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},var(--sand));color:{{COLOR_NAVY}};font-weight:700;padding:1rem;border:0;border-radius:8px;font-size:1rem;font-family:'Raleway',sans-serif;cursor:pointer;margin-top:.5rem;}
   .cta:disabled{opacity:.55;cursor:default;}
   .msg{margin-top:.9rem;font-size:.88rem;text-align:center;color:#f0b6b6;min-height:1.2em;}
   .hp{position:absolute;left:-9999px;}
@@ -113,7 +113,7 @@
     <h2>If you would rather go outside the organization</h2>
     <p>You are entitled to do that, and it will not affect your care or your housing.</p>
     <ul>
-      <li><strong>Utah Office of Licensing</strong> &mdash; investigates concerns about licensed programs. <a href="tel:8018902007" style="color:var(--sandl)">(801) 890-2007</a></li>
+      <li><strong>{{LICENSING_BODY}}</strong> &mdash; investigates concerns about licensed programs. <a href="tel:{{LICENSING_PHONE_TEL}}" style="color:var(--sandl)">{{LICENSING_PHONE}}</a></li>
       <li><strong>Adult Protective Services</strong> &mdash; abuse, neglect or exploitation of an adult. <a href="tel:18003717897" style="color:var(--sandl)">1-800-371-7897</a></li>
       <li><strong>Child Abuse and Neglect</strong> &mdash; <a href="tel:18553233237" style="color:var(--sandl)">1-855-323-3237</a></li>
       <li><strong>988 Suicide &amp; Crisis Lifeline</strong> &mdash; call or text <a href="tel:988" style="color:var(--sandl)">988</a>, any hour</li>
@@ -146,8 +146,8 @@
   </div>
 
   <div class="foot">
-    <strong style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400">The Next Right Thing in Recovery</strong><br>
-    8901 South 1300 West, West Jordan, UT 84088 &nbsp;&middot;&nbsp; <a href="tel:8018164977">(801) 816-4977</a><br>
+    <strong style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400">{{ORG_LEGAL_NAME}}</strong><br>
+    {{ADDRESS}} &nbsp;&middot;&nbsp; <a href="tel:{{PHONE_TEL}}">{{PHONE_DISPLAY}}</a><br>
     <em style="display:block;margin-top:1rem;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--sandl)">"I made a difference to that one."</em>
   </div>
 </div>
@@ -178,11 +178,11 @@ async function send(){
     d = await r.json();
   } catch(_) {
     g('go').disabled = false; g('go').textContent = 'Send it';
-    msg.textContent = 'Could not send. Please try again, or call (801) 816-4977.'; return;
+    msg.textContent = 'Could not send. Please try again, or call {{PHONE_DISPLAY}}.'; return;
   }
   if (!d.ok) {
     g('go').disabled = false; g('go').textContent = 'Send it';
-    msg.textContent = d.error || 'Could not send. Please call (801) 816-4977.'; return;
+    msg.textContent = d.error || 'Could not send. Please call {{PHONE_DISPLAY}}.'; return;
   }
   g('ref').textContent = d.case_number || '';
   const gotEmail = g('wants_response').checked && g('contact').value.indexOf('@') > -1;

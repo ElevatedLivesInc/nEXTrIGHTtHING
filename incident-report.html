@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Incident Report — The Next Right Thing in Recovery</title>
+<title>Incident Report — {{ORG_LEGAL_NAME}}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;--good:#78c896;--bad:#e07878;--warn:#e0965a;}
+  :root{--navy:{{COLOR_NAVY}};--deep:{{COLOR_NAVY_DEEP}};--sand:{{COLOR_SAND}};--sandl:{{COLOR_SAND_LIGHT}};--good:#78c896;--bad:#e07878;--warn:#e0965a;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
   .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.3rem 1.5rem;}
@@ -34,7 +34,7 @@
   .req{color:var(--sand);}
   .checks{display:flex;flex-wrap:wrap;gap:.5rem 1.1rem;}
   .checks label{display:flex;align-items:center;gap:.4rem;font-size:.82rem;text-transform:none;letter-spacing:0;color:rgba(255,255,255,.82);cursor:pointer;margin:0;}
-  .checks input{width:auto;accent-color:#c9a96e;}
+  .checks input{width:auto;accent-color:{{COLOR_SAND}};}
   .sev{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem;}
   @media(max-width:520px){.sev{grid-template-columns:1fr 1fr;}}
   .sev button{padding:.6rem .3rem;border-radius:7px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(255,255,255,.72);font-family:'Raleway',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;}
@@ -46,7 +46,7 @@
   .alertbox b{color:#f0b6b6;display:block;font-size:.92rem;margin-bottom:.35rem;}
   .alertbox p{font-size:.83rem;color:rgba(255,255,255,.78);font-weight:300;line-height:1.65;}
   .alertbox a{color:var(--sandl);}
-  .submit{width:100%;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;padding:1rem;border:0;border-radius:8px;font-size:.98rem;font-family:'Raleway',sans-serif;cursor:pointer;}
+  .submit{width:100%;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},var(--sand));color:{{COLOR_NAVY}};font-weight:700;padding:1rem;border:0;border-radius:8px;font-size:.98rem;font-family:'Raleway',sans-serif;cursor:pointer;}
   .submit:disabled{opacity:.55;cursor:default;}
   .msg{margin-top:.9rem;font-size:.85rem;text-align:center;color:#f0b6b6;min-height:1.2em;}
   .done{display:none;text-align:center;padding:2.5rem 1rem;}
@@ -59,7 +59,7 @@
 <div class="top"><div class="top-inner">
   <div>
     <h1>Incident <em>Report</em></h1>
-    <div class="tagline">The Next Right Thing in Recovery</div>
+    <div class="tagline">{{ORG_LEGAL_NAME}}</div>
   </div>
   <div class="viewer"><span id="viewer"></span><br><a href="/incident-log">Incident Log</a> <a href="/mission-control">&larr; Mission Control</a></div>
 </div></div>
@@ -70,8 +70,8 @@
 
     <div class="alertbox" id="critAlert">
       <b>This looks like a critical incident.</b>
-      <p>Utah Office of Licensing expects a critical incident report through the OL Provider Portal <b>within one business day of the occurrence</b>. Filing here does not satisfy that requirement &mdash; it records it. Tell your supervisor now, and if anyone is in danger call 911 first.<br>
-      Office of Licensing: <a href="tel:8018902007">(801) 890-2007</a> &middot; Adult Protective Services: <a href="tel:18003717897">1-800-371-7897</a></p>
+      <p>{{LICENSING_BODY}} expects a critical incident report through the OL Provider Portal <b>within one business day of the occurrence</b>. Filing here does not satisfy that requirement &mdash; it records it. Tell your supervisor now, and if anyone is in danger call 911 first.<br>
+      Office of Licensing: <a href="tel:{{LICENSING_PHONE_TEL}}">{{LICENSING_PHONE}}</a> &middot; Adult Protective Services: <a href="tel:18003717897">1-800-371-7897</a></p>
     </div>
 
     <div class="grp"><h3>When and where it happened</h3>
@@ -144,7 +144,7 @@
       </div>
 
       <div class="fld checks" style="margin-bottom:1rem">
-        <label><input type="checkbox" id="critical_incident"> <b>Critical incident</b> — reportable to Utah Office of Licensing</label>
+        <label><input type="checkbox" id="critical_incident"> <b>Critical incident</b> — reportable to {{LICENSING_BODY}}</label>
       </div>
 
       <div class="two">
@@ -213,7 +213,7 @@
       Write this number down. It is dated to the day the incident happened, not today, and leadership has been notified that a report exists.
     </p>
     <div id="critReminder"></div>
-    <a href="/incident-log" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.85rem 1.8rem;border-radius:7px;text-decoration:none;font-size:.9rem;margin-right:.5rem">Open the log</a>
+    <a href="/incident-log" style="display:inline-block;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},{{COLOR_SAND}});color:{{COLOR_NAVY}};font-weight:700;padding:.85rem 1.8rem;border-radius:7px;text-decoration:none;font-size:.9rem;margin-right:.5rem">Open the log</a>
     <a href="/incident-report" style="display:inline-block;border:1px solid rgba(201,169,110,.5);color:var(--sandl);padding:.85rem 1.8rem;border-radius:7px;text-decoration:none;font-size:.9rem">File another</a>
   </div>
 
@@ -293,7 +293,7 @@ async function submitReport(){
   if (r.status === 401) { location.href = '/signin?next=' + encodeURIComponent('/incident-report'); return; }
   if (!d.ok) {
     g('go').disabled = false; g('go').textContent = 'File this report';
-    msg.textContent = d.error || 'Could not save. Try again, or call (801) 816-4977.'; return;
+    msg.textContent = d.error || 'Could not save. Try again, or call {{PHONE_DISPLAY}}.'; return;
   }
   g('caseNum').textContent = (d.incident && d.incident.case_number) || 'Filed';
   if (body.critical_incident) {
@@ -317,7 +317,7 @@ async function submitReport(){
     if (d.viewer) g('viewer').textContent = 'Signed in as ' + d.viewer;
     if (r.status === 403) {
       document.getElementById('form').innerHTML =
-        '<div style="text-align:center;padding:3rem 1rem"><div style="font-family:\'Cormorant Garamond\',serif;font-size:1.8rem;color:#e8d5b0">This one is not yours</div>'
+        '<div style="text-align:center;padding:3rem 1rem"><div style="font-family:\'Cormorant Garamond\',serif;font-size:1.8rem;color:{{COLOR_SAND_LIGHT}}">This one is not yours</div>'
         + '<p style="color:rgba(255,255,255,.7);font-weight:300;line-height:1.75;max-width:420px;margin:1rem auto">'
         + 'You are signed in, but your account is not set up for incident reports. Text Gabe and it is a two-minute fix.</p></div>';
     }

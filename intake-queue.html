@@ -7,7 +7,7 @@
 <title>Intake Queue — Staff Only</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;}
+  :root{--navy:{{COLOR_NAVY}};--navy-deep:{{COLOR_NAVY_DEEP}};--sand:{{COLOR_SAND}};--sand-light:{{COLOR_SAND_LIGHT}};--lav:#c9b6f0;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
   .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.4rem 1.5rem;}
@@ -42,11 +42,11 @@
   .note code{background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:4px;font-size:.8rem;}
   .cklist{display:flex;flex-wrap:wrap;gap:.35rem .9rem;padding:.5rem .7rem;background:rgba(201,169,110,.06);border:1px solid rgba(201,169,110,.2);border-radius:6px;}
   .cklist label{display:flex;align-items:center;gap:.35rem;font-size:.72rem;color:rgba(255,255,255,.75);cursor:pointer;}
-  .cklist input{accent-color:#c9a96e;}
+  .cklist input{accent-color:{{COLOR_SAND}};}
   .notesbox{width:100%;min-height:52px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.76rem;padding:.5rem .7rem;resize:vertical;}
   .notesave{font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(201,169,110,.4);background:transparent;color:var(--sand-light);cursor:pointer;font-family:'Raleway',sans-serif;}
   .pbar{height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
-  .pbar i{display:block;height:100%;background:linear-gradient(90deg,#c9a96e,#e8d5b0);border-radius:4px;transition:width .3s;}
+  .pbar i{display:block;height:100%;background:linear-gradient(90deg,{{COLOR_SAND}},{{COLOR_SAND_LIGHT}});border-radius:4px;transition:width .3s;}
   .ready{background:rgba(120,200,150,.18)!important;color:#a9e5c3!important;border:1px solid rgba(120,200,150,.5)!important;}
   .qstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.8rem;margin-bottom:1.3rem;}
   .qstat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:.8rem 1rem;text-align:center;}
@@ -62,7 +62,7 @@
   .nf2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
   @media(max-width:600px){.nf2{grid-template-columns:1fr;}}
   .delbtn{margin-left:auto;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .8rem;border-radius:5px;border:1px solid rgba(224,120,120,.35);background:transparent;color:#f0b6b6;cursor:pointer;font-family:'Raleway',sans-serif;}
-  .admitbtn{width:100%;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;
+  .admitbtn{width:100%;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},{{COLOR_SAND}});color:{{COLOR_NAVY}};font-weight:700;
     border:none;border-radius:7px;padding:.7rem;font-size:.82rem;font-family:'Raleway',sans-serif;cursor:pointer;}
   .admitbtn:active{transform:scale(.98);}
 </style>
@@ -70,7 +70,7 @@
 <body>
 <div class="top"><div class="top-inner">
   <h1>Pre-Intake <em>Queue</em></h1>
-  <div style="display:flex;align-items:center;gap:.2rem;flex-wrap:wrap"><span class="viewer" id="viewer"></span><a href="/mission-control" class="mcback" style="display:inline-block;font-size:.72rem;letter-spacing:.04em;color:#e8d5b0;text-decoration:none;border:1px solid rgba(201,169,110,.45);border-radius:50px;padding:.3rem .85rem;white-space:nowrap;margin-left:1rem">&larr; Mission Control</a></div>
+  <div style="display:flex;align-items:center;gap:.2rem;flex-wrap:wrap"><span class="viewer" id="viewer"></span><a href="/mission-control" class="mcback" style="display:inline-block;font-size:.72rem;letter-spacing:.04em;color:{{COLOR_SAND_LIGHT}};text-decoration:none;border:1px solid rgba(201,169,110,.45);border-radius:50px;padding:.3rem .85rem;white-space:nowrap;margin-left:1rem">&larr; Mission Control</a></div>
 </div></div>
 
 <div class="wrap">
@@ -97,7 +97,7 @@
 </div>
 
 <div id="newModal" style="display:none;position:fixed;inset:0;background:rgba(2,4,12,.93);z-index:100;overflow-y:auto;padding:2rem 1rem">
-  <div style="max-width:620px;margin:0 auto;background:#1a2744;border:1px solid rgba(201,169,110,.4);border-radius:12px;padding:1.6rem">
+  <div style="max-width:620px;margin:0 auto;background:{{COLOR_NAVY}};border:1px solid rgba(201,169,110,.4);border-radius:12px;padding:1.6rem">
     <h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.5rem;color:var(--sand-light);margin-bottom:.2rem">Add a Request</h2>
     <div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:1.1rem">Someone who called, walked in, or was referred &mdash; not from the website.</div>
     <div class="nf2">
@@ -148,7 +148,7 @@ function showWelcome(title, blurb, status){
   el.style.display = 'block';
   el.innerHTML =
     '<div style="max-width:520px;margin:3rem auto;text-align:center">'
-    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:#e8d5b0;font-weight:300;margin-bottom:.6rem">'
+    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:{{COLOR_SAND_LIGHT}};font-weight:300;margin-bottom:.6rem">'
     + (forbidden ? 'This one is not yours' : 'Welcome to ' + title)
     + '</div>'
     + '<p style="color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.5rem">'
@@ -157,12 +157,12 @@ function showWelcome(title, blurb, status){
         : blurb)
     + '</p>'
     + (forbidden ? '' :
-        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
+        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},{{COLOR_SAND}});color:{{COLOR_NAVY}};font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
       + '<div style="font-size:.8rem;color:rgba(255,255,255,.45);margin-top:1.3rem;line-height:1.8">'
       + 'No password. You will get a 6-digit code by email &mdash; type it in and you are back here.<br>'
-      + 'Use your <b style="color:rgba(255,255,255,.7)">@nextrighthing.com</b> address.'
+      + 'Use your <b style="color:rgba(255,255,255,.7)">@{{EMAIL_DOMAIN}}</b> address.'
       + '</div>')
-    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
+    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:{{COLOR_SAND}};font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
     + '</div>';
 }
 let DATA=[], FILTER='open';
@@ -327,7 +327,7 @@ function render(){
       +((ready&&(r.status||'new')!=='intaked')?'<div class="flags"><span class="flag ready">&#10003; Ready for intake</span></div>':'')
       +(flags.length?'<div class="flags">'+flags.map(x=>'<span class="flag '+x.c+'">'+esc(x.t)+'</span>').join('')+'</div>':'')
       +(function(){const fp=fundingPath(r);return '<div class="flags"><span class="flag '+fp.c+'">$ '+fp.t+'</span>'
-        +'<a href="/funding" style="font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:#c9a96e;text-decoration:none;align-self:center;margin-left:.3rem">Funding Navigator &rarr;</a></div>';})()
+        +'<a href="/funding" style="font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:{{COLOR_SAND}};text-decoration:none;align-self:center;margin-left:.3rem">Funding Navigator &rarr;</a></div>';})()
       +'<div class="rows">'
       +line('Phone', r.phone?null:null)
       +(r.phone?('<div><b>Phone:</b> <a href="tel:'+esc(r.phone.replace(/[^0-9+]/g,''))+'">'+esc(r.phone)+'</a></div>'):'')

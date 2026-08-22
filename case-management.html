@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Case Management — The Next Right Thing</title>
+<title>Case Management — {{ORG_NAME}}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;--line:rgba(201,169,110,.22);}
+  :root{--navy:{{COLOR_NAVY}};--deep:{{COLOR_NAVY_DEEP}};--sand:{{COLOR_SAND}};--sandl:{{COLOR_SAND_LIGHT}};--line:rgba(201,169,110,.22);}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;padding-bottom:4rem;}
   .top{background:var(--navy);border-bottom:1px solid var(--line);padding:1.1rem 1.4rem;}
@@ -291,7 +291,7 @@ function render(){
        when they lapse - they are simply fine until somebody asks for proof.
        The patrol agent reads the same rows every morning and mails Cate and
        Gabe, so an expiry arrives as notice rather than as a discovery. */
-    const ENT={treatment_center:'Treatment Center',nonprofit:'Nonprofit 501(c)(3)',rent_a_husband:'Rent A Husband',other:'Other'};
+    const ENT={treatment_center:'Treatment Center',nonprofit:'Nonprofit 501(c)(3)',rent_a_husband:'{{PROGRAM_WORK_CREW_NAME}}',other:'Other'};
     const live=COMP.filter(c=>c.status!=='cancelled'&&c.status!=='not_required'&&(!Q||((c.name||'')+' '+(c.provider||'')+' '+(ENT[c.entity]||'')).toLowerCase().includes(Q.toLowerCase())));
     const rank=c=>{const d=daysUntil(c.expires_on);return d===null?9999:d;};
     const sorted=live.slice().sort((a,b)=>rank(a)-rank(b));
@@ -310,10 +310,10 @@ function render(){
         +'<div class="rside">'+(c.expires_on
             ? '<span class="chip '+cls+'">'+(d<0?Math.abs(d)+'d expired':(d===0?'expires today':'in '+d+'d'))+'</span><br><span style="opacity:.6">'+esc(c.expires_on)+'</span>'
             : '<span class="chip warn">no expiry set</span>')+'</div></div>';
-      }).join(''):'<div class="note">Nothing tracked yet. Add the Rent A Husband LLC registration and liability policy first — those are the ones that stop crews working.</div>')
+      }).join(''):'<div class="note">Nothing tracked yet. Add the {{PROGRAM_WORK_CREW_NAME}} LLC registration and liability policy first — those are the ones that stop crews working.</div>')
       +'<div class="row" style="cursor:default;border-style:dashed"><div class="rname">Add an item</div>'
       +'<div class="rmeta"><div class="three">'
-      +'<div class="fld"><label>Entity</label><select id="k_ent"><option value="treatment_center">Treatment Center</option><option value="nonprofit">Nonprofit 501(c)(3)</option><option value="rent_a_husband">Rent A Husband</option><option value="other">Other</option></select></div>'
+      +'<div class="fld"><label>Entity</label><select id="k_ent"><option value="treatment_center">Treatment Center</option><option value="nonprofit">Nonprofit 501(c)(3)</option><option value="rent_a_husband">{{PROGRAM_WORK_CREW_NAME}}</option><option value="other">Other</option></select></div>'
       +'<div class="fld"><label>Type</label><select id="k_type"><option>insurance</option><option>license</option><option>registration</option><option>certification</option><option>lease</option><option>contract</option><option>inspection</option><option>other</option></select></div>'
       +'<div class="fld"><label>Expires</label><input id="k_exp" type="date"></div></div>'
       +'<div class="two"><div class="fld"><label>Name</label><input id="k_name" placeholder="e.g. General liability policy"></div>'
@@ -324,7 +324,7 @@ function render(){
   }
 
   if(TAB==='work'){
-    /* Rent A Husband signups. A name on this list is somebody who asked for
+    /* {{PROGRAM_WORK_CREW_NAME}} signups. A name on this list is somebody who asked for
        work, which is a different and better problem than somebody who has not.
        Marking them placed writes employment back onto their resident record,
        so the readiness board stops asking for a job that now exists. */
@@ -334,7 +334,7 @@ function render(){
     const B=['unknown','pending','cleared','barred'];
     v.innerHTML='<div class="rows">'
       +'<div class="row" style="background:rgba(201,169,110,.08);cursor:default"><div class="rname">'+waiting.length+' waiting on a shift</div>'
-      +'<div class="rmeta">Rent A Husband &mdash; handyman crews across the Salt Lake Valley, run by Koby. Licensed, insured, an LLC, backed by a recovery center. <a href="/work-signup" target="_blank" style="color:var(--sand)">signup form &rarr;</a></div>'
+      +'<div class="rmeta">{{PROGRAM_WORK_CREW_NAME}} &mdash; handyman crews across the Salt Lake Valley, run by Koby. Licensed, insured, an LLC, backed by a recovery center. <a href="/work-signup" target="_blank" style="color:var(--sand)">signup form &rarr;</a></div>'
       +'<div class="rside">'+rows.length+' total</div></div>'
       +(rows.length?rows.map(w=>{
         const cls=w.status==='placed'?'ok':(w.status==='declined'?'bad':'warn');
@@ -386,7 +386,7 @@ function render(){
     +'<div class="rmeta"><span class="chip info">'+esc(x.doc_type)+'</span> '+esc(x.title||'(untitled)')
     +(x.signed_on?'<br><span style="opacity:.7">signed '+esc(x.signed_on)+'</span>':'')
     +(exp!==null?(' <span class="chip '+(exp<0?'bad':(exp<30?'warn':'ok'))+'">'+(exp<0?'expired':'expires in '+exp+'d')+'</span>'):'')
-    +(x.file_path?' <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#c9a96e;font-size:.78rem;text-decoration:none">open file &rarr;</a>':' <span class="chip warn">no file attached</span>')+'</div>'
+    +(x.file_path?' <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:{{COLOR_SAND}};font-size:.78rem;text-decoration:none">open file &rarr;</a>':' <span class="chip warn">no file attached</span>')+'</div>'
     +'<div class="rside">'+esc(x.uploaded_by||'')+'</div></div>';
   }).join(''):'<div class="note">No documents recorded yet.</div>')+'</div>';
 }
@@ -398,7 +398,7 @@ function openC(id){
   g('cSub').innerHTML=esc(c.house_name||'')+(c.room?' · '+esc(c.room):'')
     +' · last contact '+ago(lastTouch(c))
     +(c.funding_end?' · funding ends '+esc(c.funding_end):'')
-    +(c.client_id?' · <a href="/client?id='+encodeURIComponent(c.client_id)+'" target="_blank" rel="noopener" style="color:#c9a96e">open full client file &rarr;</a>':' · <span class="chip warn">not linked to an intake record</span>')
+    +(c.client_id?' · <a href="/client?id='+encodeURIComponent(c.client_id)+'" target="_blank" rel="noopener" style="color:{{COLOR_SAND}}">open full client file &rarr;</a>':' · <span class="chip warn">not linked to an intake record</span>')
     +(uf.length?'<br><span class="chip ok">'+uf.length+' funder'+(uf.length===1?'':'s')+' never tried: '+esc(uf.slice(0,3).map(f=>f.name).join(', '))+'</span>':'');
   g('n_date').value=today(); g('m_date').value=today();
   g('c_followup').value=c.case_followup_date||'';
@@ -411,7 +411,7 @@ function openC(id){
     +(gs.length?'<h3 style="margin-top:1rem">Goals</h3>'+gs.map(x=>'<div class="item"><span class="chip info">'+esc(x.domain)+'</span> '+esc(x.goal)+' <span class="chip '+(x.status==='met'?'ok':'warn')+'">'+esc(x.status)+'</span></div>').join(''):'')
     +(ms.length?'<h3 style="margin-top:1rem">Meetings</h3>'+ms.map(x=>'<div class="item">'+esc(x.meeting_date)+' — '+esc(x.kind)+(x.verified_by?' (verified by '+esc(x.verified_by)+')':'')+'</div>').join(''):'')
     +(ds.length?'<h3 style="margin-top:1rem">Documents</h3>'+ds.map(x=>'<div class="item">'+esc(x.doc_type)+' — '+esc(x.title||'')+(x.signed_on?' · signed '+esc(x.signed_on):'')
-      +(x.file_path?' · <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" style="color:#c9a96e">open file &rarr;</a>':'')+'</div>').join(''):'');
+      +(x.file_path?' · <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" style="color:{{COLOR_SAND}}">open file &rarr;</a>':'')+'</div>').join(''):'');
   g('mClient').classList.add('open');
 }
 function closeM(){g('mClient').classList.remove('open');}
@@ -504,13 +504,13 @@ async function saveComp(btn){
 function showWelcome(status){
   const el=g('note'); el.style.display='block';
   el.innerHTML='<div style="max-width:520px;margin:2rem auto;text-align:center">'
-    +'<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:#e8d5b0;font-weight:300;margin-bottom:.6rem">'
+    +'<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:{{COLOR_SAND_LIGHT}};font-weight:300;margin-bottom:.6rem">'
     +(status===403?'This one is not yours':'Welcome to Case Management')+'</div>'
     +'<p style="color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.5rem">'
     +(status===403?'You are signed in, but your account is not set up for case management. That is on purpose &mdash; each person sees only what they need.'
       :'Every client, every contact, every goal and every meeting with a real date on it. Rent and balances live somewhere else, on purpose.')+'</p>'
-    +(status===403?'':'<a href="/signin?next=%2Fcase-management" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>')
-    +'<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div></div>';
+    +(status===403?'':'<a href="/signin?next=%2Fcase-management" style="display:inline-block;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},{{COLOR_SAND}});color:{{COLOR_NAVY}};font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>')
+    +'<div style="margin-top:2rem"><a href="/mission-control" style="color:{{COLOR_SAND}};font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div></div>';
 }
 
 g('tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;

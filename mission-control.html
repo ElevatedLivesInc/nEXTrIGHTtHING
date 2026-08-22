@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Mission Control — The Next Right Thing</title>
+<title>Mission Control — {{ORG_NAME}}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;}
+  :root{--navy:{{COLOR_NAVY}};--navy-deep:{{COLOR_NAVY_DEEP}};--sand:{{COLOR_SAND}};--sand-light:{{COLOR_SAND_LIGHT}};--lav:#c9b6f0;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
   .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.6rem 1.5rem;}
@@ -52,7 +52,7 @@
 <div class="top"><div class="top-inner">
   <div>
     <h1>Mission <em>Control</em></h1>
-    <div class="tag">The Next Right Thing in Recovery</div>
+    <div class="tag">{{ORG_LEGAL_NAME}}</div>
   </div>
   <div class="viewer" id="viewer"></div>
 </div></div>
@@ -129,7 +129,7 @@
     </a>
 
     <a class="tile" href="/rounds">
-      <h3>Rounds <span style="font-size:.6rem;letter-spacing:.14em;color:#c9a96e;vertical-align:middle;border:1px solid rgba(201,169,110,.5);border-radius:50px;padding:.15rem .5rem;margin-left:.4rem">PHONE</span></h3>
+      <h3>Rounds <span style="font-size:.6rem;letter-spacing:.14em;color:{{COLOR_SAND}};vertical-align:middle;border:1px solid rgba(201,169,110,.5);border-radius:50px;padding:.15rem .5rem;margin-left:.4rem">PHONE</span></h3>
       <p>Walk the houses with one thumb. Every resident, one tap each &mdash; talked to, meeting, UA, warning, payment. Built for a hallway, not a desk.</p>
       <div class="nums">
         <div class="num"><b id="rdLeft">&ndash;</b><span>Left To See</span></div>
@@ -194,13 +194,15 @@
     <a href="/payment-options" target="_blank"><b>Payment Options</b><span>For any resident who is behind. Text or hand it to them. Public.</span></a>
     <a href="/speak-up" target="_blank"><b>Speak Up Line</b><span>Anonymous concern line for clients, residents and families. Public, no login.</span></a>
     <a href="/fellowship-hall-meetings" target="_blank"><b>Fellowship Hall Meetings</b><span>The meeting schedule. Public.</span></a>
-    <a href="/" target="_blank"><b>Main Site</b><span>nextrighthing.com &mdash; the front door.</span></a>
+    <a href="/" target="_blank"><b>Main Site</b><span>{{EMAIL_DOMAIN}} &mdash; the front door.</span></a>
   </div>
 
   <div class="note" id="note" style="display:none">Loading…</div>
 
   <div class="foot">
-    <b>Two entities, one command center.</b> Treatment-center operations (intake, housing, residents) and nonprofit operations (donations, scholarships, events) are tracked separately by design — The Next Right Thing in Recovery and The Right Thing in Recovery are distinct organizations and their records never blend.<br>
+    <!-- SECOND-ENTITY-START -->
+    <b>Two entities, one command center.</b> Treatment-center operations (intake, housing, residents) and nonprofit operations (donations, scholarships, events) are tracked separately by design — {{ORG_LEGAL_NAME}} and {{ORG_SECOND_ENTITY}} are distinct organizations and their records never blend.<br>
+    <!-- SECOND-ENTITY-END -->
     <em>"I made a difference to that one."</em>
   </div>
 </div>
@@ -216,7 +218,7 @@ function showWelcome(title, blurb, status){
   el.style.display = 'block';
   el.innerHTML =
     '<div style="max-width:520px;margin:3rem auto;text-align:center">'
-    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:#e8d5b0;font-weight:300;margin-bottom:.6rem">'
+    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:{{COLOR_SAND_LIGHT}};font-weight:300;margin-bottom:.6rem">'
     + (forbidden ? 'This one is not yours' : 'Welcome to ' + title)
     + '</div>'
     + '<p style="color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.5rem">'
@@ -225,12 +227,12 @@ function showWelcome(title, blurb, status){
         : blurb)
     + '</p>'
     + (forbidden ? '' :
-        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
+        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},{{COLOR_SAND}});color:{{COLOR_NAVY}};font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
       + '<div style="font-size:.8rem;color:rgba(255,255,255,.45);margin-top:1.3rem;line-height:1.8">'
       + 'No password. You will get a 6-digit code by email &mdash; type it in and you are back here.<br>'
-      + 'Use your <b style="color:rgba(255,255,255,.7)">@nextrighthing.com</b> address.'
+      + 'Use your <b style="color:rgba(255,255,255,.7)">@{{EMAIL_DOMAIN}}</b> address.'
       + '</div>')
-    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
+    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:{{COLOR_SAND}};font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
     + '</div>';
 }
 function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}

@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Get Help — The Next Right Thing in Recovery | West Jordan, Utah</title>
-<meta name="description" content="Every way into recovery at The Next Right Thing — insurance, Medicaid, scholarships, private pay, court-ordered, or family reaching out. Find your path and what happens next.">
+<title>Get Help — {{ORG_LEGAL_NAME}} | West Jordan, Utah</title>
+<meta name="description" content="Every way into recovery at {{ORG_NAME}} — insurance, Medicaid, scholarships, private pay, court-ordered, or family reaching out. Find your path and what happens next.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@200;300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2744;--navy-deep:#0d1424;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;--good:#78c896;}
+  :root{--navy:{{COLOR_NAVY}};--navy-deep:#0d1424;--sand:{{COLOR_SAND}};--sand-light:{{COLOR_SAND_LIGHT}};--lav:#c9b6f0;--good:#78c896;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;line-height:1.7;}
   a{color:inherit;}
@@ -22,7 +22,7 @@
   .sub{max-width:600px;margin:1.1rem auto 0;color:rgba(255,255,255,.72);font-weight:300;font-size:1.02rem;}
   .crisis{max-width:640px;margin:1.8rem auto 0;background:rgba(224,120,120,.12);border:1px solid rgba(224,120,120,.4);border-radius:9px;padding:.9rem 1.2rem;font-size:.9rem;color:#f3c9c9;}
   .crisis a{color:#fff;font-weight:700;}
-  .callnow{display:inline-block;margin-top:1.5rem;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;font-size:1rem;letter-spacing:.02em;padding:.95rem 2.2rem;border-radius:6px;text-decoration:none;box-shadow:0 6px 20px rgba(201,169,110,.3);}
+  .callnow{display:inline-block;margin-top:1.5rem;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},var(--sand));color:{{COLOR_NAVY}};font-weight:700;font-size:1rem;letter-spacing:.02em;padding:.95rem 2.2rem;border-radius:6px;text-decoration:none;box-shadow:0 6px 20px rgba(201,169,110,.3);}
   /* SECTIONS */
   section{padding:3rem 0;}
   .lbl{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sand);text-align:center;}
@@ -58,7 +58,7 @@
   .fg input,.fg select,.fg textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.9rem;padding:.65rem .8rem;}
   .fg textarea{min-height:90px;resize:vertical;}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
-  .submit{width:100%;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:#1a2744;font-weight:700;font-size:.95rem;padding:.95rem;border:none;border-radius:6px;cursor:pointer;font-family:'Raleway',sans-serif;letter-spacing:.02em;margin-top:.5rem;}
+  .submit{width:100%;background:linear-gradient(145deg,{{COLOR_SAND_LIGHT}},var(--sand));color:{{COLOR_NAVY}};font-weight:700;font-size:.95rem;padding:.95rem;border:none;border-radius:6px;cursor:pointer;font-family:'Raleway',sans-serif;letter-spacing:.02em;margin-top:.5rem;}
   .privacy{font-size:.74rem;color:rgba(255,255,255,.45);margin-top:1rem;text-align:center;font-weight:300;}
   .success{display:none;text-align:center;padding:2rem 1rem;}
   .success h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--sand-light);font-weight:300;margin-bottom:.7rem;}
@@ -82,7 +82,7 @@
     <p class="eyebrow">West Jordan, Utah &nbsp;·&nbsp; Licensed Treatment &amp; Recovery Housing</p>
     <h1>There is a way in.<br><em>Let's find yours.</em></h1>
     <p class="sub">Insurance, Medicaid, scholarship, private pay, court-ordered, or a family member trying to help someone they love — every one of those has a path here. Pick the one that sounds like you.</p>
-    <a class="callnow" href="tel:8018164977">Call (801) 816-4977</a>
+    <a class="callnow" href="tel:{{PHONE_TEL}}">Call {{PHONE_DISPLAY}}</a>
     <div class="crisis"><strong>In crisis right now?</strong> Call or text <a href="tel:988">988</a> — trained, free, available 24/7. Then call us when you're safe.</div>
   </div>
 </div>
@@ -271,7 +271,7 @@
       <div class="success" id="successBox">
         <h3>You did it. That was the hardest part.</h3>
         <p>Someone from our team will personally call or text you — usually the same day, always within one business day.</p>
-        <p>If you'd rather not wait, call us right now at <a href="tel:8018164977" style="color:var(--sand-light);font-weight:700">(801) 816-4977</a>.</p>
+        <p>If you'd rather not wait, call us right now at <a href="tel:{{PHONE_TEL}}" style="color:var(--sand-light);font-weight:700">{{PHONE_DISPLAY}}</a>.</p>
         <p style="font-size:.85rem;opacity:.7">And if things get bad before we reach you, call or text <strong>988</strong>. Any hour.</p>
       </div>
     </div>
@@ -280,10 +280,10 @@
 
 <footer>
   <div class="wrap">
-    <strong style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400">The Next Right Thing in Recovery</strong><br>
-    8901 South 1300 West, West Jordan, UT 84088<br>
-    <a href="tel:8018164977">(801) 816-4977</a> &nbsp;·&nbsp; <a href="mailto:cateo@nextrighthing.com">cateo@nextrighthing.com</a> &nbsp;·&nbsp; <a href="/">nextrighthing.com</a><br>
-    <span style="font-size:.78rem;opacity:.7;display:block;margin-top:.8rem">Scholarship funds are administered through partner organizations and The Right Thing in Recovery, a separate 501(c)(3).</span>
+    <strong style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400">{{ORG_LEGAL_NAME}}</strong><br>
+    {{ADDRESS}}<br>
+    <a href="tel:{{PHONE_TEL}}">{{PHONE_DISPLAY}}</a> &nbsp;·&nbsp; <a href="mailto:cateo@{{EMAIL_DOMAIN}}">cateo@{{EMAIL_DOMAIN}}</a> &nbsp;·&nbsp; <a href="/">{{EMAIL_DOMAIN}}</a><br>
+    <span style="font-size:.78rem;opacity:.7;display:block;margin-top:.8rem">Scholarship funds are administered through partner organizations and {{ORG_SECOND_ENTITY}}, a separate 501(c)(3).</span>
   </div>
 </footer>
 
