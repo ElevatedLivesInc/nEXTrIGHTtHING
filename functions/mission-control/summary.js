@@ -46,8 +46,10 @@ export async function onRequestGet(context) {
   const soon = new Date(Date.now()+30*24*3600*1000);
   const expiring = apps.filter(a=>a.status==='approved' && a.coverage_end && new Date(a.coverage_end) <= soon && new Date(a.coverage_end) >= new Date());
 
-  const filled=(residents||[]).filter(r=>(r.status||'active')!=='open');
-  const openB=(residents||[]).filter(r=>(r.status||'')==='open');
+  // Former residents stay on file for collections but are not occupied beds.
+  const roster=(residents||[]).filter(r=>['moved_out','graduated','evicted'].indexOf(r.status||'')===-1);
+  const filled=roster.filter(r=>(r.status||'active')!=='open');
+  const openB=roster.filter(r=>(r.status||'')==='open');
   const outstanding=filled.reduce((t,r)=>t+Math.max((Number(r.past_due)||0)+(Number(r.current_due)||0)-(Number(r.amount_paid)||0),0),0);
 
   // Case management: how many people are current on contact, and how much has
@@ -74,8 +76,8 @@ export async function onRequestGet(context) {
         notice: here.filter(r=>r.on_notice).length
       };
     })(),
-    housing: residents.length? { beds:residents.length, filled:filled.length, openBeds:openB.length,
-      occupancy: Math.round(filled.length/residents.length*100), outstanding } : {},
+    housing: roster.length? { beds:roster.length, filled:filled.length, openBeds:openB.length,
+      occupancy: Math.round(filled.length/roster.length*100), outstanding } : {},
     intake: { total:intake.length, open:openIntake.length, new:intake.filter(r=>(r.status||'new')==='new').length, urgent:hot.length, intaked:intake.filter(r=>r.status==='intaked').length,
       ready:readyNow.length, bySource },
     inkind: { total:inkind.length, redeemed:inkind.filter(r=>(r.status||'')==='redeemed').length, pending:inkind.filter(r=>(r.status||'issued')==='issued').length, value:inkind.reduce((t,r)=>t+(Number(r.donor_value)||0),0) },

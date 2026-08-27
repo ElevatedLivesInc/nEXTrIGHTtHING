@@ -8,16 +8,16 @@
 // house separated, so do not merge them for convenience.
 
 export const ROSTER = {
-  'funding':          ['gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com','rob@nextrighthing.com'],
-  'housing':          ['gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'],
-  'intake-queue':     ['gabe@nextrighthing.com','bailey@nextrighthing.com','cateo@nextrighthing.com'],
-  'in-kind-report':   ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
-  'donations-report': ['gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
-  'incident':         ['gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'],
+  'funding':          ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com','rob@nextrighthing.com'],
+  'housing':          ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'],
+  'intake-queue':     ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','bailey@nextrighthing.com','cateo@nextrighthing.com'],
+  'in-kind-report':   ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
+  'donations-report': ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
+  'incident':         ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'],
   // Case management is the clinical side. Rob is deliberately absent: he runs
   // the houses and the rent, and Cate's rule is that those two roles do not
   // see each other's data.
-  'case-management':  ['gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com']
+  'case-management':  ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com']
 };
 
 export function allowedFor(system) {
@@ -49,6 +49,7 @@ export const DIGESTS = {
 // from mission-control/summary.js's local ROLES constant - same values.)
 export const SCOPES = {
   'gabe@nextrighthing.com':   ['client', 'donor'],
+  'elevatedlivesllc@gmail.com': ['client', 'donor'],   // Trudy / Rein N' Solutions
   'cateo@nextrighthing.com':  ['client', 'donor'],
   'bailey@nextrighthing.com': ['client', 'donor'],
   'rob@nextrighthing.com':    ['client'],

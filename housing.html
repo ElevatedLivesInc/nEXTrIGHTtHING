@@ -343,6 +343,9 @@ function bal(r){return n(r.past_due)+n(r.current_due)-n(r.amount_paid);}
 function uaWord(v){return v==='clean'?'negative':v==='dirty'?'positive':(v||'');}
 function until(d){if(!d)return null;try{return Math.ceil((new Date(d+'T00:00:00')-new Date())/86400000);}catch(_){return null;}}
 function isOpen(r){return (r.status||'')==='open';}
+/* Former residents stay on file for collections but must not count as occupied beds. */
+function isGone(r){return ['moved_out','graduated','evicted'].indexOf(r.status||'')>-1;}
+function roster(list){return (list||[]).filter(function(r){return !isGone(r);});}
 
 /* The one next action for this person, chosen by what actually blocks them.
    Ordered by consequence, not by convenience: money running out beats
@@ -624,7 +627,7 @@ function render(){
   if(TAB==='map'){
     g('legend').style.display='flex';
     v.innerHTML='<div class="houses">'+houseNames.map(hn=>{
-      const beds=RES.filter(r=>r.house_name===hn);
+      const beds=roster(RES).filter(r=>r.house_name===hn);
       const open=beds.filter(isOpen), filled=beds.filter(r=>!isOpen(r));
       const occ=beds.length?Math.round(filled.length/beds.length*100):0;
       const owed=filled.reduce((t,r)=>t+Math.max(bal(r),0),0);
@@ -816,13 +819,14 @@ async function load(){
     HOUSES=d.houses||[];RES=d.residents||[];EVENTS=d.events||[];
     FUNDERS=d.funders||[];APPS=d.applications||[];PAY=d.payments||[];
     g('viewer').textContent='Signed in as '+(d.viewer||'');
-    const filled=RES.filter(r=>!isOpen(r)),open=RES.filter(isOpen);
+    const ROSTER=roster(RES);
+    const filled=ROSTER.filter(r=>!isOpen(r)),open=ROSTER.filter(isOpen);
     const owed=filled.reduce((t,r)=>t+Math.max(bal(r),0),0);
     const paid=filled.reduce((t,r)=>t+n(r.amount_paid),0);
     const risk=open.reduce((t,r)=>t+n(r.monthly_rent||775),0);
     const cliffs=filled.filter(r=>{const u=until(r.funding_end);return u!==null&&u<=30&&u>=0;}).length;
     const caseOverdue=RES.filter(isCurrent).filter(r=>{const d=dueLine(r.case_followup_date);return d&&d.overdue;}).length;
-    g('sOcc').textContent=RES.length?Math.round(filled.length/RES.length*100)+'%':'–';
+    g('sOcc').textContent=ROSTER.length?Math.round(filled.length/ROSTER.length*100)+'%':'–';
     g('sOpen').textContent=open.length; g('sRisk').textContent=money(risk);
     g('sOwed').textContent=money(owed); g('sCollected').textContent=money(paid);
     g('sCliff').textContent=cliffs; g('sCaseOverdue').textContent=caseOverdue;
