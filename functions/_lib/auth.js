@@ -139,9 +139,16 @@ function safeClaims(p) {
 
 // Full result: { email, source, reason, claims }
 export async function authenticate(request, env) {
-  const headerEmail = request.headers.get('Cf-Access-Authenticated-User-Email');
-  if (headerEmail) {
-    return { email: headerEmail.toLowerCase(), source: 'access-header', reason: REASON.OK };
+  // Cloudflare injects BOTH Cf-Access-Authenticated-User-Email and a signed
+  // Cf-Access-Jwt-Assertion on any request that actually transited an Access
+  // application. The email header on its own is attacker-controlled on any route
+  // NOT covered by an Access policy - a plain curl can set it to anyone's address
+  // - so it is never trusted alone. We verify the signed assertion instead, which
+  // carries the same identity and cannot be forged.
+  const assertion = request.headers.get('Cf-Access-Jwt-Assertion');
+  if (assertion) {
+    const viaHeader = await verifyToken(assertion, env);
+    if (viaHeader.email) return { ...viaHeader, source: 'access-jwt' };
   }
 
   const cookies = allAccessCookies(request);
