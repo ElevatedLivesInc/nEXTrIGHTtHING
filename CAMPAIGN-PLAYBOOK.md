@@ -7,7 +7,7 @@ Destination for every channel: **nextrighthing.com/yard-sale**
 
 ## Before anything ships — 2 blanks and 1 legal change
 
-**Fill in:** the sale ADDRESS and the PRIZE. Both are marked `[[ADDRESS]]` / `[[PRIZE]]` in `yard-sale.html`
+**Fill in:** the sale ADDRESS and the PRIZE. Both are marked `7437 S Ramanee Dr, Midvale, UT 84047` / `[[PRIZE]]` in `yard-sale.html`
 and flagged in a red banner at the top of the page. Delete the banner when done.
 
 **The legal change:** the drawing is **free entry, no purchase necessary**. Utah bans paid raffles outright —
@@ -91,7 +91,7 @@ list. Most organizations run the event and go quiet, and the goodwill evaporates
 > And there's a prize drawing. **Entry is free.** You don't have to buy anything, donate anything, or even show
 > up — enter online. But you should show up anyway. 😉
 >
-> 📍 [[ADDRESS]] · Full details + free entry: nextrighthing.com/yard-sale
+> 📍 7437 S Ramanee Dr, Midvale, UT 84047 · Full details + free entry: nextrighthing.com/yard-sale
 
 ### Reel script — 20 seconds (T-3 or T-2)
 
@@ -148,7 +148,7 @@ Close: "Back tomorrow at [time] with more." Each with the link sticker.
 ## Text / SMS (T-1, Thu Sep 3)
 
 > NRT Yard Sale starts TOMORROW — Sept 4–7, new inventory every morning. Free prize drawing, no purchase
-> necessary. [[ADDRESS]] · nextrighthing.com/yard-sale
+> necessary. 7437 S Ramanee Dr, Midvale, UT 84047 · nextrighthing.com/yard-sale
 > Reply STOP to opt out.
 
 **Day 4 (Mon Sep 7), morning:**
