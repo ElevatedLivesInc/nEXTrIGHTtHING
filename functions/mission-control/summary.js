@@ -93,7 +93,7 @@ export async function onRequestGet(context) {
 
   // Case management: how many people are current on contact, and how much has
   // been promised in a note and then missed.
-  const DAY=86400000, nowT=Date.now();
+  const nowT=Date.now();   // DAY is already declared above for the Events tile
   const activeClients=(caseRes||[]).filter(r=>!r.move_out_date&&(r.status||'active')!=='open');
   const touch=r=>{
     const own=(notes||[]).filter(n=>(n.resident_name||'').trim().toLowerCase()===(r.name||'').trim().toLowerCase());
