@@ -287,14 +287,14 @@
         a slip at the table. One entry per person. Winner drawn Monday, September 7.</p>
 
       <form id="entryForm" novalidate>
-        <div class="row">
-          <div><label for="f_name">Your name</label><input id="f_name" type="text" autocomplete="name" required></div>
-          <div><label for="f_phone">Phone</label><input id="f_phone" type="tel" autocomplete="tel"></div>
-        </div>
-        <label for="f_email">Email</label>
-        <input id="f_email" type="email" autocomplete="email">
+        <label for="f_name">Your name</label>
+        <input id="f_name" type="text" autocomplete="name" required>
+
+        <label for="f_contact">Phone or email</label>
+        <input id="f_contact" type="text" autocomplete="tel" required>
         <input class="hp" type="text" id="f_website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <p style="font-size:.78rem;color:rgba(255,255,255,.45);margin-top:.4rem">Give us at least one way to reach you if you win.</p>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.45);margin-top:.4rem">
+          Whichever is easier. We only use it if you win.</p>
 
         <label for="ref">Who sent you? <span style="text-transform:none;letter-spacing:0;color:rgba(255,255,255,.4)">(optional)</span></label>
         <input id="ref" type="text" maxlength="120" autocomplete="off">
@@ -443,16 +443,18 @@
   function show(kind, text){ msg.className = 'msg ' + kind; msg.textContent = text; }
   form.addEventListener('submit', async function(e){
     e.preventDefault();
+    var contact = document.getElementById('f_contact').value.trim();
+    var isEmail = contact.indexOf('@') > -1;   // one box, we sort out which it is
     var payload = {
       name:    document.getElementById('f_name').value,
-      email:   document.getElementById('f_email').value,
-      phone:   document.getElementById('f_phone').value,
+      email:   isEmail ? contact : '',
+      phone:   isEmail ? '' : contact,
       website: document.getElementById('f_website').value,
       referred_by: document.getElementById('ref').value,
       consent: document.getElementById('f_consent').checked
     };
     if(!payload.name || payload.name.trim().length < 2){ show('err','Please enter your name.'); return; }
-    if(!payload.email && !payload.phone){ show('err','Give us one way to reach you if you win — email or phone.'); return; }
+    if(!contact){ show('err','Add a phone number or an email so we can reach you if you win.'); return; }
     btn.disabled = true; btn.textContent = 'Entering…';
     try{
       var r = await fetch('/drawing/enter', {
