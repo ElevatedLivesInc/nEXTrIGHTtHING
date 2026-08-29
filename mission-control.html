@@ -45,6 +45,29 @@
   .links b{color:var(--sand-light);font-weight:600;font-size:.86rem;}
   .links span{color:rgba(255,255,255,.5);font-size:.72rem;font-weight:300;line-height:1.5;}
   .note{max-width:620px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  .band{margin-top:1.8rem;}
+  .tile.soon{opacity:.42;cursor:default;pointer-events:none;}
+  .tile.soon:hover{border-color:rgba(255,255,255,.1);transform:none;}
+  .chip-soon{display:inline-block;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;padding:.15rem .45rem;border-radius:4px;background:rgba(201,169,110,.14);color:var(--sand);border:1px solid rgba(201,169,110,.3);vertical-align:.22em;margin-left:.45rem;}
+  /* Quick actions are verbs. They are deliberately not tiles - a tile is a
+     place you go, a quick action is a thing you do in the next ten seconds. */
+  .qa{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.6rem;}
+  .qa a{display:flex;align-items:center;gap:.55rem;padding:.85rem 1rem;border-radius:9px;text-decoration:none;
+        background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.32);color:var(--sand-light);
+        font-size:.84rem;font-weight:600;transition:border-color .15s,background .15s;}
+  .qa a:hover{border-color:rgba(201,169,110,.7);background:rgba(201,169,110,.16);}
+  .qa a .plus{font-size:1.1rem;line-height:1;color:var(--sand);font-weight:400;}
+  .qa a.soon{opacity:.4;pointer-events:none;}
+  /* The clinical band. Quieter on purpose: it is not part of the operations
+     lane, and it is the only place on this page where a client's own record
+     is one click away. Lavender instead of gold so the eye can tell at a
+     glance which side of the wall it is looking at. */
+  .walled{border-left:2px solid rgba(201,182,240,.35);padding-left:1.1rem;}
+  .walled .sec{color:var(--lav);}
+  .walled .tile h3{color:var(--lav);}
+  .walled .tile{background:rgba(201,182,240,.045);border-color:rgba(201,182,240,.16);}
+  .walled .tile:hover{border-color:rgba(201,182,240,.5);}
+  .wallnote{font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.6;margin:-.4rem 0 .9rem;max-width:60ch;}
   .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.7;}
 </style>
 </head>
@@ -83,52 +106,48 @@
     </div>
   </div>
 
+  <div class="band" data-band>
   <div class="sec">Systems</div>
   <div class="tiles" id="tiles">
-    <a class="tile" href="/intake-queue">
+
+    <a class="tile" href="/intake-queue" data-scope="client" data-needs="intake-queue">
       <h3>Pre-Intake Queue</h3>
-      <p>Everyone who reached out for help — triaged, tracked from first contact through intake.</p>
+      <p>Everyone who reached out for help &mdash; triaged, tracked from first contact through intake.</p>
       <div class="nums">
-        <div class="num"><b id="iNew">–</b><span>New</span></div>
-        <div class="num flag"><b id="iUrgent">–</b><span>Reach Out 24h</span></div>
-        <div class="num"><b id="iOpen">–</b><span>Open</span></div>
-        <div class="num"><b id="iDone">–</b><span>Intaked</span></div>
+        <div class="num"><b id="iNew">&ndash;</b><span>New</span></div>
+        <div class="num flag"><b id="iUrgent">&ndash;</b><span>Reach Out 24h</span></div>
+        <div class="num"><b id="iOpen">&ndash;</b><span>Open</span></div>
+        <div class="num"><b id="iDone">&ndash;</b><span>Intaked</span></div>
       </div>
     </a>
 
-    <a class="tile" href="/funding">
+    <a class="tile" href="/case-management#funding" data-scope="client" data-needs="case-management">
       <h3>Funding Navigator</h3>
-      <p>Scholarship funders, rules, contacts — and every client application with its coverage cliff.</p>
+      <p>Every scholarship funder with its real rules and contacts, and every application with the date its coverage runs out.</p>
       <div class="nums">
-        <div class="num"><b id="fApproved">–</b><span>Approved</span></div>
-        <div class="num"><b id="fPending">–</b><span>Pending</span></div>
-        <div class="num flag"><b id="fExpiring">–</b><span>Expiring 30d</span></div>
+        <div class="num"><b id="fApproved">&ndash;</b><span>Approved</span></div>
+        <div class="num"><b id="fPending">&ndash;</b><span>Awaiting Decision</span></div>
+        <div class="num flag"><b id="fExpiring">&ndash;</b><span>Coverage Ends 30d</span></div>
       </div>
     </a>
 
-    <a class="tile" href="/in-kind-report">
-      <h3>In-Kind Donations</h3>
-      <p>Codes issued, receipts generated, monthly grant-ready totals. <span class="pill">Nonprofit</span></p>
+    <a class="tile" href="/in-kind-report" data-scope="donor" data-needs="in-kind-report">
+      <h3>Quartermaster</h3>
+      <p>Goods, services and donated experiences &mdash; issued codes, receipts, and grant-ready monthly totals. Needs, sourcing and inventory land here next. <span class="pill">Nonprofit</span></p>
       <div class="nums">
-        <div class="num"><b id="kTotal">–</b><span>Issued</span></div>
-        <div class="num"><b id="kRedeemed">–</b><span>Receipted</span></div>
-        <div class="num"><b id="kValue">–</b><span>Declared Value</span></div>
+        <div class="num"><b id="kTotal">&ndash;</b><span>Issued</span></div>
+        <div class="num"><b id="kRedeemed">&ndash;</b><span>Receipted</span></div>
+        <div class="num"><b id="kValue">&ndash;</b><span>Declared Value</span></div>
       </div>
     </a>
 
-    <a class="tile" href="/donations-report">
-      <h3>Cash Donations</h3>
-      <p>Every Square gift, monthly totals, donor emails for stewardship. <span class="pill">Nonprofit</span></p>
-      <div class="nums"><div class="num"><b>Square</b><span>Live feed</span></div></div>
+    <a class="tile" href="/donations-report" data-scope="donor" data-needs="donations-report">
+      <h3>Funding Command</h3>
+      <p>Every Square gift, monthly totals, donor emails for stewardship. Cash and grants live here; goods live in Quartermaster. <span class="pill">Nonprofit</span></p>
+      <div class="nums"><div class="num"><b>Square</b><span>Live Feed</span></div></div>
     </a>
 
-    <a class="tile" href="/admin-issue">
-      <h3>Issue In-Kind Code</h3>
-      <p>Log a donation, generate the donor's receipt code in under two minutes.</p>
-      <div class="nums"><div class="num"><b>New</b><span>Donation</span></div></div>
-    </a>
-
-    <a class="tile" href="/rounds">
+    <a class="tile" href="/rounds" data-scope="client" data-needs="housing">
       <h3>Rounds <span style="font-size:.6rem;letter-spacing:.14em;color:#c9a96e;vertical-align:middle;border:1px solid rgba(201,169,110,.5);border-radius:50px;padding:.15rem .5rem;margin-left:.4rem">PHONE</span></h3>
       <p>Walk the houses with one thumb. Every resident, one tap each &mdash; talked to, meeting, UA, warning, payment. Built for a hallway, not a desk.</p>
       <div class="nums">
@@ -138,23 +157,31 @@
       </div>
     </a>
 
-    <a class="tile" href="/case-management">
-      <h3>Case Management</h3>
-      <p>Every client, every contact, every goal, and every meeting with a real date on it. Rent and balances are not loaded here &mdash; on purpose.</p>
+    <a class="tile" href="/housing" data-scope="client" data-needs="housing">
+      <h3>Housing Command</h3>
+      <p>Six houses, every bed &mdash; occupancy, balances, funding cliffs, and each resident's success record.</p>
       <div class="nums">
-        <div class="num"><b id="cmActive">&ndash;</b><span>Active Clients</span></div>
-        <div class="num flag"><b id="cmStale">&ndash;</b><span>Not Talked To 7d</span></div>
-        <div class="num flag"><b id="cmDue">&ndash;</b><span>Follow-Ups Overdue</span></div>
+        <div class="num"><b id="hOcc">&ndash;</b><span>Occupancy</span></div>
+        <div class="num flag"><b id="hOpen">&ndash;</b><span>Open Beds</span></div>
+        <div class="num flag"><b id="hOwed">&ndash;</b><span>Outstanding</span></div>
       </div>
     </a>
 
-    <a class="tile" href="/housing">
-      <h3>Housing Command</h3>
-      <p>Six houses, every bed — occupancy, balances, funding cliffs, and each resident's success record.</p>
-      <div class="nums">
-        <div class="num"><b id="hOcc">–</b><span>Occupancy</span></div>
-        <div class="num flag"><b id="hOpen">–</b><span>Open Beds</span></div>
-        <div class="num flag"><b id="hOwed">–</b><span>Outstanding</span></div>
+    <div class="tile soon" data-scope="client">
+      <h3>Launchpad <span class="chip-soon">Not built yet</span></h3>
+      <p>Work readiness, barriers, employer leads, first day, and whether they were still there at thirty days. The crew signups and employment fields already exist &mdash; this is the screen over them.</p>
+      <div class="nums"><div class="num"><b>&ndash;</b><span>Waiting On A Shift</span></div></div>
+    </div>
+
+    <a class="tile" id="evTile" href="/yard-sale" target="_blank">
+      <h3 id="evName">Events &amp; Opportunities</h3>
+      <p id="evBlurb">Whatever is in front of the public right now.</p>
+      <div id="evRefs" style="display:none;font-size:.78rem;color:#c9b6f0;margin:-.2rem 0 .6rem"></div>
+      <div class="nums" id="evNums">
+        <div class="num"><b id="evEntries">&ndash;</b><span>Drawing Entries</span></div>
+        <div class="num"><b id="evToday">&ndash;</b><span>Added Today</span></div>
+        <div class="num"><b id="evReferred">&ndash;</b><span>Referred</span></div>
+        <div class="num" id="evWhenWrap"><b id="evWhen">&ndash;</b><span id="evWhenLabel">Until It Opens</span></div>
       </div>
     </a>
 
@@ -164,37 +191,66 @@
       <div class="nums"><div class="num"><b>Preview</b><span>Today's Briefs</span></div></div>
     </a>
 
+  </div>
+  </div>
 
-    <a class="tile" href="/incident-log">
-      <h3>Incident Reports</h3>
-      <p>Sober living and treatment center. Dated to when it happened, escalatable up the chain, licensing-ready.</p>
+  <div class="band" data-band>
+  <div class="sec">Quick Actions</div>
+  <div class="qa" id="qa">
+    <a href="/intake-queue" data-scope="client" data-needs="intake-queue"><span class="plus">+</span>New Intake Inquiry</a>
+    <a href="/admin-issue" data-scope="donor" data-needs="in-kind-report"><span class="plus">+</span>Log Contribution</a>
+    <a class="soon" href="#"><span class="plus">+</span>Submit Resource Need</a>
+    <a href="/rounds" data-scope="client" data-needs="housing"><span class="plus">&rarr;</span>Run Rounds</a>
+    <a class="soon" href="#"><span class="plus">+</span>Add Event</a>
+    <a href="/case-management#apps" data-scope="client" data-needs="case-management"><span class="plus">+</span>Add Funding Application</a>
+  </div>
+  </div>
+
+  <div class="band walled" data-band>
+  <div class="sec">Clinical &amp; Compliance</div>
+  <p class="wallnote">Behind the wall on purpose. Client records and incident narratives are not part of the operations lane above, and nothing here feeds it &mdash; the modules up top read dates and statuses, never the story.</p>
+  <div class="tiles">
+
+    <a class="tile" href="/case-management" data-scope="client" data-needs="case-management">
+      <h3>Case Management</h3>
+      <p>Every client, every contact, every goal, every meeting with a real date on it. Rent and balances are not loaded here &mdash; on purpose.</p>
       <div class="nums">
-        <div class="num"><b id="nOpen">–</b><span>Open</span></div>
-        <div class="num flag"><b id="nCrit">–</b><span>Critical</span></div>
-        <div class="num flag"><b id="nVoice">–</b><span>Speak Up New</span></div>
+        <div class="num"><b id="cmActive">&ndash;</b><span>Active Clients</span></div>
+        <div class="num flag"><b id="cmStale">&ndash;</b><span>Not Talked To 7d</span></div>
+        <div class="num flag"><b id="cmDue">&ndash;</b><span>Follow-Ups Overdue</span></div>
       </div>
     </a>
 
-    <a class="tile" href="/incident-report">
+    <a class="tile" href="/incident-log" data-scope="client" data-needs="incident">
+      <h3>Incident Log</h3>
+      <p>Sober living and treatment center. Dated to when it happened, escalatable up the chain, licensing-ready.</p>
+      <div class="nums">
+        <div class="num"><b id="nOpen">&ndash;</b><span>Open</span></div>
+        <div class="num flag"><b id="nCrit">&ndash;</b><span>Critical</span></div>
+        <div class="num flag"><b id="nVoice">&ndash;</b><span>Speak Up New</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/incident-report" data-scope="client" data-needs="incident">
       <h3>File an Incident</h3>
       <p>Two minutes, on a phone, standing in the house. Facts while they are fresh.</p>
       <div class="nums"><div class="num"><b>New</b><span>Report</span></div></div>
     </a>
 
-    <a class="tile" href="/carwash-report">
-      <h3>Event Signups</h3>
-      <p>Fundraiser RSVPs, volunteer slots, and the live scoreboard.</p>
-      <div class="nums"><div class="num"><b>Events</b><span>Scoreboard</span></div></div>
-    </a>
+  </div>
   </div>
 
+  <div class="band" data-band>
   <div class="sec">Pages You Can Send Anyone</div>
   <div class="links">
     <a href="/get-help" target="_blank"><b>Get Help</b><span>Six honest doors in &mdash; each one states the real cost. Public.</span></a>
-    <a href="/payment-options" target="_blank"><b>Payment Options</b><span>For any resident who is behind. Text or hand it to them. Public.</span></a>
-    <a href="/speak-up" target="_blank"><b>Speak Up Line</b><span>Anonymous concern line for clients, residents and families. Public, no login.</span></a>
+    <a href="/payment-options" target="_blank"><b>Payment Options</b><span>For any resident who is behind. Text it or hand it to them. Public.</span></a>
+    <a href="/speak-up" target="_blank"><b>Speak Up Line</b><span>Anonymous concern line for clients, residents and families. No login, no IP stored.</span></a>
     <a href="/fellowship-hall-meetings" target="_blank"><b>Fellowship Hall Meetings</b><span>The meeting schedule. Public.</span></a>
+    <a href="/in-kind" target="_blank"><b>Give Something</b><span>Donate goods or services. Becomes a Quartermaster record and a donor receipt.</span></a>
+    <a href="/yard-sale" target="_blank"><b>Current Event</b><span>Whatever is live right now &mdash; today, the end-of-summer yard sale.</span></a>
     <a href="/" target="_blank"><b>Main Site</b><span>nextrighthing.com &mdash; the front door.</span></a>
+  </div>
   </div>
 
   <div class="note" id="note" style="display:none">Loading…</div>
@@ -246,12 +302,25 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     const scopes=d.scopes||[], canClient=scopes.indexOf('client')>-1, canDonor=scopes.indexOf('donor')>-1;
     document.getElementById('viewer').innerHTML='Signed in as '+esc(d.viewer||'')+'<br><span style="opacity:.7">'+(canClient&&canDonor?'Full access':(canClient?'Treatment-center access':'Nonprofit access'))+'</span>';
     // Hide systems this person doesn't own. Two entities, separate records.
-    const CLIENT_TILES=['/intake-queue','/funding','/housing','/payment-options','/case-management','/rounds'];
-    const DONOR_TILES=['/in-kind-report','/donations-report','/admin-issue','/carwash-report'];
-    document.querySelectorAll('#tiles .tile').forEach(function(el){
-      const href=el.getAttribute('href')||'';
-      if(CLIENT_TILES.indexOf(href)>-1 && !canClient) el.remove();
-      if(DONOR_TILES.indexOf(href)>-1 && !canDonor) el.remove();
+    // Scope now rides on the element as data-scope instead of a list of hrefs
+    // kept in step by hand, so a card, a quick action and a walled tile are all
+    // governed by the same one line and a moved link cannot fall out of scope.
+    document.querySelectorAll('[data-scope]').forEach(function(el){
+      const sc=el.getAttribute('data-scope');
+      if(sc==='client' && !canClient) el.remove();
+      if(sc==='donor'  && !canDonor)  el.remove();
+    });
+    // Entity scope says which side of the house. Roster membership says which
+    // door actually opens. Both have to pass, or the hub hands somebody a tile
+    // that answers "this one is not yours" - which is a dead end, and this
+    // system does not do dead ends.
+    const mods=d.modules||null;
+    if(mods) document.querySelectorAll('[data-needs]').forEach(function(el){
+      if(mods.indexOf(el.getAttribute('data-needs'))===-1) el.remove();
+    });
+    // A band that lost everything it held should not leave its heading behind.
+    document.querySelectorAll('[data-band]').forEach(function(b){
+      if(!b.querySelector('.tiles > *, .qa > *, .links > *')) b.style.display='none';
     });
     const I=d.intake||{},K=d.inkind||{},F=d.funding||{};
     const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
@@ -264,6 +333,38 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     set('rdLeft',RD.left!=null?RD.left:'–');
     set('rdQuiet',RD.quiet!=null?RD.quiet:'–');
     set('rdNotice',RD.notice!=null?RD.notice:'–');
+    // Events tile. One live event at a time, named in tenant-config, so the hub
+    // is about this weekend rather than about whatever got built last.
+    const EV=d.event;
+    if(EV){
+      set('evName', EV.name);
+      const el=document.getElementById('evTile'); if(el&&EV.url) el.setAttribute('href',EV.url);
+      const when = EV.live ? 'Happening now'
+        : (EV.daysToStart!=null && EV.daysToStart>0 ? 'Opens in '+EV.daysToStart+' day'+(EV.daysToStart===1?'':'s')
+        : (EV.daysToDrawing!=null && EV.daysToDrawing>=0 ? 'Sale over — drawing pending' : 'Wrapped'));
+      set('evBlurb', when+'. '+(EV.blurb||''));
+      set('evEntries', EV.entries!=null?EV.entries:'–');
+      set('evToday', EV.today!=null?EV.today:'–');
+      set('evReferred', EV.referred!=null?EV.referred:'–');
+      // Who is actually bringing people. One line - this is a hub tile, not a report.
+      const tr=document.getElementById('evRefs');
+      if(tr){
+        const top=(EV.topReferrers||[]).slice(0,3);
+        tr.innerHTML = top.length
+          ? 'Bringing people: '+top.map(r=>esc(r.name)+' ('+r.count+')').join(' · ')
+          : '';
+        tr.style.display = top.length ? 'block' : 'none';
+      }
+      if(EV.live){ set('evWhen', EV.daysToDrawing!=null?EV.daysToDrawing:'–'); set('evWhenLabel','Days To Drawing'); }
+      else if(EV.daysToStart!=null && EV.daysToStart>0){ set('evWhen', EV.daysToStart); set('evWhenLabel','Days Until It Opens'); }
+      else { set('evWhen', EV.daysToDrawing!=null&&EV.daysToDrawing>=0?EV.daysToDrawing:'–'); set('evWhenLabel','Days To Drawing'); }
+      // Nobody has entered yet is a fact worth surfacing, not a blank.
+      if(EV.entries===0){
+        const b=document.getElementById('evBlurb');
+        if(b) b.innerHTML=esc(when)+'. <b style="color:#f0d9a0">No entries yet</b> — the drawing form is live at '+esc(EV.url)+'.';
+      }
+    }
+
     const CM=d.caseload||{};
     set('cmActive',CM.active!=null?CM.active:'–');
     set('cmStale',CM.stale!=null?CM.stale:'–');
@@ -319,7 +420,10 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
     if(I.urgent)A.push({c:'hot',t:I.urgent+' intake request'+(I.urgent>1?'s':'')+' flagged for contact within 24 hours',l:'/intake-queue',b:'Open queue'});
     if(F.expiringSoon){
       const names=(F.expiringList||[]).map(x=>x.name).filter(Boolean).slice(0,3).join(', ');
-      A.push({c:'warm',t:F.expiringSoon+' funding coverage'+(F.expiringSoon>1?'s':'')+' ending within 30 days'+(names?' — '+names:''),l:'/funding',b:'Review funding'});
+      A.push({c:'warm',t:F.expiringSoon+' funding coverage'+(F.expiringSoon>1?'s':'')+' ending within 30 days'+(names?' — '+names:''),l:'/case-management#apps',b:'Review funding'});
+    }
+    if(EV && EV.daysToStart!=null && EV.daysToStart>=0 && EV.daysToStart<=10 && EV.entries<25){
+      A.push({c:'warm',t:EV.name+' opens in '+EV.daysToStart+' day'+(EV.daysToStart===1?'':'s')+' with only '+EV.entries+' drawing entr'+(EV.entries===1?'y':'ies')+' so far',l:EV.url,b:'Open the page'});
     }
     if(K.pending)A.push({c:'warm',t:K.pending+' in-kind code'+(K.pending>1?'s':'')+' issued but no receipt generated yet',l:'/in-kind-report',b:'View donations'});
     if(I.new)A.push({c:'calm',t:I.new+' new intake request'+(I.new>1?'s':'')+' waiting for first contact',l:'/intake-queue',b:'Open queue'});

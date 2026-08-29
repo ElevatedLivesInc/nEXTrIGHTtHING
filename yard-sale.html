@@ -65,6 +65,14 @@
   .cons{display:flex;gap:.6rem;align-items:flex-start;margin:1rem 0 1.2rem;font-size:.84rem;color:rgba(255,255,255,.65);font-weight:300;}
   .cons input{margin-top:.25rem;flex:0 0 auto;}
   .hp{position:absolute;left:-9999px;}
+  .share{display:none;margin-top:1.3rem;padding:1.2rem;border:1px solid var(--sand);border-radius:10px;
+    background:rgba(201,169,110,.09);}
+  .share p{font-size:.95rem;color:rgba(255,255,255,.85);font-weight:300;margin-bottom:.9rem;}
+  .share .btns{display:flex;gap:.6rem;flex-wrap:wrap;}
+  .share button{font-family:'Raleway',sans-serif;font-weight:700;font-size:.87rem;padding:.75rem 1.3rem;
+    border-radius:7px;border:1px solid var(--sand);background:transparent;color:var(--sandl);cursor:pointer;}
+  .share button.primary{background:linear-gradient(145deg,var(--sandl),var(--sand));color:var(--navy);border:0;}
+  .share input.fallback{display:none;margin-top:.8rem;font-size:.85rem;}
   .msg{margin-top:1rem;font-size:.9rem;display:none;padding:.8rem 1rem;border-radius:7px;}
   .msg.ok{display:block;background:rgba(120,190,140,.13);border:1px solid rgba(120,190,140,.45);color:#cdebd6;}
   .msg.err{display:block;background:rgba(200,90,90,.13);border:1px solid rgba(200,90,90,.45);color:#f3cdcd;}
@@ -288,6 +296,11 @@
         <input class="hp" type="text" id="f_website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p style="font-size:.78rem;color:rgba(255,255,255,.45);margin-top:.4rem">Give us at least one way to reach you if you win.</p>
 
+        <label for="ref">Who sent you? <span style="text-transform:none;letter-spacing:0;color:rgba(255,255,255,.4)">(optional)</span></label>
+        <input id="ref" type="text" maxlength="120" autocomplete="off">
+        <p style="font-size:.78rem;color:rgba(255,255,255,.45);margin-top:.4rem">
+          If a friend told you about this, put their name here so we can thank them.</p>
+
         <div class="cons">
           <input type="checkbox" id="f_consent">
           <label for="f_consent" style="text-transform:none;letter-spacing:0;font-size:.84rem;color:rgba(255,255,255,.65);margin:0">
@@ -299,6 +312,15 @@
         <button class="btn" type="submit" id="entryBtn">Enter the drawing &mdash; free</button>
         <div class="msg" id="entryMsg"></div>
       </form>
+
+      <div class="share" id="shareBox">
+        <p>Now bring your people. Whoever moves the most gets thanked by name at the sale.</p>
+        <div class="btns">
+          <button type="button" class="primary" id="copyBtn">Copy the link</button>
+          <button type="button" id="nativeBtn" style="display:none">Share&hellip;</button>
+        </div>
+        <input class="fallback" id="shareFallback" readonly>
+      </div>
     </div>
   </div>
 </section>
@@ -426,6 +448,7 @@
       email:   document.getElementById('f_email').value,
       phone:   document.getElementById('f_phone').value,
       website: document.getElementById('f_website').value,
+      referred_by: document.getElementById('ref').value,
       consent: document.getElementById('f_consent').checked
     };
     if(!payload.name || payload.name.trim().length < 2){ show('err','Please enter your name.'); return; }
@@ -440,12 +463,47 @@
         form.reset();
         show('ok', d.already ? "You are already entered — one entry per person. Good luck!"
                              : "You're in. Winner drawn Monday, September 7. Good luck!");
+        document.getElementById('shareBox').style.display = 'block';
       } else {
         show('err', d.error || 'Something went wrong. Please try again.');
       }
     }catch(_){ show('err','Could not reach us just now. Please try again, or enter at the table.'); }
     btn.disabled = false; btn.textContent = 'Enter the drawing — free';
   });
+
+  /* Share. No tracking parameters on the URL on purpose - the referrer is a
+     name the friend types on the form, not something carried in a link. */
+  var SHARE_URL  = 'https://nextrighthing.com/yard-sale';
+  var SHARE_TEXT = 'Free prize drawing and a four-day yard sale for The Right Thing in Recovery, Sept 4-7 in Midvale. No purchase necessary. ';
+  var copyBtn = document.getElementById('copyBtn');
+  var nativeBtn = document.getElementById('nativeBtn');
+  var fallback = document.getElementById('shareFallback');
+
+  copyBtn.addEventListener('click', async function(){
+    var payload = SHARE_TEXT + SHARE_URL;
+    try{
+      if(!navigator.clipboard) throw new Error('no clipboard');
+      await navigator.clipboard.writeText(payload);
+      copyBtn.textContent = 'Copied';
+      setTimeout(function(){ copyBtn.textContent = 'Copy the link'; }, 2200);
+    }catch(_){
+      // Older browsers, or a page not served over https - show the text and select it.
+      fallback.style.display = 'block';
+      fallback.value = payload;
+      fallback.focus(); fallback.select();
+      copyBtn.textContent = 'Copy it from the box';
+    }
+  });
+
+  // Most of this traffic is a phone. Use the real share sheet where it exists.
+  if(navigator.share){
+    nativeBtn.style.display = 'inline-block';
+    nativeBtn.addEventListener('click', function(){
+      navigator.share({ title: '2nd Annual End-of-Summer Yard Sale',
+                        text: SHARE_TEXT.trim(), url: SHARE_URL })
+        .catch(function(){ /* user dismissed the sheet - nothing to do */ });
+    });
+  }
 })();
 </script>
 </body>
