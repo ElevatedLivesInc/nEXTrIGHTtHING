@@ -1,0 +1,26 @@
+# Cloudflare Pages response headers.
+#
+# The campaign pages get edited daily during the sale. Browsers and the CDN
+# were serving a stale /yard-sale for hours after a deploy - people saw an
+# old form. These tell both to re-check every time, which costs a round trip
+# and saves a day of "why isn't my change showing".
+
+/yard-sale
+  Cache-Control: public, max-age=0, must-revalidate
+
+/donate
+  Cache-Control: public, max-age=0, must-revalidate
+
+/in-kind
+  Cache-Control: public, max-age=0, must-revalidate
+
+/mission-control
+  Cache-Control: no-store
+
+# The drawing endpoint must never be cached - a cached POST response would
+# tell the second person they were already entered.
+/drawing/*
+  Cache-Control: no-store
+
+/donation/*
+  Cache-Control: no-store

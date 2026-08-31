@@ -13,6 +13,9 @@ export async function onRequestPost(context) {
   const name  = clean(b.name, 120);
   const email = clean(b.email, 160).toLowerCase();
   const phone = clean(b.phone, 40);
+  // Free text a stranger typed. Never matched to a person record, never
+  // affects odds - it exists so we can thank whoever brought them.
+  const referrer = clean(b.referred_by, 120) || null;
 
   if (name.length < 2) return json({ ok: false, error: 'Please enter your name.' }, 400);
   if (!email && !phone) return json({ ok: false, error: 'Give us one way to reach you if you win — email or phone.' }, 400);
@@ -43,11 +46,23 @@ export async function onRequestPost(context) {
     ? '?event=eq.fall-yard-sale-2026&email=eq.' + encodeURIComponent(email)
     : '?event=eq.fall-yard-sale-2026&phone=eq.' + encodeURIComponent(phone);
   try {
-    const existing = await fetch(env.SUPABASE_URL + '/rest/v1/drawing_entries' + dedupe + '&select=id&limit=1',
+    const existing = await fetch(env.SUPABASE_URL + '/rest/v1/drawing_entries' + dedupe + '&select=id,referred_by&limit=1',
       { headers: { 'apikey': env.SUPABASE_SERVICE_ROLE_KEY, 'Authorization': 'Bearer ' + env.SUPABASE_SERVICE_ROLE_KEY } });
     if (existing.ok) {
       const rows = await existing.json();
-      if (Array.isArray(rows) && rows.length) return json({ ok: true, entered: true, already: true });
+      if (Array.isArray(rows) && rows.length) {
+        // Already entered. Never insert a second row - the published rules say
+        // duplicates are consolidated, not stacked. But if they came back and
+        // this time named who sent them, fill that in on the row we already have.
+        if (referrer && !rows[0].referred_by) {
+          await fetch(env.SUPABASE_URL + '/rest/v1/drawing_entries?id=eq.' + encodeURIComponent(rows[0].id), {
+            method: 'PATCH', headers: { ...h, 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ referred_by: referrer })
+          });
+          return json({ ok: true, entered: true, already: true, referrerAdded: true });
+        }
+        return json({ ok: true, entered: true, already: true });
+      }
     }
   } catch (_) {}
 
@@ -58,6 +73,7 @@ export async function onRequestPost(context) {
       event: 'fall-yard-sale-2026',
       name, email: email || null, phone: phone || null,
       entry_method: 'online',
+      referred_by: referrer,
       consent_contact: b.consent === true || b.consent === 'true',
       ip_hash
     })
