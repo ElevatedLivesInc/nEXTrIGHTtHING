@@ -58,7 +58,7 @@
   </div>
   <div class="tblwrap" id="tblwrap" style="display:none">
     <table>
-      <thead><tr><th>Entered</th><th>Name</th><th>Email</th><th>Phone</th><th>Method</th><th>OK To Contact</th></tr></thead>
+      <thead><tr><th>Entered</th><th>Name</th><th>Email</th><th>Phone</th><th>Method</th><th>Who Sent Them</th><th>OK To Contact</th><th>Checked In</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
@@ -108,7 +108,9 @@ function rowHtml(r){
     +'<td>'+(r.email?('<a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a>'):'&mdash;')+'</td>'
     +'<td>'+esc(r.phone||'—')+'</td>'
     +'<td>'+esc(r.entry_method||'online')+'</td>'
+    +'<td>'+esc(r.referred_by||'—')+'</td>'
     +'<td>'+(r.consent_contact?'Yes':'No')+'</td>'
+    +'<td>'+(r.checked_in?'Yes':'—')+'</td>'
     +'</tr>';
 }
 function render(){
@@ -119,7 +121,7 @@ function render(){
 }
 function exportCSV(){
   const rows=filteredRows();
-  const cols=['created_at','name','email','phone','entry_method','consent_contact'];
+  const cols=['created_at','name','email','phone','entry_method','referred_by','consent_contact','checked_in'];
   const csvEsc=v=>{v=(v==null?'':v)+'';return '"'+v.replace(/"/g,'""')+'"';};
   const csv=[cols.join(',')].concat(rows.map(r=>cols.map(c=>csvEsc(r[c])).join(','))).join('\r\n');
   const a=document.createElement('a');
