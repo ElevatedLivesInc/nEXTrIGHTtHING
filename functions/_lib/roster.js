@@ -17,7 +17,11 @@ export const ROSTER = {
   // Case management is the clinical side. Rob is deliberately absent: he runs
   // the houses and the rent, and Cate's rule is that those two roles do not
   // see each other's data.
-  'case-management':  ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com']
+  'case-management':  ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
+  // Nonprofit fundraiser campaigns - prize drawing entries, page views.
+  // Same people as donations-report today; kept as its own key since a
+  // future event's audience may not match the donation-report roster exactly.
+  'drawing-entries':   ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com']
 };
 
 export function allowedFor(system) {

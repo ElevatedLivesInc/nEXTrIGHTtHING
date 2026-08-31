@@ -448,5 +448,10 @@
   });
 })();
 </script>
+<script>
+// Anonymous hit count only - no cookies, no PII. Lets staff see whether
+// anyone is actually loading this page instead of guessing from social stats.
+try{ fetch('/drawing/view', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ page:'yard-sale' }) }); }catch(_){}
+</script>
 </body>
 </html>

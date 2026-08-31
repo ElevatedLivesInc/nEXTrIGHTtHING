@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Drawing Entries — Staff Only</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.4rem 1.5rem;}
+  .top-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.7rem;}
+  h1 em{color:var(--sand-light);font-style:italic;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);}
+  .wrap{max-width:1100px;margin:0 auto;padding:1.5rem;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.9rem;margin-bottom:1.4rem;}
+  .stat{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:1rem 1.2rem;text-align:center;}
+  .stat .n{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--sand-light);}
+  .stat .l{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.3rem;}
+  .bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;align-items:center;}
+  .fbtn{padding:.45rem 1.1rem;border-radius:50px;border:1px solid rgba(201,169,110,.35);background:transparent;color:rgba(255,255,255,.7);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Raleway',sans-serif;}
+  .fbtn.active{background:rgba(201,169,110,.2);color:var(--sand-light);border-color:rgba(201,169,110,.6);}
+  #search{margin-left:auto;padding:.45rem .9rem;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-family:'Raleway',sans-serif;font-size:.8rem;min-width:200px;}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  th{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:left;padding:.6rem .7rem;border-bottom:1px solid rgba(201,169,110,.3);}
+  td{padding:.65rem .7rem;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.82);font-weight:300;vertical-align:top;}
+  td b{color:#fff;font-weight:600;}
+  td a{color:var(--sand-light);text-decoration:none;}
+  .tblwrap{overflow-x:auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;}
+  .note{max-width:640px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  .viewsrow{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.4rem;}
+  .viewpill{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:50px;padding:.4rem 1rem;font-size:.76rem;color:rgba(255,255,255,.75);}
+  .viewpill b{color:var(--sand-light);}
+  @media print{.bar,.top .viewer{display:none!important;}body{background:#fff;color:#000;}td,th{color:#000!important;border-color:#ccc!important;}.top{background:#fff;color:#000;border-color:#999;}h1,h1 em{color:#000;}.tblwrap{border:none;background:#fff;}.stat .n,.stat .l{color:#000;}.stats .stat{background:#fff;border-color:#999;}}
+  @media(max-width:700px){td,th{padding:.5rem .4rem;}}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <h1>Drawing <em>Entries</em></h1>
+  <div style="display:flex;align-items:center;gap:.2rem;flex-wrap:wrap"><span class="viewer" id="viewer"></span><a href="/mission-control" class="mcback" style="display:inline-block;font-size:.72rem;letter-spacing:.04em;color:#e8d5b0;text-decoration:none;border:1px solid rgba(201,169,110,.45);border-radius:50px;padding:.3rem .85rem;white-space:nowrap;margin-left:1rem">&larr; Mission Control</a></div>
+</div></div>
+
+<div class="wrap">
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat"><div class="n" id="sCount">0</div><div class="l">Entries</div></div>
+    <div class="stat"><div class="n" id="sConsent">0</div><div class="l">OK To Contact</div></div>
+    <div class="stat"><div class="n" id="sToday">0</div><div class="l">Entered Today</div></div>
+  </div>
+  <div class="viewsrow" id="viewsrow" style="display:none"></div>
+  <div class="bar" id="filters" style="display:none">
+    <button class="fbtn" onclick="exportCSV()">Download CSV</button>
+    <button class="fbtn" onclick="window.print()">Print</button>
+    <input id="search" placeholder="Search name, email, or phone…">
+  </div>
+  <div class="tblwrap" id="tblwrap" style="display:none">
+    <table>
+      <thead><tr><th>Entered</th><th>Name</th><th>Email</th><th>Phone</th><th>Method</th><th>OK To Contact</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="note" id="note">Loading…</div>
+</div>
+
+<script>
+
+/* No dead ends. If you are not signed in, you get a door - not an error. */
+function showWelcome(title, blurb, status){
+  var path = location.pathname.replace(/\/$/,'') || '/mission-control';
+  var forbidden = (status === 403);
+  var el = document.getElementById('note');
+  if(!el) return;
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div style="max-width:520px;margin:3rem auto;text-align:center">'
+    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:#e8d5b0;font-weight:300;margin-bottom:.6rem">'
+    + (forbidden ? 'This one is not yours' : 'Welcome to ' + title)
+    + '</div>'
+    + '<p style="color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.5rem">'
+    + (forbidden
+        ? 'You are signed in, but your account is not set up for this system. That is on purpose &mdash; each person sees only what they need. Text Gabe and it is a two-minute fix.'
+        : blurb)
+    + '</p>'
+    + (forbidden ? '' :
+        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
+      + '<div style="font-size:.8rem;color:rgba(255,255,255,.45);margin-top:1.3rem;line-height:1.8">'
+      + 'No password. You will get a 6-digit code by email &mdash; type it in and you are back here.<br>'
+      + 'Use your <b style="color:rgba(255,255,255,.7)">@nextrighthing.com</b> address.'
+      + '</div>')
+    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
+    + '</div>';
+}
+let DATA=[], Q='';
+function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
+function fmtD(d){try{return new Date(d).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(_){return d;}}
+function filteredRows(){
+  let rows=DATA;
+  if(Q){const q=Q.toLowerCase();rows=rows.filter(r=>((r.name||'')+' '+(r.email||'')+' '+(r.phone||'')).toLowerCase().indexOf(q)>-1);}
+  return rows;
+}
+function rowHtml(r){
+  return '<tr>'
+    +'<td>'+fmtD(r.created_at)+'</td>'
+    +'<td><b>'+esc(r.name||'—')+'</b></td>'
+    +'<td>'+(r.email?('<a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a>'):'&mdash;')+'</td>'
+    +'<td>'+esc(r.phone||'—')+'</td>'
+    +'<td>'+esc(r.entry_method||'online')+'</td>'
+    +'<td>'+(r.consent_contact?'Yes':'No')+'</td>'
+    +'</tr>';
+}
+function render(){
+  const rows=filteredRows();
+  document.getElementById('tbody').innerHTML=rows.map(rowHtml).join('');
+  document.getElementById('note').style.display=rows.length?'none':'block';
+  if(!rows.length)document.getElementById('note').textContent='No entries match.';
+}
+function exportCSV(){
+  const rows=filteredRows();
+  const cols=['created_at','name','email','phone','entry_method','consent_contact'];
+  const csvEsc=v=>{v=(v==null?'':v)+'';return '"'+v.replace(/"/g,'""')+'"';};
+  const csv=[cols.join(',')].concat(rows.map(r=>cols.map(c=>csvEsc(r[c])).join(','))).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='drawing-entries-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+document.getElementById('search').addEventListener('input',e=>{Q=e.target.value.trim();render();});
+
+function renderViews(viewsByPage){
+  const keys=Object.keys(viewsByPage||{}).sort((a,b)=>viewsByPage[b]-viewsByPage[a]);
+  const el=document.getElementById('viewsrow');
+  if(!keys.length){el.style.display='none';return;}
+  el.innerHTML=keys.map(k=>'<span class="viewpill"><b>'+esc(viewsByPage[k])+'</b> views &middot; '+esc(k)+'</span>').join('');
+  el.style.display='flex';
+}
+
+(async function(){
+  const note=document.getElementById('note');
+  try{
+    const res=await fetch('/drawing/list');
+    const data=await res.json();
+    if(res.status===401||res.status===403){showWelcome('Drawing Entries', 'Everyone who has entered the free prize drawing, plus how many times each campaign page has been viewed.', res.status); return;}
+    if(data.error){note.textContent='Error: '+data.error;return;}
+    DATA=data.entries||[];
+    document.getElementById('viewer').textContent='Signed in as '+(data.viewer||'');
+    const today=new Date().toDateString();
+    document.getElementById('sCount').textContent=DATA.length;
+    document.getElementById('sConsent').textContent=DATA.filter(r=>r.consent_contact).length;
+    document.getElementById('sToday').textContent=DATA.filter(r=>{try{return new Date(r.created_at).toDateString()===today;}catch(_){return false;}}).length;
+    document.getElementById('stats').style.display='grid';
+    document.getElementById('filters').style.display='flex';
+    document.getElementById('tblwrap').style.display='';
+    renderViews(data.viewsByPage);
+    render();
+  }catch(_){note.textContent='Could not load entries. Check your connection and reload.';}
+})();
+</script>
+</body>
+</html>
