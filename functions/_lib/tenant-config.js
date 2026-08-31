@@ -26,5 +26,19 @@ export const TENANT = {
   programs: { workCrew: { key: 'rent_a_husband', label: 'Rent A Husband' } },
 
   defaultFromName: 'NRT Patrol',
-  defaultFromAddress: 'patrol@nextrighthing.com'
+  defaultFromAddress: 'patrol@nextrighthing.com',
+
+  // The one live fundraiser/event Mission Control's Events tile and
+  // /mission-control/summary report on. `key` must match the `event` value
+  // functions/drawing/enter.js writes to drawing_entries, or every entry
+  // count on the hub silently reads zero. Set to null between events.
+  currentEvent: {
+    key: 'fall-yard-sale-2026',
+    name: '2nd Annual End-of-Summer Yard Sale',
+    url: '/yard-sale',
+    blurb: 'Free prize drawing, no purchase necessary.',
+    startsOn: '2026-09-04',
+    endsOn: '2026-09-07',
+    drawingOn: '2026-09-07'
+  }
 };

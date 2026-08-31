@@ -66,6 +66,17 @@ export async function onRequestPost(context) {
   }
   if (body.checks !== undefined) patch.checks = (body.checks || '').toString().slice(0, 500);
   if (body.notes !== undefined) patch.notes = (body.notes || '').toString().slice(0, 4000);
+  // Who is working this lead, before any bed exists. Independent of Admit -
+  // a case manager can be attached the moment someone reaches out.
+  if (body.case_manager !== undefined) patch.case_manager = (body.case_manager || '').toString().trim().slice(0, 160) || null;
+  // "Forward" is a same-page status flag only - it never emails or exports
+  // anything. Setting forwarded_to !== unset stamps forwarded_at; clearing it
+  // (empty string) undoes both, in case someone forwarded the wrong lead.
+  if (body.forwarded_to !== undefined) {
+    const to = (body.forwarded_to || '').toString().trim().slice(0, 160);
+    patch.forwarded_to = to || null;
+    patch.forwarded_at = to ? new Date().toISOString() : null;
+  }
   if (!Object.keys(patch).length) return json({ ok: false, error: 'nothing to update' }, 400);
 
   const res = await fetch(url, { method: 'PATCH', headers: sbHeaders, body: JSON.stringify(patch) });

@@ -216,6 +216,37 @@ async function delRow(id,btn){
     if(res.ok){ DATA=DATA.filter(r=>r.id!==id); render(); } else { btn.textContent='Retry'; }
   }catch(_){ btn.textContent='Retry'; }
 }
+// Who is working a lead, before any bed exists. Internal only - this never
+// emails or exports anything, it just labels the row so the next person who
+// opens the queue knows it is spoken for.
+async function assignCM(id,btn){
+  const val=document.getElementById('cm-'+id).value;
+  btn.textContent='Saving…';
+  try{
+    const res=await fetch('/intake-queue/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,case_manager:val})});
+    const row=DATA.find(r=>r.id===id); if(row) row.case_manager=val;
+    btn.textContent=res.ok?'Assigned ✓':'Retry';
+  }catch(_){ btn.textContent='Retry'; }
+  setTimeout(()=>{btn.textContent='Assign';},2000);
+}
+// "Forward" is a status flag on this same page, nothing more - no email, no
+// export, no data leaves this screen. It just marks who has this lead so
+// staff can say "check queue #<n>" instead of repeating details out loud.
+async function forward(id,btn,undo){
+  const row=DATA.find(r=>r.id===id); if(!row) return;
+  let to=row.forwarded_to||'';
+  if(!undo){
+    to=prompt('Forward to (name):',document.getElementById('cm-'+id).value||'')||'';
+    if(!to.trim()) return;
+  } else {
+    to='';
+  }
+  btn.textContent='…';
+  try{
+    const res=await fetch('/intake-queue/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,forwarded_to:to})});
+    if(res.ok){ row.forwarded_to=to||null; render(); } else { btn.textContent='Retry'; }
+  }catch(_){ btn.textContent='Retry'; }
+}
 
 function isReady(r){
   const c=(r.checks||'');
@@ -324,7 +355,8 @@ function render(){
     const pct=Math.round(done/CHECKS.length*100);
     const ready=isReady(r);
     return '<div class="card'+(hot?' priority':'')+'">'
-      +'<div class="chead"><div class="cname">'+esc(((r.first_name||'')+' '+(r.last_name||'')).trim()||'(no name)')+'</div>'
+      +'<div class="chead"><div class="cname">'+esc(((r.first_name||'')+' '+(r.last_name||'')).trim()||'(no name)')
+      +(r.queue_no?(' <span style="font-size:.62rem;font-family:\'Raleway\',sans-serif;color:rgba(255,255,255,.35);letter-spacing:.04em">#'+esc(r.queue_no)+'</span>'):'')+'</div>'
       +'<div class="cwhen">'+fmtWhen(r.created_at)+'</div></div>'
       +'<div class="pbar" title="'+done+' of '+CHECKS.length+' steps done"><i style="width:'+pct+'%"></i></div>'
       +((ready&&(r.status||'new')!=='intaked')?'<div class="flags"><span class="flag ready">&#10003; Ready for intake</span></div>':'')
@@ -347,6 +379,14 @@ function render(){
       +line('Motivation', r.motivation)
       +'</div>'
       +(r.message?('<div class="msg">&ldquo;'+esc(r.message)+'&rdquo;</div>'):'')
+      +'<div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin:.6rem 0;padding:.55rem .6rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px">'
+      +'<span style="font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4)">Working it:</span>'
+      +'<input id="cm-'+r.id+'" placeholder="Case manager" value="'+esc(r.case_manager||'')+'" style="flex:1;min-width:110px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.15);border-radius:5px;padding:.3rem .5rem;color:#fff;font-size:.76rem;font-family:\'Raleway\',sans-serif">'
+      +'<button class="notesave" onclick="assignCM(\''+r.id+'\',this)">Assign</button>'
+      +(r.forwarded_to
+        ? '<span style="font-size:.72rem;color:#a9e5c3">&#10003; Forwarded to '+esc(r.forwarded_to)+'</span><button class="delbtn" style="margin-left:0" onclick="forward(\''+r.id+'\',this,true)">Unforward</button>'
+        : '<button class="notesave" onclick="forward(\''+r.id+'\',this,false)">Forward</button>')
+      +'</div>'
       +'<div class="cklist">'+CHECKS.map(c=>{
         const on=(r.checks||'').split('|').indexOf(c)>-1;
         return '<label><input type="checkbox" '+(on?'checked ':'')+'onchange="toggleCheck(\''+r.id+'\',\''+c+'\',this)">'+c+'</label>';
