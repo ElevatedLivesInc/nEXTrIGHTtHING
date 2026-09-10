@@ -1627,8 +1627,11 @@ nav.scrolled{background:rgba(6,14,24,.94);backdrop-filter:blur(14px);}
                 <div class="fg"><label>Insurance company (if known)</label><input type="text" name="insurance_company" placeholder="e.g. Utah Medicaid, SelectHealth"></div>
                 <div class="fg"><label>Is housing needed?</label><select name="needs_housing"><option value="">Select…</option><option>Yes</option><option>No</option><option>Not sure</option></select></div>
                 <div class="fg"><label>On probation or parole?</label><select name="probation_parole"><option value="">Select…</option><option>Yes</option><option>No</option><option>Prefer not to say</option></select></div>
-                <div class="fg"><label>Primary substance</label><input type="text" name="primary_substance" placeholder="What are we working with?"></div>
-                <div class="fg"><label>Last use</label><select name="last_use"><option value="">Select…</option><option>Today</option><option>This week</option><option>This month</option><option>Over a month ago</option><option>Prefer not to say</option></select></div>
+                <!-- Primary substance and Last use removed 10 Sept 2026 - health
+                     information, and this form posts to a database and a third-party
+                     form service not set up to hold it. Timing is what intake triages
+                     on anyway. Clinical detail belongs in the clinical record. -->
+                <div class="fg"><label>How soon are you hoping to start?</label><select name="urgency"><option value="">Select&hellip;</option><option>Today</option><option>This week</option><option>This month</option><option>Just gathering information</option></select></div>
                 <div class="fg full"><label>What's motivating this step right now?</label><input type="text" name="motivation" placeholder="In your own words &mdash; short is fine"></div>
                 <div class="fg full"><label>Best time to reach you</label><select name="best_time"><option value="">Any time</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
               </div>
@@ -2106,11 +2109,11 @@ async function handleContact(e){
     const g=n=>((fd.get(n)||'')+'').trim();
     fd.set('_subject','Pre-Intake Request — '+g('first_name')+' '+g('last_name')
       +(g('insurance')?' — '+g('insurance'):'')
-      +(g('last_use')?' — Last use: '+g('last_use'):''));
+      +(g('urgency')?' — Wants to start: '+g('urgency'):''));
     /* save a copy to Supabase (never blocks the email) */
     try{
       const payload={};
-      ['first_name','last_name','email','phone','reaching_as','insurance','insurance_company','needs_housing','probation_parole','primary_substance','last_use','motivation','best_time','message'].forEach(k=>payload[k]=(fd.get(k)||'')+'');
+      ['first_name','last_name','email','phone','reaching_as','insurance','insurance_company','needs_housing','probation_parole','urgency','motivation','best_time','message'].forEach(k=>payload[k]=(fd.get(k)||'')+'');
       // Same utm_source capture as get-help.html, so a tagged link shows up
       // in the same source breakdown no matter which page someone lands on.
       const p=new URLSearchParams(location.search), utm=p.get('utm_source');

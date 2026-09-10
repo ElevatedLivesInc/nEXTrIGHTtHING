@@ -126,8 +126,10 @@
     </div>
     <div class="nf"><label>Employment status</label><select id="n_employment"><option value="">&mdash;</option><option>Employed full-time</option><option>Employed part-time</option><option>Unemployed</option><option>Unable to work</option></select></div>
     <div class="nf2">
-      <div class="nf"><label>Primary substance</label><input id="n_sub"></div>
-      <div class="nf"><label>Last use</label><select id="n_use"><option value="">&mdash;</option><option>Today</option><option>This week</option><option>This month</option><option>Over a month ago</option><option>Prefer not to say</option></select></div>
+      <!-- Substance and last-use inputs removed 10 Sept 2026 - this screen writes
+           to a database that is not set up to hold health information. Clinical
+           detail goes in the clinical record, not the intake queue. -->
+      <div class="nf"><label>How soon do they want to start?</label><select id="n_urgency"><option value="">&mdash;</option><option>Today</option><option>This week</option><option>This month</option><option>Just gathering information</option></select></div>
     </div>
     <div class="nf"><label>Best time to reach them</label><select id="n_time"><option value="">Any time</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
     <div class="nf"><label>Notes from the call</label><textarea id="n_msg" class="notesbox"></textarea></div>
@@ -172,16 +174,16 @@ const STATUSES=['new','contacted','scheduled','intaked','closed'];
 const CHECKS=['Insurance verified','Callback made','Assessment scheduled','ROI signed','Docs collected'];
 
 function openNew(){
-  ['n_first','n_last','n_phone','n_email','n_ref','n_sub','n_msg'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  ['n_first','n_last','n_phone','n_email','n_ref','n_msg'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
   document.getElementById('newModal').style.display='block';
 }
 async function saveNew(btn){
   const v=id=>{const e=document.getElementById(id);return e?e.value:'';};
   const body={create:true,first_name:v('n_first'),last_name:v('n_last'),phone:v('n_phone'),email:v('n_email'),
     source:v('n_source'),referred_by:v('n_ref'),reaching_as:v('n_as'),insurance:v('n_ins'),
-    needs_housing:v('n_house'),probation_parole:v('n_prob'),primary_substance:v('n_sub'),
+    needs_housing:v('n_house'),probation_parole:v('n_prob'),
     employment_status:v('n_employment'),
-    last_use:v('n_use'),best_time:v('n_time'),message:v('n_msg')};
+    urgency:v('n_urgency'),best_time:v('n_time'),message:v('n_msg')};
   if(!body.first_name&&!body.phone){alert('Add at least a name or a phone number');return;}
   btn.textContent='Adding…';
   try{
@@ -272,8 +274,7 @@ function copySummary(id,btn){
   if(r.needs_housing)L.push('Housing needed: '+r.needs_housing);
   if(r.probation_parole)L.push('Probation/parole: '+r.probation_parole);
   if(r.employment_status)L.push('Employment: '+r.employment_status);
-  if(r.primary_substance)L.push('Primary substance: '+r.primary_substance);
-  if(r.last_use)L.push('Last use: '+r.last_use);
+  if(r.urgency)L.push('Wants to start: '+r.urgency);
   if(r.best_time)L.push('Best time: '+r.best_time);
   if(r.motivation)L.push('Motivation: '+r.motivation);
   if(r.message)L.push('Message: '+r.message);
@@ -292,8 +293,8 @@ function fmtWhen(iso){
 /* Rule-based triage — flags for Bailey, no AI, human makes every call */
 function triage(r){
   const f=[];
-  const lu=(r.last_use||'').toLowerCase();
-  if(lu==='today'||lu==='this week') f.push({c:'hot',t:'Reach out within 24h — recent use'});
+  const u=(r.urgency||'').toLowerCase();
+  if(u==='today'||u==='this week') f.push({c:'hot',t:'Reach out within 24h — wants to start now'});
   if((r.needs_housing||'').toLowerCase()==='yes') f.push({c:'warm',t:'Housing needed'});
   if((r.probation_parole||'').toLowerCase()==='yes') f.push({c:'warm',t:'Probation / parole'});
   const ins=(r.insurance||'').toLowerCase();
@@ -303,7 +304,7 @@ function triage(r){
   const missing=[];
   if(!r.insurance) missing.push('insurance');
   if(!r.phone) missing.push('phone');
-  if(!r.last_use) missing.push('last use');
+  if(!r.urgency) missing.push('start timing');
   if(missing.length) f.push({c:'info',t:'Missing: '+missing.join(', ')});
   return f;
 }
@@ -373,8 +374,7 @@ function render(){
       +line('Housing needed', r.needs_housing)
       +line('Probation / parole', r.probation_parole)
       +line('Employment', r.employment_status)
-      +line('Primary substance', r.primary_substance)
-      +line('Last use', r.last_use)
+      +line('Wants to start', r.urgency)
       +line('Best time to call', r.best_time)
       +line('Motivation', r.motivation)
       +'</div>'

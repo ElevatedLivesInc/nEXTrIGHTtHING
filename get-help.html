@@ -279,13 +279,16 @@
         </div>
 
         <div class="fstep" data-step="3" hidden>
-          <div class="two">
-            <div class="fg"><label>Primary substance</label><input id="f_sub" placeholder="Optional"></div>
-            <div class="fg"><label>Last use</label><select id="f_use">
-              <option value="">Prefer not to say</option><option>Today</option><option>This week</option>
-              <option>This month</option><option>Over a month ago</option>
-            </select></div>
-          </div>
+          <!-- Primary substance and Last use were removed on 10 Sept 2026. Both are
+               health information, and this form writes to a database and a third-party
+               form service that are not set up to hold it. Urgency is what intake
+               actually triages on, and asking about timing gets that answer without
+               asking anyone to disclose their drug use to a web form. Clinical detail
+               belongs in the clinical record, gathered by a person. -->
+          <div class="fg"><label>How soon are you hoping to start?</label><select id="f_urgency">
+            <option value="">Prefer not to say</option><option>Today</option><option>This week</option>
+            <option>This month</option><option>Just gathering information</option>
+          </select></div>
           <div class="fg"><label>What's making you reach out right now?</label><input id="f_mot" placeholder="In your own words — short is fine"></div>
           <div class="fg"><label>Anything else we should know</label><textarea id="f_msg"></textarea></div>
         </div>
@@ -413,9 +416,9 @@ async function submitForm(e){
   var payload={
     first_name:g('f_first'), last_name:g('f_last'), phone:g('f_phone'), email:g('f_email'),
     reaching_as:g('f_as'), insurance:g('f_ins'), insurance_company:g('f_inscomp'),
-    needs_housing:g('f_house'), probation_parole:g('f_prob'), primary_substance:g('f_sub'),
+    needs_housing:g('f_house'), probation_parole:g('f_prob'),
     employment_status:g('f_employment'),
-    last_use:g('f_use'), motivation:g('f_mot'), best_time:g('f_time'), message:g('f_msg'),
+    urgency:g('f_urgency'), motivation:g('f_mot'), best_time:g('f_time'), message:g('f_msg'),
     source:g('f_source')
   };
   try{ await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(_){}

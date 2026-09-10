@@ -28,7 +28,7 @@ export async function onRequestGet(context) {
   // point of putting it on the hub at all.
   const EV = TENANT.currentEvent || null;
   const [intake, inkind, apps, residents, caseRes, notes, entries] = await Promise.all([
-    canClient ? get('intake_requests?select=id,status,last_use,created_at,source,checks&limit=1000') : none(),
+    canClient ? get('intake_requests?select=id,status,urgency,created_at,source,checks&limit=1000') : none(),
     canDonor  ? get('authorizations?select=id,status,donor_value&limit=1000') : none(),
     canClient ? get('funding_applications?select=id,status,coverage_end,resident_name&limit=1000') : none(),
     canClient ? get('residents?select=status,past_due,current_due,amount_paid,monthly_rent,move_out_date,last_talked,on_notice&limit=1000') : none(),
@@ -61,7 +61,11 @@ export async function onRequestGet(context) {
   } : null;
 
   const openIntake = intake.filter(r=>(r.status||'new')!=='closed');
-  const hot = openIntake.filter(r=>['today','this week'].includes((r.last_use||'').toLowerCase()));
+  // "Hot" now means someone said they want to start today or this week - a
+  // timing answer, not a clinical one. last_use is no longer read anywhere in
+  // the operations lane. Rows submitted before 10 Sept 2026 have no urgency
+  // value and simply do not count as hot; that is the intended trade.
+  const hot = openIntake.filter(r=>['today','this week'].includes((r.urgency||'').toLowerCase()));
   // Same "ready" rule as the Intake Queue screen: insurance verified and an
   // assessment on the calendar. This is the honest answer to "how many people
   // do we need" - not the whole pipeline, just who could move in today.

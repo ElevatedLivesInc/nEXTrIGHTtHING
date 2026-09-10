@@ -23,8 +23,12 @@ export async function onRequestPost(context) {
     needs_housing:     clean(body.needs_housing, 20),
     probation_parole:  clean(body.probation_parole, 30),
     employment_status: clean(body.employment_status, 30),
-    primary_substance: clean(body.primary_substance, 120),
-    last_use:          clean(body.last_use, 40),
+    // primary_substance and last_use are deliberately NOT read here, even if an
+    // old cached page still posts them. This database is not configured to hold
+    // health information, so the endpoint is where that guarantee is enforced -
+    // a form field can be re-added by accident, this cannot be bypassed.
+    // urgency ("how soon are you hoping to start") replaces them for triage.
+    urgency:           clean(body.urgency, 40),
     motivation:        clean(body.motivation, 500),
     best_time:         clean(body.best_time, 20),
     message:           clean(body.message, 2000),
