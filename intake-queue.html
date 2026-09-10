@@ -362,7 +362,7 @@ function render(){
       +((ready&&(r.status||'new')!=='intaked')?'<div class="flags"><span class="flag ready">&#10003; Ready for intake</span></div>':'')
       +(flags.length?'<div class="flags">'+flags.map(x=>'<span class="flag '+x.c+'">'+esc(x.t)+'</span>').join('')+'</div>':'')
       +(function(){const fp=fundingPath(r);return '<div class="flags"><span class="flag '+fp.c+'">$ '+fp.t+'</span>'
-        +'<a href="/funding" style="font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:#c9a96e;text-decoration:none;align-self:center;margin-left:.3rem">Funding Navigator &rarr;</a></div>';})()
+        +'<a href="/case-management#funding" style="font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:#c9a96e;text-decoration:none;align-self:center;margin-left:.3rem">Funders &rarr;</a></div>';})()
       +'<div class="rows">'
       +line('Phone', r.phone?null:null)
       +(r.phone?('<div><b>Phone:</b> <a href="tel:'+esc(r.phone.replace(/[^0-9+]/g,''))+'">'+esc(r.phone)+'</a></div>'):'')

@@ -25,6 +25,23 @@ export const TENANT = {
 
   programs: { workCrew: { key: 'rent_a_husband', label: 'Rent A Husband' } },
 
+  // The one event actually in front of the public right now. Mission Control's
+  // Events tile reads this instead of pointing at whatever was built last - the
+  // car wash was a single Saturday in July and has been a dead link ever since.
+  // Retiring an event and starting the next one is an edit to this block, and
+  // nothing else. When the real Events module lands it reads rows in this shape.
+  // No event in front of the public right now. The end-of-summer yard sale ran
+  // 4-7 Sept 2026 and closed; leaving it here made Mission Control count down to
+  // a date in the past. Starting the next one is an edit to this block, nothing
+  // else. Retired events, newest first, are kept below as a record only - nothing
+  // reads pastEvents yet.
+  currentEvent: null,
+
+  pastEvents: [
+    { key: 'fall-yard-sale-2026', name: 'End-of-Summer Yard Sale', url: '/yard-sale',
+      startsOn: '2026-09-04', endsOn: '2026-09-07', drawingOn: '2026-09-07' }
+  ],
+
   defaultFromName: 'NRT Patrol',
   defaultFromAddress: 'patrol@nextrighthing.com',
 

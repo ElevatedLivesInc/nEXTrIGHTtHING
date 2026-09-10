@@ -2,6 +2,7 @@
 import { getAuthedEmail } from '../_lib/auth.js';
 import { ROSTER, SCOPES } from '../_lib/roster.js';
 import { TENANT } from '../_lib/tenant-config.js';
+import { countReferred, tallyReferrers } from '../_lib/referrals.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -51,20 +52,9 @@ export async function onRequestGet(context) {
     today:   entries.filter(e=>(e.created_at||'').slice(0,10)===todayStr).length,
     // Referrals are recognition only - they never touch the odds. Grouped
     // case-insensitively so "sarah m" and "Sarah M." are one person.
-    referred: entries.filter(e=>(e.referred_by||'').trim()).length,
+    referred: countReferred(entries),
     checkedIn: entries.filter(e=>e.checked_in===true).length,
-    topReferrers: (function(){
-      const tally = new Map();
-      for(const e of entries){
-        const raw = (e.referred_by||'').trim();
-        if(!raw) continue;
-        const key = raw.toLowerCase().replace(/[.\s]+/g,' ').trim();
-        if(!key) continue;
-        const hit = tally.get(key);
-        if(hit) hit.count++; else tally.set(key, { name: raw, count: 1 });
-      }
-      return [...tally.values()].sort((a,b)=>b.count-a.count).slice(0,5);
-    })(),
+    topReferrers: tallyReferrers(entries, 5),
     daysToStart: daysTo(EV.startsOn),
     daysToDrawing: daysTo(EV.drawingOn),
     live: daysTo(EV.startsOn)!==null && daysTo(EV.startsOn)<=0 && daysTo(EV.endsOn)>=0

@@ -58,17 +58,15 @@ This screen is the Intake Queue: every request to get into a house or program, n
 - "Delete" removes a request entirely - use it only for test entries or genuine duplicates, not for people who simply were not a fit; "Closed" status is what handles that instead.
 - Funder and application information for that person's likely funding shows alongside the request, so a funding conversation can start on day one instead of after move-in.`
   },
+  // Retired 28 Aug 2026. The Funding Navigator is now the Funders and Funding
+  // Apps tabs inside Case Management; /funding only redirects. Kept so that a
+  // stale data-module attribute cannot land on nothing.
   funding: {
-    rosterKey: 'funding',
-    label: 'Funding Navigator',
+    rosterKey: 'case-management',
+    label: 'Funding (now in Case Management)',
     prompt: `${GUARDRAILS}
 
-This screen is the Funding Navigator, and it has two tabs:
-- "Funder Directory" is the list of organizations that can pay for a client's treatment or housing - their eligibility rules, typical award amount, and contact info. "Apply for client" jumps straight to a new application pre-filled with that funder.
-- "Client Applications" tracks every application that has actually been submitted - status (applied, approved, denied, expired, waitlist), coverage dates, and amount.
-- "Edit" opens either a funder or an application in a modal to update it; "Save" there commits the change, "Cancel" discards it.
-- "Delete" removes the funder or application permanently - for funders, prefer marking one inactive over deleting it if it might be used again later.
-- Coverage end dates matter: this is what the funding-cliff warnings elsewhere in the system (Housing, Mission Control, the morning brief) are built from, so keeping dates current here keeps those warnings honest.`
+The standalone Funding Navigator page no longer exists. The funder directory and every client application are now the "Funders" and "Funding Apps" tabs inside Case Management, at /case-management. Point the person there.`
   },
   'in-kind-report': {
     rosterKey: 'in-kind-report',
@@ -99,6 +97,9 @@ This screen is Case Management - the clinical side of working with a resident, s
 - Tabs: Caseload (everyone currently assigned), Follow-Ups Due (notes with a next step whose date has passed or is coming up), Goals, Meeting Log, Needs & Services (a checklist like insurance, ID, transportation, aftercare plan - each item has a status: needed, referred, scheduled, done, or n/a), Work Crew (${TENANT.programs.workCrew.label} signups), and Checks & Balances (compliance items like insurance and licenses, plus resident document expirations).
 - "Save note" logs a case note and can set a "next step" with a due date - that due date is what populates Follow-Ups Due, so a note without a next step will not show up there even if one is needed.
 - "Add goal" and "Log meeting" record exactly what they say; "Record document" tracks a resident document (ID, certification, etc.) including its expiration date if it has one.
+- Funding lives here too, as of 28 Aug 2026, on two tabs: "Funders" is the directory of organizations that can pay for a client's treatment or housing - eligibility, typical award, contact, and the actual application process - and "Funding Apps" is every application submitted, with status (applied, approved, denied, waitlist, expired), coverage dates and amount. "Apply for a client" on a funder opens a new application pre-filled with that funder; a client's own applications also show inside their record under Funding.
+- A funder marked "one per client" is once in a lifetime, and the directory names who already used it - check that before filling out a second form for the same person.
+- Coverage end dates are the point: the funding-cliff warnings on Housing, Mission Control and the morning brief are all built from them, so a stale end date makes those warnings lie. Prefer marking a funder inactive over deleting it.
 - Rob (house/rent operations) intentionally does not have access to this module - case management data and housing/rent data are kept separate by design, so do not suggest sharing this screen with him.`
   },
   incident: {

@@ -8,6 +8,16 @@ export async function onRequestPost(context) {
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ ok: false, error: 'not configured' }, 500);
 
   let b; try { b = await request.json(); } catch { return json({ ok: false, error: 'bad request' }, 400); }
+  // The entry period is a published rule, not a preference: it closed at the end
+  // of the sale on 7 Sept 2026. An entry taken after that either has to be
+  // honoured - changing a drawing that is already decided - or quietly binned,
+  // which is worse. So the door is shut here, before anything is stored, and the
+  // person is told plainly instead of getting a success message for nothing.
+  const ENTRIES_CLOSE = Date.parse('2026-09-08T06:00:00Z'); // midnight MDT after the last day
+  if (Date.now() > ENTRIES_CLOSE) {
+    return json({ ok: false, closed: true,
+      error: 'Entries closed at the end of the sale on Monday, September 7. Thank you for wanting in.' }, 410);
+  }
 
   const clean = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
   const name  = clean(b.name, 120);
@@ -54,14 +64,23 @@ export async function onRequestPost(context) {
         // Already entered. Never insert a second row - the published rules say
         // duplicates are consolidated, not stacked. But if they came back and
         // this time named who sent them, fill that in on the row we already have.
+        let referrerAdded = false;
         if (referrer && !rows[0].referred_by) {
-          await fetch(env.SUPABASE_URL + '/rest/v1/drawing_entries?id=eq.' + encodeURIComponent(rows[0].id), {
-            method: 'PATCH', headers: { ...h, 'Prefer': 'return=minimal' },
-            body: JSON.stringify({ referred_by: referrer })
-          });
-          return json({ ok: true, entered: true, already: true, referrerAdded: true });
+          // Its own try: if filling in the name fails, we still return "already
+          // entered". Falling through to the insert would give this person a
+          // second row, and duplicates are consolidated, not stacked. Losing a
+          // thank-you is survivable; changing someone's odds is not.
+          try {
+            const patched = await fetch(env.SUPABASE_URL + '/rest/v1/drawing_entries?id=eq.' + encodeURIComponent(rows[0].id), {
+              method: 'PATCH', headers: { ...h, 'Prefer': 'return=minimal' },
+              body: JSON.stringify({ referred_by: referrer })
+            });
+            referrerAdded = patched.ok;
+          } catch (_) {}
         }
-        return json({ ok: true, entered: true, already: true });
+        return referrerAdded
+          ? json({ ok: true, entered: true, already: true, referrerAdded: true })
+          : json({ ok: true, entered: true, already: true });
       }
     }
   } catch (_) {}

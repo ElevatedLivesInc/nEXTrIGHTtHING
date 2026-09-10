@@ -1,4 +1,5 @@
-// POST /case/update -> write case notes, goals, meetings and document records.
+// POST /case/update -> write case notes, goals, meetings, document records,
+// funders and funding applications.
 //
 // Same wall as /case/list: this endpoint can never touch a money column on
 // residents. The allow-list below is the enforcement, so a crafted request
@@ -124,6 +125,34 @@ export async function onRequestPost(context) {
       status:S(b.status,20)||'active', owner:S(b.owner,160), notes:S(b.notes,2000), updated_by:who };
     if (!rec.name) return json({ok:false,error:'name required'},400);
     return done(b.id ? await patch('compliance_items', b.id, rec) : await post('compliance_items', rec));
+  }
+
+  // Funding lives here now. The Funding Navigator used to be its own page;
+  // chasing scholarship money is case-manager work, so the directory and the
+  // applications moved onto this screen and are written through the
+  // case-management roster like everything else on it. Rob still sees who has
+  // applied and which funders are untried from Housing - he reads, he does not
+  // write, and no money column is anywhere near this endpoint.
+  if (what === 'funder') {
+    if (b.action === 'delete') { if(!b.id) return json({ok:false,error:'id required'},400); return done(await del('funders', b.id)); }
+    const rec = { name:S(b.name,160), category:S(b.category,60), website:S(b.website,300),
+      contact_name:S(b.contact_name,120), contact_email:S(b.contact_email,200), contact_phone:S(b.contact_phone,60),
+      eligibility:S(b.eligibility,2000), rules:S(b.rules,2000), typical_amount:S(b.typical_amount,80),
+      once_per_client: b.once_per_client === true, active: b.active !== false, notes:S(b.notes,2000) };
+    if (!rec.name) return json({ok:false,error:'name required'},400);
+    return done(b.id ? await patch('funders', b.id, rec) : await post('funders', rec));
+  }
+
+  if (what === 'application') {
+    if (b.action === 'delete') { if(!b.id) return json({ok:false,error:'id required'},400); return done(await del('funding_applications', b.id)); }
+    const rec = { resident_name:S(b.resident_name,160), client_id:cid(b.client_id), funder_name:S(b.funder_name,160),
+      status: ['applied','approved','denied','expired','waitlist'].includes(b.status) ? b.status : 'applied',
+      applied_date:S(b.applied_date,20), decision_date:S(b.decision_date,20),
+      amount: (b.amount===''||b.amount==null) ? null : (Number(String(b.amount).replace(/[^0-9.]/g,'')) || null),
+      coverage_start:S(b.coverage_start,20), coverage_end:S(b.coverage_end,20),
+      level_of_care:S(b.level_of_care,60), notes:S(b.notes,2000), updated_by:who };
+    if (!rec.resident_name || !rec.funder_name) return json({ok:false,error:'resident and funder required'},400);
+    return done(b.id ? await patch('funding_applications', b.id, rec) : await post('funding_applications', rec));
   }
 
   if (what === 'client') {

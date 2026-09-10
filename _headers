@@ -5,6 +5,8 @@
 # old form. These tell both to re-check every time, which costs a round trip
 # and saves a day of "why isn't my change showing".
 
+# The sale ended 7 Sept 2026; the page is now a static results page. Kept on a
+# short revalidate only until the winner's name is posted, then it can go.
 /yard-sale
   Cache-Control: public, max-age=0, must-revalidate
 

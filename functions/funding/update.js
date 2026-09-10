@@ -1,4 +1,9 @@
 // POST /funding/update -> create/update/delete funders and applications
+// RETIRED 28 Aug 2026. The Funding Navigator page is gone; the funder
+// directory and the applications are tabs inside /case-management and are
+// written through /case/update. Nothing calls this any more - it is kept
+// only so a stale bookmark or an old fetch cannot 500. Delete it once you
+// are sure nothing external points here.
 import { getAuthedEmail } from '../_lib/auth.js';
 import { allowedFor } from '../_lib/roster.js';
 

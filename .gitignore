@@ -2,3 +2,14 @@ node_modules/
 .wrangler/
 package.json
 package-lock.json
+
+# Working residue. Backups are made before every edit so a bad change is one
+# copy away from undone - they are not history and they do not belong in it.
+*.bak-*
+*.retired-*
+_*_tmp.*
+legends-unchained/
+_to_delete/
+*.zip
+*.tar.gz
+Claude outputs/

@@ -11,6 +11,8 @@
 //   SQUARE_WEBHOOK_SIGNATURE_KEY  (from the webhook subscription)
 //   SQUARE_NOTIFICATION_URL       (the exact URL above, character for character)
 //   RESEND_API_KEY, RESEND_FROM   (already set for patrol briefs)
+//   SQUARE_ACCESS_TOKEN           (optional; lets us recover a donor email from the
+//                                  Square Customer record when checkout collected none)
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 //
 // This route must NOT sit behind Cloudflare Access - Square has to reach it.
@@ -46,8 +48,32 @@ export async function onRequestPost(context) {
   const amount_cents = Number(pay.amount_money?.amount || 0);
   if (amount_cents <= 0) return json({ ok: true, skipped: 'zero amount' });
 
-  const donor_email = (pay.buyer_email_address || '').trim().toLowerCase() || null;
-  const donor_name  = (pay.shipping_address?.name || pay.billing_address?.name || '').trim() || null;
+  // Square only fills buyer_email_address when the checkout actually ASKED for an
+  // email. On a payment link with customer info collection switched off, a card or
+  // Apple Pay payment arrives with this field empty - which is exactly what
+  // happened to four gifts over the 4-7 Sept yard sale, including one for $950.
+  // The gift was logged and numbered; there was simply no address to send to.
+  //
+  // So: fall back to the Customer record Square attached to the payment. Costs one
+  // API call, only on the payments that would otherwise go unacknowledged, and it
+  // is skipped entirely when no token is configured.
+  let donor_email = (pay.buyer_email_address || '').trim().toLowerCase() || null;
+  let donor_name  = (pay.shipping_address?.name || pay.billing_address?.name || '').trim() || null;
+
+  if (!donor_email && pay.customer_id && env.SQUARE_ACCESS_TOKEN) {
+    try {
+      const c = await fetch('https://connect.squareup.com/v2/customers/' + encodeURIComponent(pay.customer_id), {
+        headers: { 'Authorization': 'Bearer ' + env.SQUARE_ACCESS_TOKEN, 'Square-Version': '2025-01-23' }
+      });
+      if (c.ok) {
+        const cust = (await c.json())?.customer || {};
+        donor_email = (cust.email_address || '').trim().toLowerCase() || null;
+        if (!donor_name) {
+          donor_name = [cust.given_name, cust.family_name].filter(Boolean).join(' ').trim() || null;
+        }
+      }
+    } catch (_) { /* the gift is already logged - never fail the webhook over a lookup */ }
+  }
 
   const H = {
     'Content-Type': 'application/json',
@@ -80,8 +106,16 @@ export async function onRequestPost(context) {
     })
   });
 
-  // No email on file: the gift is still logged, and the dashboard can show it needs a mailed receipt.
-  if (!donor_email) return json({ ok: true, logged: true, emailed: false, reason: 'no donor email' });
+  // No email anywhere: the gift is still logged and numbered, and email_error now
+  // says why, so it shows up as an action item instead of an unexplained blank.
+  if (!donor_email) {
+    await fetch(env.SUPABASE_URL + '/rest/v1/donation_receipts?payment_id=eq.' + encodeURIComponent(pay.id), {
+      method: 'PATCH', headers: { ...H, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ email_sent: false,
+        email_error: 'No email: Square collected none at checkout and no customer record had one. Needs a receipt sent by hand.' })
+    });
+    return json({ ok: true, logged: true, emailed: false, reason: 'no donor email' });
+  }
   if (!env.RESEND_API_KEY) return json({ ok: true, logged: true, emailed: false, reason: 'resend not configured' });
 
   const amount = '$' + (amount_cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

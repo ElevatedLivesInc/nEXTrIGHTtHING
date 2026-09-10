@@ -77,6 +77,8 @@
     <button class="tab" data-t="goals">Goals</button>
     <button class="tab" data-t="meetings">Meeting Log</button>
     <button class="tab" data-t="needs">Needs &amp; Services</button>
+    <button class="tab" data-t="funders">Funders</button>
+    <button class="tab" data-t="apps">Funding Apps</button>
     <button class="tab" data-t="work">Work Crew</button>
     <button class="tab" data-t="compliance">Checks &amp; Balances</button>
     <button class="tab" data-t="docs">Documents</button>
@@ -133,6 +135,7 @@
     </div>
     <div class="fld"><label>Title / where it lives</label><input id="d_title" placeholder="e.g. Lease — Redwood 2A — signed original in binder"></div>
     <div class="fld"><label>Attach the file (optional — PDF, photo or Word, up to 25 MB)</label><input id="d_file" type="file" accept=".pdf,.jpg,.jpeg,.png,.heic,.webp,.tif,.tiff,.doc,.docx,.txt"></div>
+    <div class="fld"><label>Notes (what it is for, what is still missing, who has the original)</label><textarea id="d_notes" placeholder="e.g. Signed copy in the binder — client keeps the original. Renewal starts 60 days out."></textarea></div>
     <div id="d_prog" style="font-size:.78rem;color:rgba(255,255,255,.6);margin-bottom:.5rem"></div>
     <button class="btn" onclick="saveDoc(this)">Record document</button>
   </div>
@@ -143,9 +146,78 @@
     <button class="btn" style="margin-top:.8rem" onclick="saveNeeds(this)">Save needs</button>
   </div>
 
+  <div class="seg"><h3>Funding</h3>
+    <div id="cFunding"></div>
+    <button class="btn" style="margin-top:.7rem" onclick="openApp({resident_name:CUR.name,client_id:CUR.client_id})">Log a funding application</button>
+  </div>
+
   <div class="seg" id="hist"></div>
   <div style="margin-top:1.4rem;display:flex;gap:.6rem;justify-content:flex-end">
     <button class="btn ghost" onclick="closeM()">Close</button>
+  </div>
+</div></div>
+
+<!-- FUNDER MODAL. Moved here from the retired Funding Navigator page. -->
+<div class="modal" id="mFunder" style="z-index:80"><div class="sheet">
+  <h2 id="fTitle">Add funder</h2>
+  <div class="rmeta" style="margin-bottom:1rem">Who they are, who qualifies, and exactly how to apply &mdash; so the next case manager does not have to phone around and find out again.</div>
+  <input type="hidden" id="f_id">
+  <div class="fld"><label>Organization name *</label><input id="f_name" placeholder="e.g. The Solida Foundation"></div>
+  <div class="two">
+    <div class="fld"><label>Category</label><select id="f_category">
+      <option value="Scholarship">Scholarship</option><option value="Treatment Funder">Treatment Funder</option>
+      <option value="Housing Assistance">Housing Assistance</option><option value="Grant">Grant</option><option value="Other">Other</option>
+    </select></div>
+    <div class="fld"><label>Typical amount</label><input id="f_amount" placeholder="e.g. $1,000 or 30 days PHP"></div>
+  </div>
+  <div class="fld"><label>Website / application link</label><input id="f_website" placeholder="https://"></div>
+  <div class="three">
+    <div class="fld"><label>Contact name</label><input id="f_cname"></div>
+    <div class="fld"><label>Contact email</label><input id="f_cemail"></div>
+    <div class="fld"><label>Contact phone</label><input id="f_cphone"></div>
+  </div>
+  <div class="fld"><label>Eligibility (who qualifies)</label><textarea id="f_elig"></textarea></div>
+  <div class="fld"><label>Rules / process (deadlines, documents, how to apply)</label><textarea id="f_rules"></textarea></div>
+  <div class="fld"><label style="text-transform:none;letter-spacing:0;font-size:.82rem;color:rgba(255,255,255,.75)"><input type="checkbox" id="f_once" style="width:auto;margin-right:.5rem">One scholarship per client, for life</label></div>
+  <div class="fld"><label style="text-transform:none;letter-spacing:0;font-size:.82rem;color:rgba(255,255,255,.75)"><input type="checkbox" id="f_active" checked style="width:auto;margin-right:.5rem">Active &mdash; currently accepting applications</label></div>
+  <div class="fld"><label>Notes</label><textarea id="f_notes"></textarea></div>
+  <div style="display:flex;gap:.6rem;justify-content:flex-end">
+    <button class="btn ghost" onclick="closeX('mFunder')">Cancel</button>
+    <button class="btn" onclick="saveFunder(this)">Save funder</button>
+  </div>
+</div></div>
+
+<!-- APPLICATION MODAL -->
+<div class="modal" id="mApp" style="z-index:80"><div class="sheet">
+  <h2 id="aTitle">Log a funding application</h2>
+  <div class="rmeta" style="margin-bottom:1rem">The date coverage <b>ends</b> is the one that matters. It is where the next application has to start.</div>
+  <input type="hidden" id="a_id">
+  <div class="two">
+    <div class="fld"><label>Client name *</label><input id="a_res" list="clientlist"><datalist id="clientlist"></datalist></div>
+    <div class="fld"><label>Funder *</label><input id="a_fund" list="funderlist"><datalist id="funderlist"></datalist></div>
+  </div>
+  <div class="two">
+    <div class="fld"><label>Status</label><select id="a_status">
+      <option value="applied">Applied &mdash; awaiting decision</option><option value="approved">Approved</option>
+      <option value="denied">Denied</option><option value="waitlist">Waitlist</option><option value="expired">Expired</option>
+    </select></div>
+    <div class="fld"><label>Level of care</label><select id="a_loc">
+      <option value="">&mdash;</option><option>PHP</option><option>IOP</option><option>General Outpatient</option><option>Sober Living</option><option>Detox</option>
+    </select></div>
+  </div>
+  <div class="two">
+    <div class="fld"><label>Applied date</label><input id="a_applied" type="date"></div>
+    <div class="fld"><label>Decision date</label><input id="a_decision" type="date"></div>
+  </div>
+  <div class="two">
+    <div class="fld"><label>Coverage starts</label><input id="a_start" type="date"></div>
+    <div class="fld"><label>Coverage ends (the cliff)</label><input id="a_end" type="date"></div>
+  </div>
+  <div class="fld"><label>Amount</label><input id="a_amount" placeholder="750"></div>
+  <div class="fld"><label>Notes (denial reason, next funder to try, who you spoke to)</label><textarea id="a_notes"></textarea></div>
+  <div style="display:flex;gap:.6rem;justify-content:flex-end">
+    <button class="btn ghost" onclick="closeX('mApp')">Cancel</button>
+    <button class="btn" onclick="saveApp(this)">Save application</button>
   </div>
 </div></div>
 
@@ -179,6 +251,23 @@ function untriedFunders(c){
   const touched=new Set(has.map(a=>a.funder_name));
   const spent=new Set(has.filter(a=>['approved','expired'].includes(a.status)).map(a=>a.funder_name));
   return FUNDERS.filter(f=>f.active!==false&&!touched.has(f.name)&&!(f.once_per_client&&spent.has(f.name)));
+}
+
+/* Funding. This used to be its own page. It is here because the person who
+   chases a scholarship is the same person who carries the case, and the date
+   coverage ends is a case-management deadline like any other. */
+const APP_CHIP={approved:'ok',applied:'info',waitlist:'info',denied:'bad',expired:'warn'};
+function appCliff(a){const d=daysUntil(a.coverage_end);return (a.status==='approved'&&d!==null&&d<=30&&d>=0)?d:null;}
+/* Whoever already carries this person's case. Matched by name, the same way
+   every other funding row on the site has always been matched. */
+function cmFor(name){
+  const c=CLIENTS.find(x=>(x.name||'').trim().toLowerCase()===(name||'').trim().toLowerCase());
+  return c&&c.case_manager?c.case_manager:null;
+}
+/* Who has already spent a once-per-client funder. Nobody gets a second bite,
+   so the directory says so before somebody fills out the form twice. */
+function usedOnce(funderName){
+  return APPS.filter(a=>a.funder_name===funderName&&['approved','expired'].includes(a.status)).map(a=>a.resident_name);
 }
 
 
@@ -220,7 +309,9 @@ function stats(){
     ['<b>'+stale.length+'</b><span>Not talked to in 7d</span>'],
     ['<b>'+od+'</b><span>Follow-ups overdue</span>'],
     ['<b>'+openGoals+'</b><span>Open goals</span>'],
-    ['<b>'+noCM+'</b><span>No case manager</span>']
+    ['<b>'+noCM+'</b><span>No case manager</span>'],
+    ['<b>'+APPS.filter(a=>a.status==='applied').length+'</b><span>Funding pending</span>'],
+    ['<b>'+APPS.filter(a=>appCliff(a)!==null).length+'</b><span>Coverage ends 30d</span>']
   ].map(x=>'<div class="stat">'+x+'</div>').join('');
   g('stats').style.display='grid';
 }
@@ -323,6 +414,68 @@ function render(){
     return;
   }
 
+  if(TAB==='funders'){
+    const rows=FUNDERS.filter(f=>!Q||((f.name||'')+' '+(f.category||'')+' '+(f.eligibility||'')+' '+(f.rules||'')).toLowerCase().includes(Q.toLowerCase()));
+    const live=FUNDERS.filter(f=>f.active!==false).length;
+    v.innerHTML='<div class="rows">'
+      +'<div class="row" style="background:rgba(201,169,110,.08);cursor:default"><div class="rname">'+live+' funder'+(live===1?'':'s')+' taking applications</div>'
+      +'<div class="rmeta">Every funder with its real rules, its real contact and its real process, so nobody has to phone around and learn it twice. Marked one-per-client means one per client for life &mdash; the directory names who already used it.</div>'
+      +'<div class="rside"><button class="btn" onclick="openFunder()">+ Add funder</button></div></div>'
+      +(rows.length?rows.map(f=>{
+        const used=f.once_per_client?usedOnce(f.name):[];
+        return '<div class="row" style="cursor:default'+(f.active===false?';opacity:.55':'')+'">'
+        +'<div class="rname">'+esc(f.name)+'</div>'
+        +'<div class="rmeta">'
+        +(f.category?'<span class="chip info">'+esc(f.category)+'</span>':'')
+        +(f.once_per_client?'<span class="chip warn">1 per client</span>':'')
+        +(f.active===false?'<span class="chip bad">not taking applications</span>':'')
+        +(f.typical_amount?'<br><b>Typical:</b> '+esc(f.typical_amount):'')
+        +(f.website?'<br><b>Apply:</b> <a href="'+esc(f.website)+'" target="_blank" rel="noopener" style="color:var(--sandl)">'+esc(String(f.website).slice(0,60))+'</a>':'')
+        +((f.contact_name||f.contact_email||f.contact_phone)?'<br><b>Contact:</b> '+esc(f.contact_name||'')
+          +(f.contact_phone?' · <a href="tel:'+esc(String(f.contact_phone).replace(/[^0-9+]/g,''))+'" style="color:var(--sandl)">'+esc(f.contact_phone)+'</a>':'')
+          +(f.contact_email?' · <a href="mailto:'+esc(f.contact_email)+'" style="color:var(--sandl)">'+esc(f.contact_email)+'</a>':''):'')
+        +(f.eligibility?'<br><b>Eligibility:</b> '+esc(f.eligibility):'')
+        +(f.rules?'<br><b>Process:</b> '+esc(f.rules):'')
+        +(used.length?'<br><span class="chip bad">already used by '+esc(used.join(', '))+'</span>':'')
+        +(f.notes?'<br><span style="opacity:.62">'+esc(f.notes)+'</span>':'')
+        +'</div>'
+        +'<div class="rside"><button class="btn ghost" onclick="openFunderById(\''+esc(f.id)+'\')">Edit</button>'
+        +'<br><button class="btn ghost" style="margin-top:.4rem" onclick="openApp({funder_name:'+JSON.stringify(f.name||'').replace(/"/g,'&quot;')+'})">Apply for a client</button>'
+        +'<br><button class="btn ghost" style="margin-top:.4rem" onclick="delF(\'funder\',\''+esc(f.id)+'\')">Delete</button></div></div>';
+      }).join(''):'<div class="note">No funders yet. Add the first one and every case manager after you inherits it.</div>')
+      +'</div>';
+    return;
+  }
+
+  if(TAB==='apps'){
+    const rows=APPS.filter(a=>!Q||((a.resident_name||'')+' '+(a.funder_name||'')+' '+(a.status||'')).toLowerCase().includes(Q.toLowerCase()));
+    const pending=APPS.filter(a=>a.status==='applied').length;
+    const cliffs=APPS.filter(a=>appCliff(a)!==null);
+    v.innerHTML='<div class="rows">'
+      +'<div class="row" style="background:rgba(201,169,110,.08);cursor:default"><div class="rname">'+pending+' awaiting a decision</div>'
+      +'<div class="rmeta">'+(cliffs.length?'<span class="chip warn">'+cliffs.length+' coverage'+(cliffs.length===1?'':'s')+' ending within 30 days</span> &mdash; the next application starts now, not on the last day.':'Nothing falls off a cliff in the next 30 days.')+'</div>'
+      +'<div class="rside"><button class="btn" onclick="openApp()">+ Log application</button></div></div>'
+      +(rows.length?rows.map(a=>{
+        const d=appCliff(a), cm=cmFor(a.resident_name);
+        return '<div class="row" style="cursor:default'+(d!==null?';border-color:rgba(240,217,160,.5)':'')+'">'
+        +'<div class="rname">'+esc(a.resident_name)+'</div>'
+        +'<div class="rmeta"><span class="chip '+(APP_CHIP[a.status]||'info')+'">'+esc(a.status)+'</span>'
+        +(a.level_of_care?'<span class="chip info">'+esc(a.level_of_care)+'</span>':'')
+        +(d!==null?'<span class="chip warn">coverage ends in '+d+'d</span>':'')
+        +'<br><b>Funder:</b> '+esc(a.funder_name)
+        +'<br><b>Case manager:</b> '+(cm?esc(cm):'<span class="chip warn">unassigned</span>')
+        +(a.amount?'<br><b>Amount:</b> $'+Number(a.amount).toLocaleString('en-US'):'')
+        +(a.applied_date?'<br><b>Applied:</b> '+esc(a.applied_date)+(a.decision_date?' · decided '+esc(a.decision_date):''):'')
+        +((a.coverage_start||a.coverage_end)?'<br><b>Coverage:</b> '+esc(a.coverage_start||'?')+' &rarr; '+esc(a.coverage_end||'?'):'')
+        +(a.notes?'<br><span style="opacity:.65;font-style:italic">'+esc(a.notes)+'</span>':'')
+        +'</div>'
+        +'<div class="rside"><button class="btn ghost" onclick="openAppById(\''+esc(a.id)+'\')">Edit</button>'
+        +'<br><button class="btn ghost" style="margin-top:.4rem" onclick="delF(\'application\',\''+esc(a.id)+'\')">Delete</button></div></div>';
+      }).join(''):'<div class="note">No applications logged yet. Open a funder and apply for somebody.</div>')
+      +'</div>';
+    return;
+  }
+
   if(TAB==='work'){
     /* Rent A Husband signups. A name on this list is somebody who asked for
        work, which is a different and better problem than somebody who has not.
@@ -386,7 +539,7 @@ function render(){
     +'<div class="rmeta"><span class="chip info">'+esc(x.doc_type)+'</span> '+esc(x.title||'(untitled)')
     +(x.signed_on?'<br><span style="opacity:.7">signed '+esc(x.signed_on)+'</span>':'')
     +(exp!==null?(' <span class="chip '+(exp<0?'bad':(exp<30?'warn':'ok'))+'">'+(exp<0?'expired':'expires in '+exp+'d')+'</span>'):'')
-    +(x.file_path?' <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#c9a96e;font-size:.78rem;text-decoration:none">open file &rarr;</a>':' <span class="chip warn">no file attached</span>')+'</div>'
+    +(x.file_path?' <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#c9a96e;font-size:.78rem;text-decoration:none">open file &rarr;</a>':' <span class="chip warn">no file attached</span>')+(x.notes?'<br><span style="opacity:.7;font-style:italic">'+esc(x.notes)+'</span>':'')+'</div>'
     +'<div class="rside">'+esc(x.uploaded_by||'')+'</div></div>';
   }).join(''):'<div class="note">No documents recorded yet.</div>')+'</div>';
 }
@@ -403,7 +556,18 @@ function openC(id){
   g('n_date').value=today(); g('m_date').value=today();
   g('c_followup').value=c.case_followup_date||'';
   { const nd=c.case_needs||{}; NEED_KEYS.forEach(k=>{const el=g('need_'+k); if(el) el.value=nd[k]||'';}); }
-  ['n_sum','n_next','n_due','g_goal','g_target','d_title','d_signed','d_exp','m_by'].forEach(i=>g(i).value='');
+  ['n_sum','n_next','n_due','g_goal','g_target','d_title','d_signed','d_exp','d_notes','m_by'].forEach(i=>g(i).value='');
+  const fa=mine(APPS,c);
+  g('cFunding').innerHTML=(fa.length?fa.map(a=>{
+      const d=appCliff(a);
+      return '<div class="item"><span class="chip '+(APP_CHIP[a.status]||'info')+'">'+esc(a.status)+'</span> '+esc(a.funder_name)
+      +(a.amount?' · $'+Number(a.amount).toLocaleString('en-US'):'')
+      +(d!==null?' <span class="chip warn">coverage ends in '+d+'d</span>':'')
+      +((a.coverage_start||a.coverage_end)?'<br><span class="when">'+esc(a.coverage_start||'?')+' &rarr; '+esc(a.coverage_end||'?')+'</span>':'')
+      +(a.notes?'<br><span style="opacity:.65">'+esc(a.notes)+'</span>':'')
+      +' <a href="#" onclick="event.preventDefault();openAppById(\''+esc(a.id)+'\')" style="color:var(--sand);font-size:.76rem">edit</a></div>';
+    }).join(''):'<div class="item">No funding application logged for this person yet.</div>')
+    +(uf.length?'<div class="item"><b>Never tried:</b> '+uf.map(f=>esc(f.name)).join(', ')+'</div>':'');
   const ns=mine(NOTES,c).slice(0,12), gs=mine(GOALS,c), ms=mine(MEET,c).slice(0,12), ds=mine(DOCS,c);
   g('hist').innerHTML='<h3>History</h3>'
     +(ns.length?ns.map(n=>'<div class="item"><span class="when">'+esc(n.note_date||'')+' · '+esc(n.contact_type||'')+' · '+esc(n.author||'')+'</span><br>'+esc(n.summary)
@@ -411,7 +575,8 @@ function openC(id){
     +(gs.length?'<h3 style="margin-top:1rem">Goals</h3>'+gs.map(x=>'<div class="item"><span class="chip info">'+esc(x.domain)+'</span> '+esc(x.goal)+' <span class="chip '+(x.status==='met'?'ok':'warn')+'">'+esc(x.status)+'</span></div>').join(''):'')
     +(ms.length?'<h3 style="margin-top:1rem">Meetings</h3>'+ms.map(x=>'<div class="item">'+esc(x.meeting_date)+' — '+esc(x.kind)+(x.verified_by?' (verified by '+esc(x.verified_by)+')':'')+'</div>').join(''):'')
     +(ds.length?'<h3 style="margin-top:1rem">Documents</h3>'+ds.map(x=>'<div class="item">'+esc(x.doc_type)+' — '+esc(x.title||'')+(x.signed_on?' · signed '+esc(x.signed_on):'')
-      +(x.file_path?' · <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" style="color:#c9a96e">open file &rarr;</a>':'')+'</div>').join(''):'');
+      +(x.file_path?' · <a href="/case/file?id='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener" style="color:#c9a96e">open file &rarr;</a>':'')
+      +(x.notes?'<br><span style="opacity:.7;font-style:italic">'+esc(x.notes)+'</span>':'')+'</div>').join(''):'');
   g('mClient').classList.add('open');
 }
 function closeM(){g('mClient').classList.remove('open');}
@@ -462,8 +627,9 @@ async function saveDoc(btn){
   }
   const okDone=await send({what:'document',resident_name:CUR.name,client_id:CUR.client_id,house_name:CUR.house_name,doc_type:g('d_type').value,
     title:g('d_title').value,signed_on:g('d_signed').value,expires_on:g('d_exp').value,
+    notes:g('d_notes').value,
     file_path:file_path,mime_type:mime,size_bytes:size},btn);
-  if(okDone){ g('d_file').value=''; prog.textContent=''; }
+  if(okDone){ g('d_file').value=''; g('d_notes').value=''; prog.textContent=''; }
 }
 
 function saveNeeds(b){
@@ -501,6 +667,92 @@ async function saveComp(btn){
   if(okDone) render();
 }
 
+/* ---- Funding: directory and applications ---- */
+function closeX(id){g(id).classList.remove('open');}
+
+function openFunder(f){
+  f=f||{};
+  g('fTitle').textContent=f.id?'Edit funder':'Add funder';
+  g('f_id').value=f.id||'';
+  g('f_name').value=f.name||'';
+  g('f_category').value=f.category||'Scholarship';
+  g('f_amount').value=f.typical_amount||'';
+  g('f_website').value=f.website||'';
+  g('f_cname').value=f.contact_name||'';
+  g('f_cemail').value=f.contact_email||'';
+  g('f_cphone').value=f.contact_phone||'';
+  g('f_elig').value=f.eligibility||'';
+  g('f_rules').value=f.rules||'';
+  g('f_notes').value=f.notes||'';
+  g('f_once').checked=!!f.once_per_client;
+  g('f_active').checked=f.active!==false;
+  g('mFunder').classList.add('open');
+}
+function openFunderById(id){const f=FUNDERS.find(x=>String(x.id)===String(id));if(f)openFunder(f);}
+
+function openApp(a){
+  a=a||{};
+  g('aTitle').textContent=a.id?'Edit application':'Log a funding application';
+  g('a_id').value=a.id||'';
+  g('a_res').value=a.resident_name||'';
+  g('a_fund').value=a.funder_name||'';
+  g('a_status').value=a.status||'applied';
+  g('a_loc').value=a.level_of_care||'';
+  g('a_applied').value=a.applied_date||(a.id?'':today());
+  g('a_decision').value=a.decision_date||'';
+  g('a_start').value=a.coverage_start||'';
+  g('a_end').value=a.coverage_end||'';
+  g('a_amount').value=a.amount||'';
+  g('a_notes').value=a.notes||'';
+  g('mApp').dataset.cid=a.client_id||'';
+  g('mApp').classList.add('open');
+}
+function openAppById(id){const a=APPS.find(x=>String(x.id)===String(id));if(a)openApp(a);}
+
+/* Same door as every other write on this page: /case/update, gated by the
+   case-management roster. Nothing here can reach a money column. */
+async function sendF(body,btn,modalId){
+  const old=btn.textContent; btn.textContent='Saving…'; btn.disabled=true;
+  try{
+    const r=await fetch('/case/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json().catch(()=>({}));
+    btn.disabled=false; btn.textContent=old;
+    if(!r.ok||d.ok===false){alert('Save failed'+(d.error?': '+d.error:''));return false;}
+    if(modalId) closeX(modalId);
+    await load(true);
+    if(CUR&&g('mClient').classList.contains('open')) openC(CUR.id);
+    return true;
+  }catch(_){btn.disabled=false;btn.textContent=old;alert('Save failed — check your connection.');return false;}
+}
+function saveFunder(b){
+  if(!g('f_name').value.trim()) return alert('The funder needs a name.');
+  sendF({what:'funder',id:g('f_id').value||undefined,name:g('f_name').value,category:g('f_category').value,
+    website:g('f_website').value,contact_name:g('f_cname').value,contact_email:g('f_cemail').value,
+    contact_phone:g('f_cphone').value,eligibility:g('f_elig').value,rules:g('f_rules').value,
+    typical_amount:g('f_amount').value,once_per_client:g('f_once').checked,active:g('f_active').checked,
+    notes:g('f_notes').value},b,'mFunder');
+}
+function saveApp(b){
+  const who=g('a_res').value.trim(), fund=g('a_fund').value.trim();
+  if(!who||!fund) return alert('A client and a funder, or it is not an application yet.');
+  const match=CLIENTS.find(c=>(c.name||'').trim().toLowerCase()===who.toLowerCase());
+  sendF({what:'application',id:g('a_id').value||undefined,resident_name:who,
+    client_id:g('mApp').dataset.cid||(match?match.client_id:null),funder_name:fund,
+    status:g('a_status').value,level_of_care:g('a_loc').value,applied_date:g('a_applied').value,
+    decision_date:g('a_decision').value,coverage_start:g('a_start').value,coverage_end:g('a_end').value,
+    amount:g('a_amount').value,notes:g('a_notes').value},b,'mApp');
+}
+async function delF(what,id){
+  if(!confirm('Delete this record permanently?')) return;
+  try{
+    const r=await fetch('/case/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({what:what,action:'delete',id:id})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||d.ok===false) return alert('Delete failed'+(d.error?': '+d.error:''));
+    await load(true);
+    if(CUR&&g('mClient').classList.contains('open')) openC(CUR.id);
+  }catch(_){ alert('Delete failed — check your connection.'); }
+}
+
 function showWelcome(status){
   const el=g('note'); el.style.display='block';
   el.innerHTML='<div style="max-width:520px;margin:2rem auto;text-align:center">'
@@ -526,9 +778,21 @@ async function load(quiet){
     CLIENTS=d.clients||[];NOTES=d.notes||[];GOALS=d.goals||[];MEET=d.meetings||[];
     DOCS=d.documents||[];APPS=d.applications||[];FUNDERS=d.funders||[];WORK=d.work||[];COMP=d.compliance||[];
     g('viewer').textContent='Signed in as '+(d.viewer||'');
+    g('funderlist').innerHTML=FUNDERS.filter(f=>f.active!==false).map(f=>'<option value="'+esc(f.name)+'">').join('');
+    g('clientlist').innerHTML=CLIENTS.filter(active).map(c=>'<option value="'+esc(c.name)+'">').join('');
     g('tabs').style.display='flex'; stats(); render();
   }catch(_){ if(!quiet) g('note').textContent='Could not load. Check your connection and reload.'; }
 }
+/* /case-management#funding and #apps come in from Mission Control's funding
+   alert and from Housing, so those links land on the funding view rather than
+   on the caseload with the person left to hunt for the tab. */
+(function(){
+  const h=(location.hash||'').replace('#','');
+  const want=h==='funding'?'funders':(h==='apps'||h==='applications'?'apps':null);
+  if(!want) return;
+  TAB=want;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.t===want));
+})();
 buildNeedsUI();
 load();
 </script>

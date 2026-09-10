@@ -8,7 +8,13 @@
 // house separated, so do not merge them for convenience.
 
 export const ROSTER = {
-  'funding':          ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com','rob@nextrighthing.com'],
+  // The Funding Navigator page retired on 28 Aug 2026 - the funder directory
+  // and the applications are tabs inside Case Management now, so this list is
+  // deliberately identical to 'case-management'. Rob is not on it: he reads
+  // who has applied and which funders are untried from Housing, which is his
+  // screen, and he does not write funding records. The /funding/* endpoints
+  // are kept only so an old bookmark cannot 500 - nothing calls them.
+  'funding':          ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
   'housing':          ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','cateo@nextrighthing.com','rob@nextrighthing.com','bailey@nextrighthing.com'],
   'intake-queue':     ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','bailey@nextrighthing.com','cateo@nextrighthing.com'],
   'in-kind-report':   ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
