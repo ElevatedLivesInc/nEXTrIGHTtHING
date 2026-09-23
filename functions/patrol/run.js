@@ -57,7 +57,7 @@ export async function onRequest(context) {
 
   // ---------- INTAKE ----------
   const open = intake.filter(r=>(r.status||'new')!=='closed');
-  const urgent = open.filter(r=>['today','this week'].includes((r.last_use||'').toLowerCase()));
+  const urgent = open.filter(r=>['today','this week'].includes((r.urgency||'').toLowerCase()));
   const urgentStale = urgent.filter(r=>(r.status||'new')==='new' && age(r.created_at)>=1);
   const newOvernight = intake.filter(r=>age(r.created_at)!==null && age(r.created_at)<=1);
   const silent = open.filter(r=>(r.status||'new')!=='new' && age(r.created_at)>=14 && (r.status!=='intaked'));

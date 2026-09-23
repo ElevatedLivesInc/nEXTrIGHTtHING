@@ -28,7 +28,11 @@ export async function onRequestPost(context) {
       insurance:S(body.insurance,60), insurance_company:S(body.insurance_company,120),
       needs_housing:S(body.needs_housing,20), probation_parole:S(body.probation_parole,30),
       employment_status:S(body.employment_status,30),
-      primary_substance:S(body.primary_substance,120), last_use:S(body.last_use,40),
+      // urgency ("how soon are you hoping to start") is the triage signal.
+      // primary_substance and last_use are NOT accepted here - this database
+      // is not configured to hold health information, and a phone/walk-in
+      // entry must not be a back door around that.
+      urgency:S(body.urgency,40),
       motivation:S(body.motivation,500), best_time:S(body.best_time,20),
       message:S(body.message,2000), source:S(body.source,40)||'phone',
       referred_by:S(body.referred_by,200), status:'new'

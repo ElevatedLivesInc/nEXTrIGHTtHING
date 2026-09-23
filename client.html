@@ -106,8 +106,7 @@ function render(D){
       ['As',i.reaching_as==='family'?'A family member':'Themselves'],
       ['Source',esc([i.source,i.referred_by].filter(Boolean).join(' — '))],
       ['Insurance at intake',esc([i.insurance,i.insurance_company].filter(Boolean).join(' — '))],
-      ['Primary substance',esc(i.primary_substance||'')],
-      ['Last use at intake',esc(i.last_use||'')],
+      ['Hoping to start',esc(i.urgency||'')],
       ['Probation / parole',esc(i.probation_parole||'')],
       ['In their words',i.motivation?'<em>&ldquo;'+esc(i.motivation)+'&rdquo;</em>':'']
     ]));
