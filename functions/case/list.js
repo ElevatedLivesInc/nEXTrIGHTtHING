@@ -12,6 +12,7 @@
 // management goal, not a debt to the house.
 import { getAuthedEmail } from '../_lib/auth.js';
 import { allowedFor } from '../_lib/roster.js';
+import { TENANT } from '../_lib/tenant-config.js';
 
 const RESIDENT_COLS = [
   'id','client_id','name','house_name','room','status','move_in_date','move_out_date',
@@ -25,7 +26,9 @@ const RESIDENT_COLS = [
   'payer_type','funding_source','funding_end',
   // Shared with the Case Management tab on Housing: same columns, two views,
   // so the two screens can never drift out of sync.
-  'case_needs','case_followup_date'
+  'case_needs','case_followup_date',
+  // Health insurance renewal tracking (Oct 2026) - the 30-day reminder.
+  'insurance_carrier','insurance_renewal_date','insurance_receipt'
 ].join(',');
 
 export async function onRequestGet(context) {
@@ -55,5 +58,5 @@ export async function onRequestGet(context) {
     get('compliance_items?select=*&order=expires_on.asc&limit=500')
   ]);
 
-  return json({ viewer:who, clients, notes, goals, meetings, documents:docs, applications:apps, funders, work, compliance });
+  return json({ viewer:who, links:(TENANT.caseLinks||[]), clients, notes, goals, meetings, documents:docs, applications:apps, funders, work, compliance });
 }

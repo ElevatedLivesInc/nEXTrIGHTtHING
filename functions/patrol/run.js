@@ -50,6 +50,9 @@ export async function onRequest(context) {
     get('documents?select=resident_name,doc_type,title,expires_on&limit=2000'),
     get('work_signups?select=*&limit=500')
   ]);
+  // Square tax receipts that never went out (Square often passes no buyer email).
+  // Eight sat unsent for weeks before anyone noticed - this keeps that visible.
+  const donUnsent = await get('donation_receipts?select=receipt_no,donor_name,donor_email,amount_cents,created_at&email_sent_at=is.null&order=created_at.desc&limit=100');
 
   const now=Date.now(), DAY=86400000;
   const age=d=>d? Math.floor((now-new Date(d).getTime())/DAY) : null;
@@ -145,7 +148,8 @@ export async function onRequest(context) {
 
   const donationBody = wrap('Donations Brief',
     sec('Codes issued but never redeemed (7+ days)', unredeemed.map(r=>li('<b>'+r.donor_name+'</b> &mdash; '+r.code+' &middot; '+(r.description||'')))) +
-    sec('Donations missing an email address', noEmail.slice(0,10).map(r=>li(r.donor_name+' &mdash; no email captured, no thank-you possible')))
+    sec('Donations missing an email address', noEmail.slice(0,10).map(r=>li(r.donor_name+' &mdash; no email captured, no thank-you possible'))) +
+    sec('Tax receipts never emailed (Square gifts)', donUnsent.map(r=>li('<b>'+(r.receipt_no||'receipt')+'</b> &mdash; '+(r.donor_name||'donor')+' &middot; $'+((Number(r.amount_cents)||0)/100).toFixed(2)+(r.donor_email?'':' &middot; Square sent no email - look the donor up in Square'))))
   );
 
   const houseLines = Object.keys(byHouse).map(k=>li(k+': '+byHouse[k].open+' open of '+byHouse[k].beds+' beds'));
@@ -213,12 +217,16 @@ export async function onRequest(context) {
   const noMeetings= active.filter(r=>((Number(r.house_meetings)||0)+(Number(r.peer_meetings)||0))===0);
   const houseWins = active.filter(r=>((Number(r.house_meetings)||0)+(Number(r.peer_meetings)||0))>=4);
   const nm = r => (r.name||'Resident') + (r.house_name?' &middot; '+r.house_name:'');
+  const evicting = active.filter(r=>r.eviction_pending);
+  const insSoon  = active.filter(r=>r.insurance_renewal_date && until(r.insurance_renewal_date)!==null && until(r.insurance_renewal_date)<=30);
 
   const houseBody = wrap('House Brief',
     (houseWins.length? '<div style="background:#eef7f1;border-left:3px solid #78c896;padding:.8rem 1rem;border-radius:0 6px 6px 0;margin-bottom:1rem">'
       +'<div style="font-family:Georgia,serif;color:#2f6b4a;font-size:1.02rem;margin-bottom:.3rem">Doing the work</div>'
       +'<div style="font-size:.88rem;color:#3b5c4a">'+houseWins.slice(0,6).map(r=>r.name).join(', ')
       +' &mdash; four or more meetings this month. Worth saying out loud to them.</div></div>' : '') +
+    sec('Eviction pending', evicting.map(r=>li('<b>'+nm(r)+'</b>'+(r.eviction_link?' &middot; paperwork linked on Housing':' &middot; no paperwork linked yet')))) +
+    sec('Health insurance renewing within 30 days', insSoon.map(r=>li(nm(r)+' &mdash; '+(r.insurance_carrier||'carrier not recorded')+(until(r.insurance_renewal_date)<0?' &middot; <b>renewal date has passed</b>':' renews '+r.insurance_renewal_date)))) +
     sec('On notice &mdash; decide today', onNotice.map(r=>li('<b>'+nm(r)+'</b>'+(r.warning_reason?' &mdash; '+r.warning_reason:'')+' &middot; '+(r.warnings||0)+' warnings'))) +
     sec('Two or more warnings', warned.map(r=>li(nm(r)+' &mdash; '+(r.warnings||0)+' warnings'+(r.last_warning?', last on '+r.last_warning:'')))) +
     sec('Nobody has talked to them in 2 weeks', quietRes.slice(0,12).map(r=>li(nm(r)+' &mdash; last contact '+(r.last_talked||'never recorded')))) +
@@ -294,7 +302,7 @@ export async function onRequest(context) {
 
   const messages = [
     { to:TEAM.intake, subject:'Intake Brief &mdash; '+urgentStale.length+' urgent, '+newOvernight.length+' new', html:intakeBody },
-    { to:TEAM.donations, subject:'Donations Brief &mdash; '+unredeemed.length+' codes awaiting receipts', html:donationBody },
+    { to:TEAM.donations, subject:'Donations Brief &mdash; '+donUnsent.length+' tax receipts unsent, '+unredeemed.length+' codes awaiting receipts', html:donationBody },
     { to:TEAM.housing, subject:'House Brief &mdash; '+onNotice.length+' on notice, '+openBeds.length+' open beds', html:houseBody },
     { to:TEAM.funding, subject:'Funding Brief &mdash; '+expiring.length+' coverage'+(expiring.length===1?'':'s')+' ending within 30 days', html:fundingBody },
     { to:TEAM.leadership, subject:'Incident & Compliance Brief &mdash; '+incCritOpen.length+' critical unreported, '+voiceNew.length+' Speak Up', html:incidentBody },
