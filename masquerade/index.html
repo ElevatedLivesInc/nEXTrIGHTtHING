@@ -7,7 +7,10 @@
 <meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, 6–10 PM, West Jordan, UT. Dinner, live auction, music and a free opportunity drawing benefiting The Right Thing in Recovery, a 501(c)(3) nonprofit.">
 <meta property="og:title" content="Flannel to Formal Masquerade Fundraiser">
 <meta property="og:description" content="Fri Nov 13 · 6–10 PM · 7669 S Redwood Rd, West Jordan. Dinner included. Reserve your seat or become a sponsor.">
-<meta property="og:image" content="https://nextrighthing.com/masquerade/flyer-sponsors.jpg">
+<meta property="og:image" content="https://nextrighthing.com/masquerade/share.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="https://nextrighthing.com/masquerade/"><meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Raleway:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -176,6 +179,10 @@ h2.fancy{font-family:"Great Vibes",cursive;font-weight:400;font-size:clamp(2.6re
 .tier .btn.ghost{color:#4c1d95;border-color:#7c3aed}
 .tier.top{box-shadow:0 0 0 2px var(--gold),0 14px 40px rgba(201,169,110,.25)}
 .top nav{scrollbar-width:none}.top nav::-webkit-scrollbar{display:none}
+.share{text-align:center;background:linear-gradient(160deg,rgba(124,58,237,.28),rgba(201,169,110,.08));border:1px solid rgba(185,167,232,.4);border-radius:22px;padding:30px 20px}
+.share .row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px}
+.share .row a,.share .row button{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;border:1px solid rgba(230,207,155,.55);background:rgba(7,11,31,.5);color:var(--text);font:inherit;font-weight:700;font-size:.92rem;text-decoration:none;cursor:pointer;min-height:46px}
+.share .row a:hover,.share .row button:hover{border-color:var(--gold);color:var(--gold2)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -209,6 +216,7 @@ window.GALA = {
     <a href="#sponsor">Sponsor</a>
     <a href="#inkind">Donate</a>
     <a href="#drawing">Drawing</a>
+    <a href="#share">Share</a>
   </nav>
 </div></div>
 
@@ -262,6 +270,21 @@ window.GALA = {
     <div class="info-card"><div class="k">Benefits</div><div class="v">The Right Thing in Recovery</div><p>A 501(c)(3) nonprofit providing recovery opportunities, sober activities, transportation, peer support and resources.</p></div>
     <div class="info-card"><div class="k">Sponsors</div><div class="v">From $100</div><p>Five levels plus in-kind gifts of $100+. <a href="#sponsor">See levels →</a></p></div>
     <div class="info-card"><div class="k">Questions</div><div class="v">Ryan Anderson</div><p><a class="cname-mail2" href="mailto:ryan@nextrighthing.com">ryan@nextrighthing.com</a> · <a href="tel:8018164977">801-816-4977</a></p></div>
+  </div>
+</div></section>
+
+<!-- share -->
+<section id="share" style="padding-top:10px"><div class="wrap">
+  <div class="share">
+    <h2 class="fancy"><span class="brush">Pass It On</span></h2>
+    <p class="lead" style="margin:10px auto 0">One share can fill a seat, land a sponsor or bring in an auction item. Send it to the people who show up for others.</p>
+    <div class="row">
+      <button type="button" id="sh-native">📲 Share</button>
+      <a id="sh-fb" target="_blank" rel="noopener">Facebook</a>
+      <a id="sh-sms">💬 Text it</a>
+      <a id="sh-mail">✉️ Email it</a>
+      <button type="button" id="sh-copy">🔗 Copy link</button>
+    </div>
   </div>
 </div></section>
 
@@ -479,7 +502,7 @@ window.GALA = {
       <a href="flyer-event.jpg" download><img src="flyer-event.jpg" alt="Event flyer: Flannel to Formal Masquerade Fundraiser open house, Friday November 13 2026, 6 to 10 PM, 7669 S Redwood Rd, tickets $30 individual, $50 couples, dinner included" loading="lazy"></a>
       <a href="flyer-sponsors.jpg" download><img src="flyer-sponsors.jpg" alt="Sponsor opportunities flyer with five sponsorship levels from $100 to $2,500 and up, plus in-kind sponsorship" loading="lazy"></a>
     </div>
-    <p style="margin-top:12px"><button class="btn small ghost" type="button" id="share">Share this page</button></p>
+    <p style="margin-top:12px"><a class="btn small ghost" href="#share">Share this page</a></p>
   </div>
 </div></section>
 
@@ -530,8 +553,17 @@ $$('[data-ics]').forEach(b=>b.onclick=()=>{
 });
 
 /* share */
-$('#share').onclick=async()=>{ const d={title:'Flannel to Formal Masquerade',text:'Fri Nov 13 · 6–10 PM · West Jordan. Dinner included — join us!',url:location.href};
-  try{ if(navigator.share) await navigator.share(d); else { await navigator.clipboard.writeText(location.href); $('#share').textContent='Link copied ✓'; } }catch(e){} };
+(function(){const url='https://nextrighthing.com/masquerade/';
+  const msg='You should come to this with me: the Flannel to Formal Masquerade, Fri Nov 13 in West Jordan. Dinner, live auction, music and a free drawing, all for recovery. $30 a seat: ';
+  $('#sh-fb').href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url);
+  $('#sh-sms').href='sms:?&body='+encodeURIComponent(msg+url);
+  $('#sh-mail').href='mailto:?subject='+encodeURIComponent('Come to the Flannel to Formal Masquerade with me')+'&body='+encodeURIComponent(msg+url);
+  const copy=async b=>{try{await navigator.clipboard.writeText(url);b.textContent='Link copied ✓';}catch(e){window.prompt('Copy this link:',url);}};
+  $('#sh-copy').onclick=e=>copy(e.currentTarget);
+  $('#sh-native').onclick=async e=>{ if(navigator.share){ try{await navigator.share({title:'Flannel to Formal Masquerade',text:msg,url});}catch(_){} } else copy(e.currentTarget); };
+})();
+/* share */
+
 
 /* tiers */
 const STAR='<svg class="star" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs><path d="M50 6 62 38 96 39 69 60 79 93 50 74 21 93 31 60 4 39 38 38Z" fill="url(#sg)" stroke="#4c1d95" stroke-width="2"/><g fill="#fff" opacity=".85"><circle cx="50" cy="22" r="2.4"/><circle cx="50" cy="34" r="2.4"/><circle cx="26" cy="43" r="2.2"/><circle cx="74" cy="43" r="2.2"/><circle cx="35" cy="74" r="2.2"/><circle cx="65" cy="74" r="2.2"/><circle cx="50" cy="52" r="3.2"/></g></svg>';
