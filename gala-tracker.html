@@ -336,7 +336,32 @@ $$('.tabs button').forEach(b=>b.onclick=()=>{ tab=b.dataset.tab; $$('.tabs butto
 $('#refresh').onclick=load;
 $('#setgoal').onclick=async e=>{ e.preventDefault(); const v=prompt('Fundraising goal in dollars (leave blank to hide the goal)', D.event&&D.event.goal_cents?D.event.goal_cents/100:''); if(v===null) return;
   const c=v.trim()===''?null:Math.round(parseFloat(v)*100); try{ await call('POST',{action:'goal',goal_cents:c}); D.event=D.event||{}; D.event.goal_cents=c; render(); toast('Goal saved'); }catch(err){ toast(err.message); } };
-load();
+async function doorCheckin(){
+  const id=new URLSearchParams(location.search).get('checkin'); if(!id||!D) return;
+  const r=D.rsvps.find(x=>x.id===id);
+  const box=document.createElement('div');
+  box.style.cssText='position:fixed;inset:0;z-index:60;background:rgba(5,6,20,.82);display:grid;place-items:center;padding:16px';
+  const seats=r?r.individual_qty+r.couple_qty*2:0, owes=r&&r.source==='web'&&!['paid','comp'].includes(r.pay_status)?ticketCents(r):0;
+  box.innerHTML=r?`<div class="panel" style="max-width:420px;width:100%;text-align:center">
+      <div class="meta">Ticket MQ-${esc(id.replace(/-/g,'').slice(0,8).toUpperCase())}</div>
+      <h2 style="color:var(--gold2);font-size:2rem;margin:6px 0">${esc(r.full_name)}</h2>
+      <div style="font-size:1.2rem;font-weight:700">Admit ${seats}</div>
+      ${r.guest_names?`<div class="meta">+ ${esc(r.guest_names)}</div>`:''}
+      ${r.dietary?`<div class="meta">Dietary: ${esc(r.dietary)}</div>`:''}
+      <div style="margin:12px 0">${r.checked_in?'<span class="pill p-paid">Already checked in</span>':(owes?`<span class="pill p-reserved">Collect ${$$$(owes)}</span>`:'<span class="pill p-paid">Paid</span>')}</div>
+      <div style="display:grid;gap:8px">
+        ${r.checked_in?'':(owes?'<button class="btn" data-a="paid">Collected payment + check in</button>':'')}
+        ${r.checked_in?'':'<button class="btn '+(owes?'g':'')+'" data-a="in">Check in</button>'}
+        <button class="btn g" data-a="close">Close</button>
+      </div></div>`
+   :`<div class="panel" style="max-width:420px;text-align:center"><h2 style="color:var(--err)">Ticket not found</h2><p class="meta">It may have been cancelled. Check the Guests tab.</p><button class="btn g" data-a="close">Close</button></div>`;
+  document.body.appendChild(box);
+  box.onclick=async e=>{const a=e.target.dataset&&e.target.dataset.a; if(!a) return;
+    if(a==='paid') await save('gala_rsvps',id,{pay_status:'paid',checked_in:true});
+    if(a==='in') await save('gala_rsvps',id,{checked_in:true});
+    history.replaceState(null,'',location.pathname); box.remove(); };
+}
+load().then(doorCheckin);
 })();
 </script>
 </body>

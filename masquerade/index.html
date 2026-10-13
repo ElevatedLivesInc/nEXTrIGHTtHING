@@ -195,7 +195,16 @@ window.GALA = {
   supabaseUrl: 'https://uhnytejrlfummcrwdeij.supabase.co',
   supabaseKey: 'sb_publishable_0x4W8Ja8S_PrwAQ6egq0-Q_D4XH8PFY',   // public, insert-only (see RLS)
   // Paste Square payment links here once Cate/Ryan create them. Leave '' to show "pay at the door".
-  square: { individual: '', couple: '', sponsor: '', donate: '' },
+  // Square payment links. Paste each link between the quotes. Empty = that button just doesn't show (pay at the door).
+  square: {
+    individual: 'https://square.link/u/GY9y6xlh',   // Masquerade Ticket — Individual ($30)
+    couple: 'https://square.link/u/RgfQQnso',       // Masquerade Ticket — Couple ($50)
+    supporter: '',    // Recovery Supporter Sponsorship ($100)
+    hope: '',         // Hope Sponsor Sponsorship ($250)
+    changemaker: '',  // Change Maker Sponsorship ($500)
+    champion: '',     // Community Champion Sponsorship ($1,000)
+    partner: ''       // Recovery Partner Sponsorship ($2,500+, buyer enters amount)
+  },
   contactName: 'Ryan Anderson',
   contactEmail: 'ryan@nextrighthing.com',
   phone: '801-816-4977',
@@ -233,7 +242,7 @@ window.GALA = {
       <div><b id="cd-d">–</b><span>Days</span></div><div><b id="cd-h">–</b><span>Hours</span></div><div><b id="cd-m">–</b><span>Min</span></div>
     </div>
     <div class="cta">
-      <a class="btn" href="#tickets">Reserve tickets · $30</a>
+      <a class="btn" href="#tickets">Tickets · $30 · Couples $50</a>
       <a class="btn ghost" href="#sponsor">Become a sponsor</a>
     </div>
   </div>
@@ -629,8 +638,14 @@ function wire(form, okBox, build, table, after){
     if(fd.email && !/^\S+@\S+\.\S+$/.test(fd.email.trim())){ err.textContent='That email doesn\'t look quite right.'; f.email.focus(); return; }
     const btn=$('button[type=submit]',f); btn.disabled=true; const label=btn.textContent; btn.textContent='Sending…';
     try{
-      if(!DEMO) await api(table,row);
-      if(after) await after(fd,row);
+      let res=null;
+      if(!DEMO){
+        if(table==='@rsvp'){
+          const r=await fetch('/masquerade/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...row,drawing:!!fd.drawing})});
+          res=await r.json().catch(()=>({})); if(!r.ok){ const e=new Error(res.error||r.status); e.status=r.status; throw e; }
+        } else await api(table,row);
+      }
+      if(after) await after(fd,row,res);
       f.style.display='none'; const ok=$(okBox); ok.style.display='block'; ok.focus();
       if(!DEMO) loadBoard();
     }catch(e){
@@ -644,13 +659,14 @@ wire('#f-rsvp','#ok-rsvp', fd=>{
   if(!clean(fd.full_name)) return 'Please add your name.';
   if(qty.individual_qty+qty.couple_qty===0) return 'Choose at least one ticket.';
   return {event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), dietary:clean(fd.dietary), attire:fd.attire||'surprise'};
-}, 'gala_rsvps', async (fd,row)=>{
+}, '@rsvp', async (fd,row,res)=>{
   const total=row.individual_qty*30+row.couple_qty*50;
   $('#ok-rsvp-msg').textContent = `Seat${row.individual_qty+row.couple_qty*2>1?'s':''} reserved for ${row.full_name}. Your total is $${total} — pay online now or at the door.`;
   const links=[]; if(row.individual_qty) links.push(payBtn(C.square.individual, row.individual_qty>1?`Pay for ${row.individual_qty} individual tickets`:'Pay for individual ticket'));
   if(row.couple_qty) links.push(payBtn(C.square.couple, row.couple_qty>1?`Pay for ${row.couple_qty} couple tickets`:'Pay for couple ticket'));
+  if(res && res.id){ links.unshift(`<a class="btn" href="ticket?id=${encodeURIComponent(res.id)}">🎟 View your ticket</a>`);
+    if(row.email) $('#ok-rsvp-msg').textContent += ` We just emailed your ticket to ${row.email}.`; }
   $('#pay-now').innerHTML = links.join('');
-  if(fd.drawing && !DEMO){ try{ await api('gala_drawing',{event_slug:C.slug,full_name:row.full_name,email:row.email,phone:row.phone}); }catch(e){} }
 });
 
 wire('#f-sponsor','#ok-sponsor', fd=>{
@@ -659,7 +675,7 @@ wire('#f-sponsor','#ok-sponsor', fd=>{
   if(t.id==='partner'){ amt=parseInt(fd.amount,10)||0; if(amt<2500) return 'Recovery Partner starts at $2,500.'; }
   if(fd.website && !/^https?:\/\//i.test(fd.website.trim())) fd.website='https://'+fd.website.trim();
   return {event_slug:C.slug, tier:t.id, amount_cents:amt*100, business_name:clean(fd.business_name), contact_name:clean(fd.contact_name), email:clean(fd.email), phone:clean(fd.phone), website:clean(fd.website), display_name:clean(fd.display_name), message:clean(fd.message)};
-}, 'gala_sponsors', async (fd,row)=>{ $('#ok-sp-name').textContent=row.display_name||row.business_name; $('#sp-pay').innerHTML=payBtn(C.square.sponsor,'Pay sponsorship online'); });
+}, 'gala_sponsors', async (fd,row)=>{ $('#ok-sp-name').textContent=row.display_name||row.business_name; $('#sp-pay').innerHTML=payBtn(C.square[row.tier],'Pay your sponsorship online'); });
 
 wire('#f-inkind','#ok-inkind', fd=>{
   if(!clean(fd.donor_name)) return 'Please add your name.';

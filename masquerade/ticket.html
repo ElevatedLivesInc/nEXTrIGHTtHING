@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Your Masquerade Ticket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Raleway:wght@400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font:16px/1.5 Raleway,system-ui,sans-serif;color:#ece8f4;background:radial-gradient(800px 600px at 80% -10%,rgba(124,58,237,.55),transparent 60%),radial-gradient(700px 600px at 0% 110%,rgba(124,58,237,.35),transparent 60%),#070b1f;padding:24px 16px 48px}
+.wrap{max-width:440px;margin:0 auto}
+.ticket{position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(180deg,#171036,#0e0a26);border:1px solid rgba(168,85,247,.6);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(230,207,155,.25)}
+.ticket img.banner{display:block;width:100%;height:auto}
+.body{padding:22px 24px 18px;text-align:center}
+.kick{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:#c4b5fd;font-weight:700}
+.name{font-family:"Great Vibes",cursive;font-size:2.6rem;line-height:1.1;color:#f3d48a;margin:6px 0 2px;word-break:break-word}
+.admit{font-family:"Cormorant Garamond",serif;font-size:1.5rem;font-weight:700;color:#fff}
+.row{display:flex;justify-content:space-between;gap:12px;text-align:left;margin:16px 0 4px;padding:12px 0;border-top:1px solid rgba(185,167,232,.25);border-bottom:1px solid rgba(185,167,232,.25);font-size:.92rem}
+.row b{display:block;color:#fff}.row span{color:#b8b0d2}
+.perf{position:relative;height:28px;margin:4px 0}
+.perf::before{content:"";position:absolute;left:18px;right:18px;top:50%;border-top:2px dashed rgba(185,167,232,.4)}
+.perf i{position:absolute;top:0;width:28px;height:28px;border-radius:50%;background:#070b1f}
+.perf i:first-child{left:-14px}.perf i:last-child{right:-14px}
+.stub{padding:6px 24px 24px;text-align:center}
+#qr{display:inline-block;background:#fff;padding:12px;border-radius:14px}
+#qr img,#qr canvas{display:block}
+.code{font-family:ui-monospace,Menlo,monospace;letter-spacing:.18em;margin-top:10px;color:#e6cf9b;font-weight:700}
+.status{display:inline-block;margin-top:10px;padding:5px 14px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.paid{background:rgba(127,209,168,.15);color:#7fd1a8;border:1px solid #7fd1a8}
+.due{background:rgba(242,196,109,.12);color:#f2c46d;border:1px solid #f2c46d}
+.in{background:rgba(185,167,232,.15);color:#c4b5fd;border:1px solid #c4b5fd}
+.small{font-size:.8rem;color:#9d97b5;margin-top:10px}
+.actions{display:grid;gap:10px;margin-top:18px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border-radius:999px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer;border:1px solid #c9a96e;background:transparent;color:#e6cf9b}
+.btn.gold{background:linear-gradient(135deg,#e2c788,#b08d4f);color:#1b1404;border:0}
+.err{text-align:center;padding:60px 10px}
+footer{margin-top:22px;text-align:center;font-size:.72rem;color:#7d769a}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><p class="err">Loading your ticket…</p></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const id=new URLSearchParams(location.search).get('id')||'';
+const start='2026-11-13T18:00:00-07:00', end='2026-11-13T22:00:00-07:00';
+const z=d=>new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+function render(t){
+  const status=t.checked_in?'<span class="status in">Checked in ✓</span>':(t.paid?'<span class="status paid">Paid ✓</span>':`<span class="status due">Pay $${t.total} online or at the door</span>`);
+  $('#app').innerHTML=`<div class="ticket">
+    <img class="banner" src="banner.jpg" alt="Flannel to Formal Masquerade Fundraiser" width="1380" height="403">
+    <div class="body">
+      <div class="kick">Admission ticket</div>
+      <div class="name">${esc(t.name)}</div>
+      <div class="admit">Admit ${t.seats} · Dinner included</div>
+      <div class="row"><div><b>Fri, Nov 13, 2026</b><span>6:00 – 10:00 PM</span></div><div style="text-align:right"><b>7669 S Redwood Rd</b><span>West Jordan, UT</span></div></div>
+      <div class="small">Dress code: flannel, formal, masquerade — or all three.</div>
+    </div>
+    <div class="perf"><i></i><i></i></div>
+    <div class="stub">
+      <div id="qr" aria-label="Check-in QR code"></div>
+      <div class="code">${esc(t.code)}</div>
+      ${status}
+      <div class="small">Show this at the door. Screenshot it in case the signal is weak.</div>
+    </div>
+  </div>
+  <div class="actions">
+    ${t.paid?'':'<a class="btn gold" href="./#tickets">Pay online</a>'}
+    <button class="btn" id="ics">＋ Add to calendar</button>
+    <button class="btn" id="share">Invite a friend</button>
+  </div>
+  <footer>Proceeds benefit The Right Thing in Recovery, a 501(c)(3) nonprofit · EIN 93-4316358<br>Questions: 801-816-4977 · ryan@nextrighthing.com</footer>`;
+  if(window.QRCode) new QRCode($('#qr'),{text:location.origin+'/gala-tracker?checkin='+t.id,width:180,height:180,colorDark:'#140f33',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  else $('#qr').textContent=t.code;
+  $('#ics').onclick=()=>{const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NRT//Masquerade//EN','BEGIN:VEVENT','UID:masquerade-2026-'+t.id+'@nextrighthing.com','DTSTAMP:'+z(new Date()),'DTSTART:'+z(start),'DTEND:'+z(end),'SUMMARY:Flannel to Formal Masquerade ('+t.code+')','LOCATION:7669 S Redwood Rd\\, West Jordan\\, UT 84084','DESCRIPTION:Your ticket: '+location.href,'END:VEVENT','END:VCALENDAR'].join('\r\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='masquerade-ticket.ics';a.click();};
+  $('#share').onclick=async e=>{const url=location.origin+'/masquerade/';const d={title:'Flannel to Formal Masquerade',text:"I've got my ticket for the Flannel to Formal Masquerade on Nov 13. Come with me!",url};
+    try{if(navigator.share)await navigator.share(d);else{await navigator.clipboard.writeText(url);e.currentTarget.textContent='Link copied ✓';}}catch(_){}};
+}
+if(!/^[0-9a-f-]{36}$/i.test(id)){ $('#app').innerHTML='<p class="err">This ticket link looks incomplete. Check the link in your email, or call 801-816-4977.</p>'; return; }
+fetch('ticket-data?id='+encodeURIComponent(id)).then(r=>r.ok?r.json():Promise.reject(r.status)).then(render)
+ .catch(s=>{ if(id==='00000000-0000-0000-0000-000000000000'||location.hostname==='localhost') render({id,code:'MQ-DEMO1234',name:'Alex Sample',seats:2,total:50,paid:false,checked_in:false});
+   else $('#app').innerHTML='<p class="err">We couldn’t find that ticket. Check the link in your email, or call 801-816-4977.</p>'; });
+})();
+</script>
+</body>
+</html>
