@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flannel to Formal Masquerade · Nov 13, 2026</title>
+<meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, 6–10 PM, West Jordan, UT. Dinner, live auction, music and a free opportunity drawing benefiting The Right Thing in Recovery, a 501(c)(3) nonprofit.">
+<meta property="og:title" content="Flannel to Formal Masquerade Fundraiser">
+<meta property="og:description" content="Fri Nov 13 · 6–10 PM · 7669 S Redwood Rd, West Jordan. Dinner included. Reserve your seat or become a sponsor.">
+<meta property="og:image" content="/masquerade/flyer-event.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#070b1f; --navy:#0d1433; --navy2:#141c44; --card:rgba(255,255,255,.055); --line:rgba(201,169,110,.28);
+  --gold:#c9a96e; --gold2:#e6cf9b; --lav:#b9a7e8; --plum:#6b3fa0; --text:#ece8f4; --muted:#a9a3bf; --ok:#7fd1a8; --err:#ff9a9a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text);font:16px/1.6 Raleway,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:
+  radial-gradient(900px 600px at 85% -10%,rgba(107,63,160,.45),transparent 60%),
+  radial-gradient(700px 500px at -10% 30%,rgba(201,169,110,.12),transparent 60%),
+  radial-gradient(800px 700px at 50% 110%,rgba(107,63,160,.28),transparent 60%),var(--ink)}
+a{color:var(--gold2)}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;line-height:1.1;margin:0}
+h2{font-size:clamp(2rem,6vw,3rem);color:var(--gold2)}
+h3{font-size:1.5rem}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+section{padding:64px 0}
+.eyebrow{font-size:.75rem;letter-spacing:.24em;text-transform:uppercase;color:var(--lav);font-weight:600}
+.lead{color:var(--muted);max-width:640px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:999px;border:1px solid var(--gold);background:linear-gradient(135deg,#d8bb80,#b08d4f);color:#1a1404;font-weight:700;text-decoration:none;cursor:pointer;font:inherit;font-weight:700;min-height:48px}
+.btn.ghost{background:transparent;color:var(--gold2)}
+.btn.small{padding:9px 16px;min-height:40px;font-size:.9rem}
+.btn:disabled{opacity:.6;cursor:wait}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;backdrop-filter:blur(8px)}
+.grid{display:grid;gap:16px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g5{grid-template-columns:repeat(5,1fr)}}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5;margin:0 auto;max-width:600px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(7,11,31,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none;font-weight:600;font-size:.85rem}
+.brand svg{width:26px;height:26px}
+.top nav{display:flex;gap:4px;overflow-x:auto}
+.top nav a{color:var(--muted);text-decoration:none;font-size:.82rem;padding:6px 10px;border-radius:999px;white-space:nowrap}
+.top nav a:hover{color:var(--gold2)}
+@media(max-width:620px){.top nav a.hide-sm{display:none}}
+
+/* hero */
+.hero{padding:56px 0 40px;text-align:center;position:relative;overflow:hidden}
+.hero .f2f{font-size:.85rem;letter-spacing:.32em;text-transform:uppercase;color:var(--text);font-weight:600}
+.hero h1{font-size:clamp(3.4rem,15vw,7.5rem);font-style:italic;background:linear-gradient(180deg,#f4e3b5,#c9a96e 55%,#9c7a3e);-webkit-background-clip:text;background-clip:text;color:transparent;margin:6px 0 0;letter-spacing:-.01em}
+.hero .fund{font-size:clamp(1rem,3.4vw,1.4rem);letter-spacing:.42em;text-transform:uppercase;font-weight:600}
+.hero .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;margin:18px 0 6px;color:var(--lav);font-weight:600;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase}
+.when{font-family:"Cormorant Garamond",serif;font-size:clamp(1.5rem,5vw,2.2rem);font-weight:700;margin-top:18px}
+.where{color:var(--muted)}
+.where a{color:var(--text)}
+.count{display:flex;justify-content:center;gap:10px;margin:26px 0}
+.count div{min-width:70px;padding:10px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.count b{display:block;font-family:"Cormorant Garamond",serif;font-size:2rem;color:var(--gold2);line-height:1}
+.count span{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.cta{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.mask{position:absolute;opacity:.12;pointer-events:none}
+
+/* tracker */
+.tracker{padding:26px 0}
+.meter{height:16px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--plum),var(--lav),var(--gold));transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;text-align:center}
+.stats b{display:block;font-family:"Cormorant Garamond",serif;font-size:2rem;color:var(--gold2);line-height:1.1}
+.stats span{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.raised{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.raised strong{font-family:"Cormorant Garamond",serif;font-size:1.8rem;color:var(--gold2)}
+
+/* features */
+.feat{text-align:center}
+.feat .ic{width:54px;height:54px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:rgba(185,167,232,.12);border:1px solid var(--line);font-size:1.5rem}
+.feat p{color:var(--muted);font-size:.92rem;margin:.4rem 0 0}
+.dress{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.dress span{padding:6px 14px;border-radius:999px;border:1px solid var(--line);font-size:.85rem}
+
+/* invitation */
+.invite{font-family:"Cormorant Garamond",serif;font-size:1.25rem;line-height:1.55;max-width:720px;margin:0 auto}
+.invite p{margin:0 0 1em}
+.sig{font-style:italic;color:var(--gold2)}
+
+/* tiers */
+.tier{display:flex;flex-direction:column;position:relative;padding:20px 18px}
+.tier .nm{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--lav)}
+.tier .amt{font-family:"Cormorant Garamond",serif;font-size:2.4rem;font-weight:700;color:var(--gold2);line-height:1.1;margin:4px 0 8px}
+.tier ul{margin:0 0 14px;padding-left:18px;color:var(--text);font-size:.9rem}
+.tier li{margin:.25em 0}
+.tier .tag{font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--muted);margin-top:auto;margin-bottom:12px;font-size:1.1rem}
+.tier.top{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset,0 10px 40px rgba(201,169,110,.15)}
+.tier .badge{position:absolute;top:-11px;right:14px;background:var(--gold);color:#1a1404;font-size:.66rem;font-weight:800;letter-spacing:.12em;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+
+/* forms */
+form{display:grid;gap:12px}
+label{display:grid;gap:5px;font-size:.85rem;font-weight:600;color:var(--text)}
+label small{font-weight:400;color:var(--muted)}
+input,select,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(7,11,31,.6);color:var(--text);font:inherit;font-size:16px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--lav);outline-offset:1px;border-color:transparent}
+.row2{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media(max-width:520px){.row2{grid-template-columns:1fr}}
+.req{font-size:.8rem;color:var(--lav)}
+.ferr{color:var(--err);font-size:.82rem;min-height:0}
+.ok-box{display:none;border:1px solid var(--ok);background:rgba(127,209,168,.08);border-radius:14px;padding:16px}
+.ok-box h3{color:var(--ok);font-size:1.4rem}
+.total{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:12px;background:rgba(201,169,110,.1);border:1px solid var(--line)}
+.total b{font-family:"Cormorant Garamond",serif;font-size:1.6rem;color:var(--gold2)}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:500}
+.check input{width:20px;height:20px;margin-top:2px;flex:none}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:1.3rem;cursor:pointer}
+.stepper output{min-width:28px;text-align:center;font-weight:700;font-size:1.1rem}
+.tline{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.tline small{color:var(--muted);display:block;font-weight:400}
+
+/* sponsor wall */
+.wall-tier{margin-top:18px}
+.wall-tier h4{margin:0 0 8px;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--lav)}
+.wall{display:flex;flex-wrap:wrap;gap:10px}
+.wall a,.wall span{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);text-decoration:none;font-weight:600}
+.wall img{height:28px;max-width:110px;object-fit:contain;background:#fff;border-radius:6px;padding:2px 4px}
+.wall-empty{color:var(--muted);font-style:italic}
+
+.ideas{columns:2;padding-left:18px;color:var(--muted);font-size:.92rem;margin:.6rem 0 0}
+details{border-bottom:1px solid rgba(255,255,255,.1);padding:14px 0}
+summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::after{content:"+";color:var(--gold)}
+details[open] summary::after{content:"–"}
+details p,details li{color:var(--muted);font-size:.94rem}
+.flyers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.flyers a{display:block;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.flyers img{width:100%;display:block}
+footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem}
+footer strong{color:var(--text)}
+.demo{display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:30;max-width:520px;margin:0 auto;padding:10px 14px;border-radius:12px;background:#2a1f4a;border:1px solid var(--lav);font-size:.82rem;text-align:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<!-- ======================= CONFIG — the only part staff ever edit ======================= -->
+<script>
+window.GALA = {
+  slug: 'masquerade-2026',
+  supabaseUrl: 'https://uhnytejrlfummcrwdeij.supabase.co',
+  supabaseKey: 'sb_publishable_0x4W8Ja8S_PrwAQ6egq0-Q_D4XH8PFY',   // public, insert-only (see RLS)
+  // Paste Square payment links here once Cate/Ryan create them. Leave '' to show "pay at the door".
+  square: { individual: '', couple: '', sponsor: '', donate: '' },
+  contactName: 'Ryan Anderson',
+  contactEmail: 'ryan@nextrighthing.com',
+  phone: '801-816-4977',
+  startISO: '2026-11-13T18:00:00-07:00',
+  endISO:   '2026-11-13T22:00:00-07:00',
+  address: '7669 S Redwood Rd, West Jordan, UT 84084'
+};
+</script>
+
+<div class="top"><div class="wrap">
+  <a class="brand" href="/" aria-label="Back to nextrighthing.com">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="#b9a7e8" stroke-width="5"/><path d="M50 12 61 40 90 41 67 59 75 88 50 71 25 88 33 59 10 41 39 40Z" fill="#b9a7e8"/></svg>
+    <span>Masquerade 2026</span>
+  </a>
+  <nav aria-label="Sections">
+    <a href="#tickets">Tickets</a>
+    <a href="#sponsor">Sponsor</a>
+    <a href="#inkind" class="hide-sm">Donate an item</a>
+    <a href="#drawing" class="hide-sm">Free drawing</a>
+  </nav>
+</div></div>
+
+<header class="hero">
+  <svg class="mask" style="right:-60px;top:20px;width:320px" viewBox="0 0 200 100" aria-hidden="true"><path d="M10 40c20-25 60-25 90 0 30-25 70-25 90 0-5 35-35 50-60 40-12-5-20-10-30-10s-18 5-30 10C35 90 15 75 10 40z" fill="#b9a7e8"/></svg>
+  <div class="wrap">
+    <div class="f2f">Flannel to Formal</div>
+    <h1>Masquerade</h1>
+    <div class="fund">Fundraiser</div>
+    <div class="chips"><span>Dinner</span><span>•</span><span>Live Auction</span><span>•</span><span>Free Drawing</span><span>•</span><span>Music</span><span>•</span><span>Open House</span></div>
+    <div class="when">Friday, November 13, 2026<br>6:00 – 10:00 PM</div>
+    <div class="where"><a href="https://maps.google.com/?q=7669+S+Redwood+Rd+West+Jordan+UT+84084" target="_blank" rel="noopener">7669 S Redwood Rd, West Jordan, UT 84084</a></div>
+    <div class="count" id="count" aria-live="off">
+      <div><b id="cd-d">–</b><span>Days</span></div><div><b id="cd-h">–</b><span>Hours</span></div><div><b id="cd-m">–</b><span>Min</span></div>
+    </div>
+    <div class="cta">
+      <a class="btn" href="#tickets">Reserve tickets · $30</a>
+      <a class="btn ghost" href="#sponsor">Become a sponsor</a>
+    </div>
+  </div>
+</header>
+
+<!-- live tracker -->
+<div class="tracker"><div class="wrap">
+  <div class="card">
+    <div class="raised">
+      <div><span class="eyebrow">Together so far</span><br><strong id="t-raised">—</strong> <span id="t-goal" style="color:var(--muted)"></span></div>
+      <a class="btn small ghost" href="#sponsor">Add your name</a>
+    </div>
+    <div class="meter" role="progressbar" aria-label="Fundraising progress" aria-valuemin="0" aria-valuemax="100" id="t-meter"><i id="t-bar"></i></div>
+    <div class="stats">
+      <div><b id="t-guests">—</b><span>Guests coming</span></div>
+      <div><b id="t-sponsors">—</b><span>Sponsors</span></div>
+      <div><b id="t-items">—</b><span>Items donated</span></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- invitation -->
+<section id="invite"><div class="wrap">
+  <div style="text-align:center;margin-bottom:22px"><span class="eyebrow">You're invited</span></div>
+  <div class="invite">
+    <p>You're invited to join us for an exciting evening of community, celebration, and giving back at The Next Right Thing in Recovery's Flannel to Formal Masquerade Fundraiser!</p>
+    <p>We're opening our doors for a special open house where you can meet our team, learn more about our mission, and help support the work we do to make a difference in the lives of individuals and families impacted by addiction.</p>
+    <p>Whether you come dressed in flannel, formal attire, or your favorite masquerade style, we would love to have you there!</p>
+    <p>Your presence and support help us continue our mission of providing hope, recovery, and the opportunity for a better future. This is a wonderful chance to connect with our community, celebrate second chances, and support a cause that truly matters.</p>
+    <p>Come for the fun, stay for the mission, and help us make a difference!</p>
+    <p class="sig">With gratitude,<br>The Next Right Thing in Recovery Team</p>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<!-- the evening -->
+<section><div class="wrap">
+  <div style="text-align:center;margin-bottom:26px"><span class="eyebrow">The evening</span><h2>Good food. Great company.<br>A brighter tomorrow.</h2></div>
+  <div class="grid g5">
+    <div class="card feat"><div class="ic">🍽</div><h3>Dinner</h3><p>Included with every ticket.</p></div>
+    <div class="card feat"><div class="ic">🔨</div><h3>Live auction</h3><p>Bid on items from local businesses.</p></div>
+    <div class="card feat"><div class="ic">⭐</div><h3>Free drawing</h3><p>No purchase necessary. <a href="#drawing">Enter here</a>.</p></div>
+    <div class="card feat"><div class="ic">♫</div><h3>Music</h3><p>All evening long.</p></div>
+    <div class="card feat"><div class="ic">📷</div><h3>Photo booth</h3><p>Masks encouraged. <a href="#faq">Photo policy</a>.</p></div>
+  </div>
+  <div style="text-align:center;margin-top:26px">
+    <div class="eyebrow">Dress code: your call</div>
+    <div class="dress"><span>Flannel</span><span>Formal</span><span>Masquerade</span><span>All three</span></div>
+  </div>
+</div></section>
+
+<!-- tickets -->
+<section id="tickets"><div class="wrap">
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <span class="eyebrow">Tickets</span>
+      <h2>Save your seat</h2>
+      <p class="lead">Dinner is included with every ticket. Reserve now so the kitchen knows you're coming — pay online or at the door.</p>
+      <div class="card" style="margin-top:16px">
+        <div class="tline"><div><strong>Individual</strong><small>One guest · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$30</b></div>
+        <div class="tline" style="border:0"><div><strong>Couple</strong><small>Two guests · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$50</b></div>
+      </div>
+      <p style="margin-top:16px"><button class="btn small ghost" type="button" data-ics>＋ Add to calendar</button> <a class="btn small ghost" id="gcal" target="_blank" rel="noopener">Google Calendar</a></p>
+    </div>
+    <div class="card">
+      <form id="f-rsvp" novalidate>
+        <div class="row2">
+          <div><label>Individual tickets</label><div class="stepper" data-step="individual_qty"><button type="button" aria-label="Fewer">−</button><output>1</output><button type="button" aria-label="More">+</button></div></div>
+          <div><label>Couple tickets</label><div class="stepper" data-step="couple_qty"><button type="button" aria-label="Fewer">−</button><output>0</output><button type="button" aria-label="More">+</button></div></div>
+        </div>
+        <div class="total"><span><span id="r-guests">1 guest</span></span><b id="r-total">$30</b></div>
+        <label>Your name <input name="full_name" autocomplete="name" required maxlength="120"></label>
+        <div class="row2">
+          <label>Email <input name="email" type="email" autocomplete="email" maxlength="200"></label>
+          <label>Phone <input name="phone" type="tel" autocomplete="tel" maxlength="40"></label>
+        </div>
+        <div class="req">One of these is required so we can reach you.</div>
+        <label>Names of your other guests <small>(optional)</small><input name="guest_names" maxlength="600"></label>
+        <label>Dietary needs <small>(optional — helps the kitchen)</small><input name="dietary" maxlength="300"></label>
+        <label>Coming as… <select name="attire"><option value="surprise">It's a surprise</option><option value="flannel">Flannel</option><option value="formal">Formal</option><option value="masquerade">Full masquerade</option></select></label>
+        <label class="check"><input type="checkbox" name="drawing" checked> Also enter me in the free opportunity drawing</label>
+        <div class="ferr" role="alert"></div>
+        <button class="btn" type="submit">Reserve my seat</button>
+      </form>
+      <div class="ok-box" id="ok-rsvp" tabindex="-1">
+        <h3>You're on the list ✦</h3>
+        <p id="ok-rsvp-msg">We can't wait to see you on November 13.</p>
+        <div id="pay-now" class="cta" style="justify-content:flex-start"></div>
+        <p style="margin:.8rem 0 0"><button class="btn small ghost" type="button" data-ics>＋ Add to calendar</button></p>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<!-- sponsor -->
+<section id="sponsor"><div class="wrap">
+  <div style="text-align:center;max-width:720px;margin:0 auto 28px">
+    <span class="eyebrow">Sponsor opportunities</span>
+    <h2>Be part of the next right thing</h2>
+    <p class="lead" style="margin:10px auto 0">Your sponsorship helps provide recovery opportunities, sober activities, transportation, peer support and resources to individuals working to rebuild their lives. <em style="color:var(--lav)">Together, we can make a difference.</em></p>
+  </div>
+  <div class="grid g5" id="tiers"></div>
+
+  <div class="grid g2" style="margin-top:28px;align-items:start">
+    <div class="card">
+      <h3 style="color:var(--gold2)">Sponsor sign-up</h3>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:.3rem">Pick a level, tell us how you'd like to be listed, and we'll take it from there.</p>
+      <form id="f-sponsor" novalidate>
+        <label>Sponsorship level <select name="tier" id="s-tier"></select></label>
+        <label id="s-amt-wrap" hidden>Amount <small>($2,500 or more)</small><input name="amount" type="number" min="2500" step="50" inputmode="numeric" value="2500"></label>
+        <label>Business or family name <input name="business_name" required maxlength="160" autocomplete="organization"></label>
+        <label>Contact person <input name="contact_name" maxlength="120" autocomplete="name"></label>
+        <div class="row2">
+          <label>Email <input name="email" type="email" maxlength="200" autocomplete="email"></label>
+          <label>Phone <input name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+        </div>
+        <div class="req">One of these is required so we can reach you.</div>
+        <label>Website or social link <small>(optional)</small><input name="website" type="url" maxlength="300" placeholder="https://"></label>
+        <label>List us as <small>(how your name should appear)</small><input name="display_name" maxlength="160"></label>
+        <label>Anything we should know? <small>(optional)</small><textarea name="message" rows="3" maxlength="1000"></textarea></label>
+        <div class="ferr" role="alert"></div>
+        <button class="btn" type="submit">Become a sponsor</button>
+      </form>
+      <div class="ok-box" id="ok-sponsor" tabindex="-1">
+        <h3>Thank you, partner ✦</h3>
+        <p><span id="ok-sp-name"></span> — <span id="ok-sp-contact"></span> will reach out within one business day to confirm your sponsorship and collect your logo.</p>
+        <p style="font-size:.9rem;color:var(--muted)">Have your logo ready? Email it (PNG or SVG) to <a id="logo-mail"></a> so it makes the printed signage.</p>
+        <div id="sp-pay" class="cta" style="justify-content:flex-start"></div>
+      </div>
+    </div>
+    <div class="card" id="wall-card">
+      <h3 style="color:var(--gold2)">Our sponsors</h3>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:.3rem">The businesses and families making this night possible.</p>
+      <div id="wall"><p class="wall-empty">Be the first name on the board.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<!-- in-kind -->
+<section id="inkind"><div class="wrap">
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <span class="eyebrow">In-kind sponsor</span>
+      <h2>Donate goods or services</h2>
+      <p class="lead">Gifts valued at $100 or more receive sponsor recognition based on the value of your donation. Every donated item receives a receipt.</p>
+      <ul class="ideas"><li>Food &amp; beverages</li><li>Gift baskets</li><li>Auction items</li><li>Drawing prizes</li><li>Gift cards</li><li>Decorations</li><li>Photography</li><li>DJ / music</li><li>Event supplies</li><li>Services</li><li>And more!</li></ul>
+      <div class="card" style="margin-top:18px">
+        <strong>Recognized for in-kind support</strong>
+        <div id="wall-inkind" class="wall" style="margin-top:10px"><span class="wall-empty" style="border:0;background:none;padding:0">Your business could be first.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <form id="f-inkind" novalidate>
+        <label>Your name <input name="donor_name" required maxlength="160" autocomplete="name"></label>
+        <label>Business <small>(optional)</small><input name="business_name" maxlength="160" autocomplete="organization"></label>
+        <div class="row2">
+          <label>Email <input name="email" type="email" maxlength="200" autocomplete="email"></label>
+          <label>Phone <input name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+        </div>
+        <div class="req">One of these is required so we can reach you.</div>
+        <label>What would you like to donate? <textarea name="description" rows="3" required maxlength="1000" placeholder="e.g. Gift basket with two spa passes"></textarea></label>
+        <div class="row2">
+          <label>Type <select name="category"><option value="auction">Auction item</option><option value="drawing">Drawing prize</option><option value="gift_basket">Gift basket</option><option value="gift_card">Gift card</option><option value="food">Food &amp; beverage</option><option value="service">Service</option><option value="decor">Decorations</option><option value="music">DJ / music</option><option value="photo">Photography</option><option value="supplies">Event supplies</option><option value="other">Other</option></select></label>
+          <label>Estimated value <small>($, optional)</small><input name="est_value" type="number" min="0" step="1" inputmode="numeric"></label>
+        </div>
+        <label>Getting it to us <select name="delivery"><option value="dropoff">I'll drop it off</option><option value="pickup">Please pick it up</option><option value="day_of">I'll bring it the day of</option></select></label>
+        <div class="ferr" role="alert"></div>
+        <button class="btn" type="submit">Pledge my donation</button>
+      </form>
+      <div class="ok-box" id="ok-inkind" tabindex="-1">
+        <h3>Thank you ✦</h3>
+        <p><span id="ok-ik-contact"></span> will reach out to arrange drop-off or pickup. You'll receive an in-kind receipt once your gift arrives.</p>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<!-- drawing -->
+<section id="drawing"><div class="wrap">
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <span class="eyebrow">Opportunity drawing</span>
+      <h2>Free to enter</h2>
+      <p class="lead">No purchase, ticket, or donation is necessary to enter or win. Every entry has the same chance.</p>
+      <details><summary>Official rules (summary)</summary>
+        <ul>
+          <li>No purchase, ticket or donation necessary. A purchase or donation does not increase your chances.</li>
+          <li>One entry per person, by this form or by asking any staff member at the event.</li>
+          <li>Open to adults 18 and older.</li>
+          <li>Entries close at the start of the drawing during the event on November 13, 2026.</li>
+          <li>Winners are chosen at random and contacted by phone or email.</li>
+          <li>Prizes are donated by community sponsors and have no cash alternative.</li>
+        </ul>
+      </details>
+    </div>
+    <div class="card">
+      <form id="f-drawing" novalidate>
+        <label>Your name <input name="full_name" required maxlength="120" autocomplete="name"></label>
+        <div class="row2">
+          <label>Email <input name="email" type="email" maxlength="200" autocomplete="email"></label>
+          <label>Phone <input name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+        </div>
+        <div class="req">One of these is required so we can reach a winner.</div>
+        <label class="check"><input type="checkbox" name="adult" required> I'm 18 or older</label>
+        <div class="ferr" role="alert"></div>
+        <button class="btn" type="submit">Enter free</button>
+      </form>
+      <div class="ok-box" id="ok-drawing" tabindex="-1"><h3>You're entered ✦</h3><p>Good luck! Winners are drawn during the event.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<!-- FAQ -->
+<section id="faq"><div class="wrap" style="max-width:780px">
+  <div style="text-align:center;margin-bottom:18px"><span class="eyebrow">Good to know</span><h2>Questions</h2></div>
+  <details><summary>Can I pay at the door?</summary><p>Yes. Reserving online just lets the kitchen plan dinner. You can pay online (when available) or at the door.</p></details>
+  <details><summary>Is my sponsorship or ticket tax-deductible?</summary><p>Contributions benefit The Right Thing in Recovery, a 501(c)(3) nonprofit organization (EIN 93-4316358), and are tax-deductible to the extent allowed by law. If you receive tickets, dinner, or other benefits in return, your receipt will show their value, and only the amount above that value is deductible. Please consult your tax advisor.</p></details>
+  <details><summary>What should I wear?</summary><p>Flannel, formal, masquerade — or all three. Masks encouraged, never required.</p></details>
+  <details><summary>Photos &amp; privacy</summary><p>We love a good photo booth, and we protect the people we serve. Please don't photograph, post, or tag anyone without asking first. Our staff will never share images of people in our care without their written consent.</p></details>
+  <details><summary>I want to help but can't attend</summary><p>Become a sponsor, donate an item, or enter the free drawing — all from this page. Questions? Contact <a class="cname-mail"></a> or call <a href="tel:8018164977">801-816-4977</a>.</p></details>
+  <div style="margin-top:28px"><div class="eyebrow" style="margin-bottom:10px">Share the flyers</div>
+    <div class="flyers">
+      <a href="flyer-event.jpg" download><img src="flyer-event.jpg" alt="Event flyer: Flannel to Formal Masquerade Fundraiser open house, Friday November 13 2026, 6 to 10 PM, 7669 S Redwood Rd, tickets $30 individual, $50 couples, dinner included" loading="lazy"></a>
+      <a href="flyer-sponsors.jpg" download><img src="flyer-sponsors.jpg" alt="Sponsor opportunities flyer with five sponsorship levels from $100 to $2,500 and up, plus in-kind sponsorship" loading="lazy"></a>
+    </div>
+    <p style="margin-top:12px"><button class="btn small ghost" type="button" id="share">Share this page</button></p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <p><strong>Flannel to Formal Masquerade Fundraiser</strong> · Friday, November 13, 2026 · 6:00–10:00 PM · 7669 S Redwood Rd, West Jordan, UT 84084</p>
+  <p>Funds raised benefit <strong>The Right Thing in Recovery</strong>, a 501(c)(3) nonprofit organization, EIN 93-4316358. The evening is hosted at, and includes an open house of, The Next Right Thing in Recovery.</p>
+  <p>Sponsorship questions: <a class="cname-mail"></a> · <a href="tel:8018164977">801-816-4977</a> · <a href="/">nextrighthing.com</a></p>
+</div></footer>
+
+<div class="demo" id="demo">Preview mode — the database isn't connected yet, so nothing you submit here is saved.</div>
+
+<script>
+(function(){
+const C = window.GALA;
+const $ = (s,el=document)=>el.querySelector(s), $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const money = c => '$' + Math.round(c/100).toLocaleString();
+let DEMO = false;
+
+const TIERS = [
+  {id:'supporter', name:'Recovery Supporter', amt:100,  tag:'Small support. Big impact.', perks:['Name listed on sponsor board','Social media thank-you']},
+  {id:'hope',      name:'Hope Sponsor',       amt:250,  tag:'Hope builds brighter futures.', perks:['All Recovery Supporter benefits','Business name/logo on event materials','2 event tickets']},
+  {id:'changemaker',name:'Change Maker',      amt:500,  tag:'Be the change.', perks:['All Hope Sponsor benefits','Logo prominently displayed at event','4 event tickets','Social media spotlight']},
+  {id:'champion',  name:'Community Champion', amt:1000, tag:'Stronger together.', perks:['All Change Maker benefits','Large logo on event signage','6 event tickets','Verbal recognition during event','Dedicated social media post']},
+  {id:'partner',   name:'Recovery Partner',   amt:2500, plus:true, tag:'Invest in lasting change.', perks:['All Community Champion benefits','Premier logo placement','8 event tickets','Special recognition during event','Opportunity to provide promotional materials/items for guests']}
+];
+
+/* contact links */
+$$('.cname-mail').forEach(a=>{a.href='mailto:'+C.contactEmail;a.textContent=C.contactName+' ('+C.contactEmail+')'});
+$('#logo-mail').href='mailto:'+C.contactEmail+'?subject=Masquerade%20sponsor%20logo'; $('#logo-mail').textContent=C.contactEmail;
+$('#ok-sp-contact').textContent=C.contactName; $('#ok-ik-contact').textContent=C.contactName;
+
+/* countdown */
+const start = new Date(C.startISO);
+function tick(){
+  let ms = start - new Date();
+  if(ms<=0){ $('#count').innerHTML = new Date() < new Date(C.endISO) ? '<div style="padding:12px 18px"><b style="font-size:1.4rem">Happening now ✦</b></div>' : '<div style="padding:12px 18px"><b style="font-size:1.3rem">Thank you for an unforgettable night</b></div>'; return; }
+  $('#cd-d').textContent=Math.floor(ms/864e5); $('#cd-h').textContent=Math.floor(ms/36e5)%24; $('#cd-m').textContent=Math.floor(ms/6e4)%60;
+}
+tick(); setInterval(tick, 30000);
+
+/* calendar */
+const z = d => new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+$('#gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Flannel to Formal Masquerade Fundraiser')+'&dates='+z(C.startISO)+'/'+z(C.endISO)+'&location='+encodeURIComponent(C.address)+'&details='+encodeURIComponent('Dinner, live auction, music and a free drawing. '+location.href);
+$$('[data-ics]').forEach(b=>b.onclick=()=>{
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NRT//Masquerade//EN','BEGIN:VEVENT','UID:masquerade-2026@nextrighthing.com','DTSTAMP:'+z(new Date()),'DTSTART:'+z(C.startISO),'DTEND:'+z(C.endISO),'SUMMARY:Flannel to Formal Masquerade Fundraiser','LOCATION:'+C.address.replace(/,/g,'\\,'),'DESCRIPTION:Dinner\\, live auction\\, music and a free drawing.','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Masquerade tomorrow','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download='masquerade-2026.ics'; a.click();
+});
+
+/* share */
+$('#share').onclick=async()=>{ const d={title:'Flannel to Formal Masquerade',text:'Fri Nov 13 · 6–10 PM · West Jordan. Dinner included — join us!',url:location.href};
+  try{ if(navigator.share) await navigator.share(d); else { await navigator.clipboard.writeText(location.href); $('#share').textContent='Link copied ✓'; } }catch(e){} };
+
+/* tiers */
+$('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':''}">${t.plus?'<span class="badge">Premier</span>':''}
+  <div class="nm">${t.name}</div><div class="amt">$${t.amt.toLocaleString()}${t.plus?'+':''}</div>
+  <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul><div class="tag">${t.tag}</div>
+  <button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Choose</button></div>`).join('');
+$('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
+$('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
+$$('[data-tier]').forEach(b=>b.onclick=()=>{ $('#s-tier').value=b.dataset.tier; $('#s-tier').onchange(); $('#f-sponsor').scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>$('#f-sponsor [name=business_name]').focus({preventScroll:true}),500); });
+
+/* ticket steppers */
+const qty={individual_qty:1,couple_qty:0};
+function renderQty(){
+  $$('[data-step]').forEach(s=>s.querySelector('output').textContent=qty[s.dataset.step]);
+  const guests=qty.individual_qty+qty.couple_qty*2, total=qty.individual_qty*30+qty.couple_qty*50;
+  $('#r-guests').textContent = guests+' guest'+(guests===1?'':'s'); $('#r-total').textContent='$'+total;
+}
+$$('[data-step]').forEach(s=>{ const [minus,,plus]=s.children, k=s.dataset.step, max=k==='couple_qty'?10:20;
+  minus.onclick=()=>{qty[k]=Math.max(0,qty[k]-1);renderQty()}; plus.onclick=()=>{qty[k]=Math.min(max,qty[k]+1);renderQty()}; });
+renderQty();
+
+/* data */
+async function api(path, body){
+  const r = await fetch(C.supabaseUrl+'/rest/v1/'+path,{method:'POST',headers:{apikey:C.supabaseKey,authorization:'Bearer '+C.supabaseKey,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify(body)});
+  if(!r.ok){ const t=await r.text(); const e=new Error(t); e.status=r.status; throw e; }
+  const t=await r.text(); return t?JSON.parse(t):null;
+}
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl = u => /^https?:\/\//i.test(u||'') ? u : '';
+
+function renderBoard(d){
+  $('#t-raised').textContent = money(d.raised_cents||0);
+  if(d.goal_cents){ const pct=Math.min(100,Math.round((d.raised_cents||0)/d.goal_cents*100));
+    $('#t-goal').textContent='of '+money(d.goal_cents)+' goal'; $('#t-meter').setAttribute('aria-valuenow',pct); requestAnimationFrame(()=>$('#t-bar').style.width=Math.max(pct,2)+'%'); }
+  else { $('#t-goal').textContent='pledged & raised'; $('#t-meter').hidden=true; }
+  $('#t-guests').textContent=d.guests||0; $('#t-sponsors').textContent=d.sponsor_count||0; $('#t-items').textContent=d.inkind_count||0;
+  const sp=d.sponsors||[];
+  if(sp.length){ $('#wall').innerHTML = [...TIERS].reverse().map(t=>{ const list=sp.filter(s=>s.tier===t.id); if(!list.length) return '';
+      return `<div class="wall-tier"><h4>${t.name}s</h4><div class="wall">${list.map(s=>{ const u=safeUrl(s.url), l=safeUrl(s.logo);
+        const inner=(l?`<img src="${esc(l)}" alt="">`:'')+esc(s.name); return u?`<a href="${esc(u)}" target="_blank" rel="noopener">${inner}</a>`:`<span>${inner}</span>`; }).join('')}</div></div>`; }).join(''); }
+  const ik=d.inkind||[]; if(ik.length) $('#wall-inkind').innerHTML = ik.map(n=>`<span>${esc(n)}</span>`).join('');
+}
+async function loadBoard(){
+  try{ const d = await api('rpc/gala_public',{p_slug:C.slug}); renderBoard(d); }
+  catch(e){ DEMO=true; $('#demo').style.display='block';
+    renderBoard({goal_cents:1500000,raised_cents:612000,guests:58,sponsor_count:9,inkind_count:14,
+      sponsors:[{name:'Sample Sponsor Co.',tier:'partner'},{name:'Example Family',tier:'champion'},{name:'Demo Coffee',tier:'changemaker'},{name:'Placeholder Auto',tier:'hope'},{name:'Test Bakery',tier:'supporter'}],
+      inkind:['Sample Spa','Example Bistro','Demo Florist']}); }
+}
+loadBoard(); setInterval(()=>{ if(!DEMO && !document.hidden) loadBoard(); }, 60000);
+
+/* forms */
+const clean = v => { v=(v||'').trim(); return v===''?null:v; };
+function wire(form, okBox, build, table, after){
+  const f=$(form), err=$('.ferr',f);
+  f.addEventListener('submit', async ev=>{
+    ev.preventDefault(); err.textContent='';
+    const fd=Object.fromEntries(new FormData(f).entries());
+    const row=build(fd); if(typeof row==='string'){ err.textContent=row; return; }
+    if(!row) return;
+    if(!clean(fd.email) && !clean(fd.phone)){ err.textContent='Please add an email or a phone number so we can reach you.'; (f.email||f.phone).focus(); return; }
+    if(fd.email && !/^\S+@\S+\.\S+$/.test(fd.email.trim())){ err.textContent='That email doesn\'t look quite right.'; f.email.focus(); return; }
+    const btn=$('button[type=submit]',f); btn.disabled=true; const label=btn.textContent; btn.textContent='Sending…';
+    try{
+      if(!DEMO) await api(table,row);
+      if(after) await after(fd,row);
+      f.style.display='none'; const ok=$(okBox); ok.style.display='block'; ok.focus();
+      if(!DEMO) loadBoard();
+    }catch(e){
+      err.textContent = (e.status===409 || /duplicate|unique/i.test(e.message)) ? 'Looks like you\'re already entered — you\'re all set!' : 'Something went wrong sending that. Please try again, or call 801-816-4977.';
+    }finally{ btn.disabled=false; btn.textContent=label; }
+  });
+}
+const payBtn = (url,label) => url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">${label}</a>` : '';
+
+wire('#f-rsvp','#ok-rsvp', fd=>{
+  if(!clean(fd.full_name)) return 'Please add your name.';
+  if(qty.individual_qty+qty.couple_qty===0) return 'Choose at least one ticket.';
+  return {event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), dietary:clean(fd.dietary), attire:fd.attire||'surprise'};
+}, 'gala_rsvps', async (fd,row)=>{
+  const total=row.individual_qty*30+row.couple_qty*50;
+  $('#ok-rsvp-msg').textContent = `Seat${row.individual_qty+row.couple_qty*2>1?'s':''} reserved for ${row.full_name}. Your total is $${total} — pay online now or at the door.`;
+  const links=[]; if(row.individual_qty) links.push(payBtn(C.square.individual, row.individual_qty>1?`Pay for ${row.individual_qty} individual tickets`:'Pay for individual ticket'));
+  if(row.couple_qty) links.push(payBtn(C.square.couple, row.couple_qty>1?`Pay for ${row.couple_qty} couple tickets`:'Pay for couple ticket'));
+  $('#pay-now').innerHTML = links.join('');
+  if(fd.drawing && !DEMO){ try{ await api('gala_drawing',{event_slug:C.slug,full_name:row.full_name,email:row.email,phone:row.phone}); }catch(e){} }
+});
+
+wire('#f-sponsor','#ok-sponsor', fd=>{
+  if(!clean(fd.business_name)) return 'Please add the business or family name.';
+  const t=TIERS.find(x=>x.id===fd.tier); let amt=t.amt;
+  if(t.id==='partner'){ amt=parseInt(fd.amount,10)||0; if(amt<2500) return 'Recovery Partner starts at $2,500.'; }
+  if(fd.website && !/^https?:\/\//i.test(fd.website.trim())) fd.website='https://'+fd.website.trim();
+  return {event_slug:C.slug, tier:t.id, amount_cents:amt*100, business_name:clean(fd.business_name), contact_name:clean(fd.contact_name), email:clean(fd.email), phone:clean(fd.phone), website:clean(fd.website), display_name:clean(fd.display_name), message:clean(fd.message)};
+}, 'gala_sponsors', async (fd,row)=>{ $('#ok-sp-name').textContent=row.display_name||row.business_name; $('#sp-pay').innerHTML=payBtn(C.square.sponsor,'Pay sponsorship online'); });
+
+wire('#f-inkind','#ok-inkind', fd=>{
+  if(!clean(fd.donor_name)) return 'Please add your name.';
+  if(!clean(fd.description)) return 'Tell us what you\'d like to donate.';
+  const v=parseInt(fd.est_value,10);
+  return {event_slug:C.slug, donor_name:clean(fd.donor_name), business_name:clean(fd.business_name), email:clean(fd.email), phone:clean(fd.phone), description:clean(fd.description), category:fd.category, est_value_cents:isNaN(v)?null:v*100, delivery:fd.delivery};
+}, 'gala_inkind');
+
+wire('#f-drawing','#ok-drawing', fd=>{
+  if(!clean(fd.full_name)) return 'Please add your name.';
+  if(!fd.adult) return 'Entrants must be 18 or older.';
+  return {event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone)};
+}, 'gala_drawing');
+})();
+</script>
+</body>
+</html>

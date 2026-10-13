@@ -26,3 +26,10 @@
 
 /donation/*
   Cache-Control: no-store
+
+# Masquerade fundraiser page - edited often before Nov 13.
+/masquerade/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/gala-tracker*
+  Cache-Control: no-store

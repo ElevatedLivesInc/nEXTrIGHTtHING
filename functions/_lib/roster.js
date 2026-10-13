@@ -27,7 +27,9 @@ export const ROSTER = {
   // Nonprofit fundraiser campaigns - prize drawing entries, page views.
   // Same people as donations-report today; kept as its own key since a
   // future event's audience may not match the donation-report roster exactly.
-  'drawing-entries':   ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com']
+  'drawing-entries':   ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com'],
+  // Flannel to Formal Masquerade (Nov 13, 2026) - nonprofit side, same people as donations-report.
+  'gala-tracker':      ['elevatedlivesllc@gmail.com','gabe@nextrighthing.com','ryan@nextrighthing.com','cateo@nextrighthing.com','bailey@nextrighthing.com']
 };
 
 export function allowedFor(system) {

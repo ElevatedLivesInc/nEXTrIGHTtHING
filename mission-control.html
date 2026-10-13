@@ -173,15 +173,13 @@
       <div class="nums"><div class="num"><b>&ndash;</b><span>Waiting On A Shift</span></div></div>
     </div>
 
-    <a class="tile" id="evTile" href="/yard-sale" target="_blank">
-      <h3 id="evName">Events &amp; Opportunities</h3>
-      <p id="evBlurb">Whatever is in front of the public right now.</p>
-      <div id="evRefs" style="display:none;font-size:.78rem;color:#c9b6f0;margin:-.2rem 0 .6rem"></div>
-      <div class="nums" id="evNums">
-        <div class="num"><b id="evEntries">&ndash;</b><span>Drawing Entries</span></div>
-        <div class="num"><b id="evToday">&ndash;</b><span>Added Today</span></div>
-        <div class="num"><b id="evReferred">&ndash;</b><span>Referred</span></div>
-        <div class="num" id="evWhenWrap"><b id="evWhen">&ndash;</b><span id="evWhenLabel">Until It Opens</span></div>
+    <a class="tile" href="/gala-tracker" data-scope="donor" data-needs="gala-tracker">
+      <h3>Masquerade &middot; Nov 13</h3>
+      <p>Flannel to Formal fundraiser. Guests, sponsors, in-kind, the free drawing &mdash; and every sponsor promise tracked until it is kept.</p>
+      <div class="nums">
+        <div class="num"><b id="gGuests">&ndash;</b><span>Guests</span></div>
+        <div class="num"><b id="gSponsors">&ndash;</b><span>Sponsors</span></div>
+        <div class="num flag"><b id="gTodo">&ndash;</b><span>To-Do</span></div>
       </div>
     </a>
 
@@ -248,7 +246,7 @@
     <a href="/speak-up" target="_blank"><b>Speak Up Line</b><span>Anonymous concern line for clients, residents and families. No login, no IP stored.</span></a>
     <a href="/fellowship-hall-meetings" target="_blank"><b>Fellowship Hall Meetings</b><span>The meeting schedule. Public.</span></a>
     <a href="/in-kind" target="_blank"><b>Give Something</b><span>Donate goods or services. Becomes a Quartermaster record and a donor receipt.</span></a>
-    <a href="/yard-sale" target="_blank"><b>Current Event</b><span>Whatever is live right now &mdash; today, the end-of-summer yard sale.</span></a>
+    <a href="/masquerade" target="_blank"><b>Current Event</b><span>Flannel to Formal Masquerade, Fri Nov 13 &mdash; tickets, sponsors, in-kind, free drawing. Public.</span></a>
     <a href="/" target="_blank"><b>Main Site</b><span>nextrighthing.com &mdash; the front door.</span></a>
   </div>
   </div>
@@ -363,6 +361,18 @@ function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
         const b=document.getElementById('evBlurb');
         if(b) b.innerHTML=esc(when)+'. <b style="color:#f0d9a0">No entries yet</b> — the drawing form is live at '+esc(EV.url)+'.';
       }
+    }
+
+    // Masquerade tile - live counts from the tracker's own endpoint.
+    if(canDonor && document.getElementById('gGuests')){
+      fetch('/gala-tracker/data').then(r=>r.ok?r.json():null).then(g=>{
+        if(!g) return;
+        const live=(g.rsvps||[]).filter(r=>r.pay_status!=='cancelled');
+        const sp=(g.sponsors||[]).filter(s=>s.status!=='declined');
+        set('gGuests', live.reduce((a,r)=>a+(r.individual_qty||0)+(r.couple_qty||0)*2,0));
+        set('gSponsors', sp.length);
+        set('gTodo', sp.filter(s=>!s.show_publicly||s.status!=='paid').length+(g.inkind||[]).filter(i=>i.status==='pledged'||i.status==='received').length);
+      }).catch(()=>{});
     }
 
     const CM=d.caseload||{};
