@@ -7,10 +7,10 @@
 <meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, 6–10 PM, West Jordan, UT. Dinner, live auction, music and a free opportunity drawing benefiting The Right Thing in Recovery, a 501(c)(3) nonprofit.">
 <meta property="og:title" content="Flannel to Formal Masquerade Fundraiser">
 <meta property="og:description" content="Fri Nov 13 · 6–10 PM · 7669 S Redwood Rd, West Jordan. Dinner included. Reserve your seat or become a sponsor.">
-<meta property="og:image" content="/masquerade/flyer-event.jpg">
+<meta property="og:image" content="https://nextrighthing.com/masquerade/flyer-sponsors.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Raleway:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#070b1f; --navy:#0d1433; --navy2:#141c44; --card:rgba(255,255,255,.055); --line:rgba(201,169,110,.28);
@@ -28,7 +28,7 @@ h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;line-hei
 h2{font-size:clamp(2rem,6vw,3rem);color:var(--gold2)}
 h3{font-size:1.5rem}
 .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
-section{padding:64px 0}
+section{padding:64px 0;scroll-margin-top:60px}
 .eyebrow{font-size:.75rem;letter-spacing:.24em;text-transform:uppercase;color:var(--lav);font-weight:600}
 .lead{color:var(--muted);max-width:640px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:999px;border:1px solid var(--gold);background:linear-gradient(135deg,#d8bb80,#b08d4f);color:#1a1404;font-weight:700;text-decoration:none;cursor:pointer;font:inherit;font-weight:700;min-height:48px}
@@ -48,7 +48,7 @@ section{padding:64px 0}
 .top nav{display:flex;gap:4px;overflow-x:auto}
 .top nav a{color:var(--muted);text-decoration:none;font-size:.82rem;padding:6px 10px;border-radius:999px;white-space:nowrap}
 .top nav a:hover{color:var(--gold2)}
-@media(max-width:620px){.top nav a.hide-sm{display:none}}
+@media(max-width:620px){.top nav a{padding:6px 8px;font-size:.78rem}.brand span{display:none}}
 
 /* hero */
 .hero{padding:56px 0 40px;text-align:center;position:relative;overflow:hidden}
@@ -141,6 +141,41 @@ footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);f
 footer strong{color:var(--text)}
 .demo{display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:30;max-width:520px;margin:0 auto;padding:10px 14px;border-radius:12px;background:#2a1f4a;border:1px solid var(--lav);font-size:.82rem;text-align:center}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* ---- flyer-matched styling (purple sponsor flyer) ---- */
+.script{font-family:"Great Vibes",cursive;font-weight:400}
+.brush{position:relative;display:inline-block;padding:.05em .6em .15em;z-index:0}
+.brush::before{content:"";position:absolute;inset:18% -4% 8%;z-index:-1;border-radius:40% 12% 45% 10%/60% 30% 70% 40%;background:linear-gradient(95deg,rgba(124,58,237,0),#7c3aed 12%,#a855f7 55%,#7c3aed 88%,rgba(124,58,237,0));transform:skew(-8deg) rotate(-1.5deg);opacity:.9}
+h2.fancy{font-family:"Great Vibes",cursive;font-weight:400;font-size:clamp(2.6rem,9vw,4.2rem);color:#f3d48a;text-shadow:0 2px 12px rgba(0,0,0,.45)}
+.banner{display:block;width:100%;height:auto;max-width:1100px;margin:0 auto;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 0 1px rgba(230,207,155,.35)}
+.hero .wrap{position:relative}
+.sparkle{position:absolute;border-radius:50%;background:#f6dc9a;box-shadow:0 0 12px 4px rgba(246,220,154,.55);pointer-events:none}
+.bokeh{position:absolute;border-radius:50%;background:rgba(168,85,247,.25);filter:blur(6px);pointer-events:none}
+.goldline{height:2px;max-width:420px;margin:18px auto;background:linear-gradient(90deg,transparent,#e6c37a,transparent)}
+/* info */
+.info-grid{display:grid;gap:14px}
+@media(min-width:760px){.info-grid{grid-template-columns:repeat(3,1fr)}}
+.info-card{background:linear-gradient(160deg,rgba(124,58,237,.18),rgba(255,255,255,.04));border:1px solid rgba(185,167,232,.35);border-radius:18px;padding:20px}
+.info-card .k{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--lav);font-weight:700}
+.info-card .v{font-family:"Cormorant Garamond",serif;font-size:1.55rem;font-weight:700;color:#fff;line-height:1.2;margin-top:6px}
+.info-card p{margin:.4rem 0 0;color:var(--muted);font-size:.92rem}
+.info-wide{grid-column:1/-1;display:grid;gap:16px;align-items:center}
+@media(min-width:760px){.info-wide{grid-template-columns:1.1fr 1fr}}
+.info-wide img{width:100%;height:auto;border-radius:14px;display:block}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pills span{padding:6px 12px;border-radius:999px;background:rgba(168,85,247,.22);border:1px solid rgba(185,167,232,.4);font-size:.85rem;font-weight:600}
+/* flyer-style tier cards */
+.tier{background:linear-gradient(180deg,#faf7ff,#ece4ff);border:0;color:#2a1650;padding:0 0 16px;overflow:visible;text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.35)}
+.tier .nm{display:block;margin:14px 12px 4px;padding:8px 10px;color:#fff;font-size:.8rem;letter-spacing:.06em;background:linear-gradient(95deg,#6d28d9,#9333ea);border-radius:10px 4px 12px 4px;transform:rotate(-1deg)}
+.tier.cm .nm{background:linear-gradient(95deg,#3730a3,#4f46e5)}
+.tier.top .nm{background:#111}
+.tier .amt{color:#4c1d95;margin:6px 0 2px}
+.tier .star{width:46px;height:46px;margin:0 auto 6px}
+.tier ul{text-align:left;color:#2a1650;padding:0 14px 0 30px}
+.tier .tag{font-family:"Great Vibes",cursive;font-style:normal;color:#6d28d9;font-size:1.45rem}
+.tier .btn{margin:0 14px}
+.tier .btn.ghost{color:#4c1d95;border-color:#7c3aed}
+.tier.top{box-shadow:0 0 0 2px var(--gold),0 14px 40px rgba(201,169,110,.25)}
+.top nav{scrollbar-width:none}.top nav::-webkit-scrollbar{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -165,23 +200,24 @@ window.GALA = {
 
 <div class="top"><div class="wrap">
   <a class="brand" href="/" aria-label="Back to nextrighthing.com">
-    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="#b9a7e8" stroke-width="5"/><path d="M50 12 61 40 90 41 67 59 75 88 50 71 25 88 33 59 10 41 39 40Z" fill="#b9a7e8"/></svg>
+    <img src="starfish.png" alt="" width="30" height="27" style="width:30px;height:auto">
     <span>Masquerade 2026</span>
   </a>
   <nav aria-label="Sections">
+    <a href="#info">Info</a>
     <a href="#tickets">Tickets</a>
     <a href="#sponsor">Sponsor</a>
-    <a href="#inkind" class="hide-sm">Donate an item</a>
-    <a href="#drawing" class="hide-sm">Free drawing</a>
+    <a href="#inkind">Donate</a>
+    <a href="#drawing">Drawing</a>
   </nav>
 </div></div>
 
 <header class="hero">
-  <svg class="mask" style="right:-60px;top:20px;width:320px" viewBox="0 0 200 100" aria-hidden="true"><path d="M10 40c20-25 60-25 90 0 30-25 70-25 90 0-5 35-35 50-60 40-12-5-20-10-30-10s-18 5-30 10C35 90 15 75 10 40z" fill="#b9a7e8"/></svg>
+  <span class="bokeh" style="width:90px;height:90px;left:6%;top:40px"></span><span class="bokeh" style="width:60px;height:60px;right:10%;top:300px"></span><span class="bokeh" style="width:120px;height:120px;left:40%;bottom:-30px"></span>
+  <span class="sparkle" style="width:4px;height:4px;left:12%;top:120px"></span><span class="sparkle" style="width:3px;height:3px;right:18%;top:70px"></span><span class="sparkle" style="width:5px;height:5px;right:7%;bottom:90px"></span>
   <div class="wrap">
-    <div class="f2f">Flannel to Formal</div>
-    <h1>Masquerade</h1>
-    <div class="fund">Fundraiser</div>
+    <h1 class="sr">Flannel to Formal Masquerade Fundraiser</h1>
+    <img class="banner" src="banner.jpg" alt="The Next Right Thing in Recovery presents the Flannel to Formal Masquerade Fundraiser" width="1380" height="382">
     <div class="chips"><span>Dinner</span><span>•</span><span>Live Auction</span><span>•</span><span>Free Drawing</span><span>•</span><span>Music</span><span>•</span><span>Open House</span></div>
     <div class="when">Friday, November 13, 2026<br>6:00 – 10:00 PM</div>
     <div class="where"><a href="https://maps.google.com/?q=7669+S+Redwood+Rd+West+Jordan+UT+84084" target="_blank" rel="noopener">7669 S Redwood Rd, West Jordan, UT 84084</a></div>
@@ -211,9 +247,27 @@ window.GALA = {
   </div>
 </div></div>
 
+<!-- info -->
+<section id="info" style="padding-top:40px"><div class="wrap">
+  <div style="text-align:center;margin-bottom:22px"><span class="eyebrow">Event info</span><h2 class="fancy"><span class="brush">Everything you need</span></h2></div>
+  <div class="info-grid">
+    <div class="info-card"><div class="k">When</div><div class="v">Friday, Nov 13, 2026</div><p>Doors 6:00 PM · Wraps 10:00 PM</p></div>
+    <div class="info-card"><div class="k">Where</div><div class="v">7669 S Redwood Rd</div><p>West Jordan, UT 84084 · <a href="https://maps.google.com/?q=7669+S+Redwood+Rd+West+Jordan+UT+84084" target="_blank" rel="noopener">Directions</a></p></div>
+    <div class="info-card"><div class="k">Tickets</div><div class="v">$30 · $50 couples</div><p>Dinner included. Reserve online, pay online or at the door. <a href="#tickets">Reserve →</a></p></div>
+    <div class="info-card info-wide">
+      <div><div class="k">Dress code</div><div class="v">Flannel to Formal</div><p>Come in flannel, a tux, your best masquerade look — or all three. Masks encouraged, never required.</p>
+        <div class="pills"><span>🍽 Dinner</span><span>🔨 Live auction</span><span>⭐ Free drawing</span><span>♫ Music</span><span>📷 Photo booth</span><span>🏠 Open house</span></div></div>
+      <img src="flannel-to-formal.jpg" alt="A red flannel shirt next to a black tuxedo" loading="lazy" width="539" height="173">
+    </div>
+    <div class="info-card"><div class="k">Benefits</div><div class="v">The Right Thing in Recovery</div><p>A 501(c)(3) nonprofit providing recovery opportunities, sober activities, transportation, peer support and resources.</p></div>
+    <div class="info-card"><div class="k">Sponsors</div><div class="v">From $100</div><p>Five levels plus in-kind gifts of $100+. <a href="#sponsor">See levels →</a></p></div>
+    <div class="info-card"><div class="k">Questions</div><div class="v">Ryan Anderson</div><p><a class="cname-mail2" href="mailto:ryan@nextrighthing.com">ryan@nextrighthing.com</a> · <a href="tel:8018164977">801-816-4977</a></p></div>
+  </div>
+</div></section>
+
 <!-- invitation -->
 <section id="invite"><div class="wrap">
-  <div style="text-align:center;margin-bottom:22px"><span class="eyebrow">You're invited</span></div>
+  <div style="text-align:center;margin-bottom:22px"><h2 class="fancy"><span class="brush">Join Us</span></h2></div>
   <div class="invite">
     <p>You're invited to join us for an exciting evening of community, celebration, and giving back at The Next Right Thing in Recovery's Flannel to Formal Masquerade Fundraiser!</p>
     <p>We're opening our doors for a special open house where you can meet our team, learn more about our mission, and help support the work we do to make a difference in the lives of individuals and families impacted by addiction.</p>
@@ -247,7 +301,7 @@ window.GALA = {
   <div class="grid g2" style="align-items:start">
     <div>
       <span class="eyebrow">Tickets</span>
-      <h2>Save your seat</h2>
+      <h2 class="fancy">Save your seat</h2>
       <p class="lead">Dinner is included with every ticket. Reserve now so the kitchen knows you're coming — pay online or at the door.</p>
       <div class="card" style="margin-top:16px">
         <div class="tline"><div><strong>Individual</strong><small>One guest · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$30</b></div>
@@ -290,8 +344,8 @@ window.GALA = {
 <!-- sponsor -->
 <section id="sponsor"><div class="wrap">
   <div style="text-align:center;max-width:720px;margin:0 auto 28px">
-    <span class="eyebrow">Sponsor opportunities</span>
-    <h2>Be part of the next right thing</h2>
+    <h2 class="fancy"><span class="brush">Sponsor Opportunities</span></h2>
+    <div class="script" style="font-size:1.9rem;color:#e6cf9b;margin-top:4px">Be a sponsor. Be part of the next right thing.</div>
     <p class="lead" style="margin:10px auto 0">Your sponsorship helps provide recovery opportunities, sober activities, transportation, peer support and resources to individuals working to rebuild their lives. <em style="color:var(--lav)">Together, we can make a difference.</em></p>
   </div>
   <div class="grid g5" id="tiers"></div>
@@ -338,7 +392,7 @@ window.GALA = {
   <div class="grid g2" style="align-items:start">
     <div>
       <span class="eyebrow">In-kind sponsor</span>
-      <h2>Donate goods or services</h2>
+      <h2 class="fancy"><span class="brush">In-Kind Sponsor</span></h2><div class="v" style="font-family:Cormorant Garamond,serif;font-size:1.5rem;font-weight:700;margin-top:6px">Donate goods or services</div>
       <p class="lead">Gifts valued at $100 or more receive sponsor recognition based on the value of your donation. Every donated item receives a receipt.</p>
       <ul class="ideas"><li>Food &amp; beverages</li><li>Gift baskets</li><li>Auction items</li><li>Drawing prizes</li><li>Gift cards</li><li>Decorations</li><li>Photography</li><li>DJ / music</li><li>Event supplies</li><li>Services</li><li>And more!</li></ul>
       <div class="card" style="margin-top:18px">
@@ -379,7 +433,7 @@ window.GALA = {
   <div class="grid g2" style="align-items:start">
     <div>
       <span class="eyebrow">Opportunity drawing</span>
-      <h2>Free to enter</h2>
+      <h2 class="fancy">Free to enter</h2>
       <p class="lead">No purchase, ticket, or donation is necessary to enter or win. Every entry has the same chance.</p>
       <details><summary>Official rules (summary)</summary>
         <ul>
@@ -478,8 +532,9 @@ $('#share').onclick=async()=>{ const d={title:'Flannel to Formal Masquerade',tex
   try{ if(navigator.share) await navigator.share(d); else { await navigator.clipboard.writeText(location.href); $('#share').textContent='Link copied ✓'; } }catch(e){} };
 
 /* tiers */
-$('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':''}">${t.plus?'<span class="badge">Premier</span>':''}
-  <div class="nm">${t.name}</div><div class="amt">$${t.amt.toLocaleString()}${t.plus?'+':''}</div>
+const STAR='<svg class="star" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs><path d="M50 6 62 38 96 39 69 60 79 93 50 74 21 93 31 60 4 39 38 38Z" fill="url(#sg)" stroke="#4c1d95" stroke-width="2"/><g fill="#fff" opacity=".85"><circle cx="50" cy="22" r="2.4"/><circle cx="50" cy="34" r="2.4"/><circle cx="26" cy="43" r="2.2"/><circle cx="74" cy="43" r="2.2"/><circle cx="35" cy="74" r="2.2"/><circle cx="65" cy="74" r="2.2"/><circle cx="50" cy="52" r="3.2"/></g></svg>';
+$('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':''} ${t.id==='changemaker'?'cm':''}">${t.plus?'<span class="badge">Premier</span>':''}
+  <div class="nm">${t.name}</div><div class="amt">$${t.amt.toLocaleString()}${t.plus?'+':''}</div>${STAR}
   <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul><div class="tag">${t.tag}</div>
   <button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Choose</button></div>`).join('');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
