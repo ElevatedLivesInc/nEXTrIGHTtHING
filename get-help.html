@@ -57,6 +57,11 @@
   .fg label{display:block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.3rem;}
   .fg input,.fg select,.fg textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:6px;color:#fff;font-family:'Raleway',sans-serif;font-size:.9rem;padding:.65rem .8rem;}
   .fg textarea{min-height:90px;resize:vertical;}
+  .fg.bad input,.fg.bad select{border-color:rgba(224,120,110,.75);background:rgba(224,120,110,.08);}
+  .reqnote{font-size:.74rem;line-height:1.5;color:rgba(255,255,255,.52);margin:-.35rem 0 .9rem;}
+  .reqnote b{color:var(--sand-light);font-weight:600;}
+  .ferr{display:none;font-size:.85rem;line-height:1.5;color:#F2AFA6;background:rgba(224,120,110,.11);border:1px solid rgba(224,120,110,.38);border-radius:6px;padding:.65rem .85rem;margin-bottom:.9rem;}
+  .ferr.on{display:block;}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
   .submit{width:100%;background:linear-gradient(145deg,#e8d5b0,var(--sand));color:var(--navy);font-weight:700;font-size:.95rem;padding:.95rem;border:none;border-radius:6px;cursor:pointer;font-family:'Raleway',sans-serif;letter-spacing:.02em;margin-top:.5rem;}
   /* STEPPED FORM */
@@ -245,6 +250,7 @@
             <div class="fg"><label>Phone</label><input id="f_phone" type="tel" placeholder="(801) 555-0000"></div>
             <div class="fg"><label>Email</label><input id="f_email" type="email"></div>
           </div>
+          <p class="reqnote"><b>One of these is required.</b> A phone number or an email &mdash; whichever you'd rather we use. We can't reach you back without one.</p>
           <div class="two">
             <div class="fg"><label>This is for</label><select id="f_as">
               <option value="self">Myself</option><option value="family">Someone I love</option>
@@ -294,6 +300,8 @@
         </div>
 
         <input type="hidden" id="f_source" value="get-help-page">
+
+        <div class="ferr" id="ferr" role="alert" aria-live="assertive"></div>
 
         <div class="stepnav">
           <button type="button" class="navbtn ghost" id="backBtn" onclick="stepBack()" style="display:none">Back</button>
@@ -382,13 +390,36 @@ function goToStep(n){
 function scrollToFormTop(){
   document.querySelector('.formwrap').scrollIntoView({behavior:'smooth',block:'start'});
 }
+/* Inline validation instead of alert(). A browser alert on a phone reads as
+   something breaking, and this form is often opened by someone who is already
+   having the worst week of their life. Tell them what is missing, in place,
+   without throwing a system dialog at them. */
+function fieldError(msg, id){
+  var box=document.getElementById('ferr');
+  fieldClear();
+  if(box){ box.textContent=msg; box.classList.add('on'); }
+  var f=document.getElementById(id);
+  if(f){
+    if(f.parentNode && f.parentNode.classList) f.parentNode.classList.add('bad');
+    f.focus();
+  }
+}
+function fieldClear(){
+  var box=document.getElementById('ferr');
+  if(box) box.classList.remove('on');
+  var bad=document.querySelectorAll('.fg.bad');
+  for(var i=0;i<bad.length;i++) bad[i].classList.remove('bad');
+}
 function stepNext(){
   if(STEP===1){
     var first=document.getElementById('f_first').value.trim();
     var phone=document.getElementById('f_phone').value.trim();
     var email=document.getElementById('f_email').value.trim();
-    if(!first){alert('Your first name is all we need to start.');document.getElementById('f_first').focus();return;}
-    if(!phone&&!email){alert('A phone number or email so someone can reach you.');document.getElementById('f_phone').focus();return;}
+    if(!first){ fieldError('We just need your first name to get started.','f_first'); return; }
+    /* Required by NRT: no inquiry is accepted without a way to reach the person
+       back. Either channel satisfies it — never both. */
+    if(!phone&&!email){ fieldError('Add a phone number or an email so someone can reach you back. Either one is fine — you do not need both.','f_phone'); return; }
+    fieldClear();
   }
   goToStep(Math.min(3,STEP+1));
   scrollToFormTop();
