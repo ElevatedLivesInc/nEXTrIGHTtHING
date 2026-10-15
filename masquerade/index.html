@@ -239,6 +239,14 @@ h2.fancy{font-family:"Great Vibes",cursive;font-weight:400;font-size:clamp(2.6re
 }
 @media(min-width:760px){.more-inv{display:none}}
 footer a,.info-card a{overflow-wrap:anywhere}
+#qb{border:1px solid var(--gold);border-radius:20px;padding:0;background:#140a2b;color:var(--text);width:min(440px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+#qb::backdrop{background:rgba(5,2,15,.72);backdrop-filter:blur(3px)}
+#qb form{padding:22px 20px 18px;display:grid;gap:12px}
+#qb h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:#fff}
+#qb .qb-amt{color:var(--gold2);font-weight:700}
+#qb .x{position:absolute;right:10px;top:8px;background:none;border:0;color:var(--muted);font-size:1.6rem;cursor:pointer;line-height:1;padding:6px}
+#qb .consent{margin:0}
+#qb .small{font-size:.8rem;color:var(--muted);margin:0}
 </style>
 </head>
 <body>
@@ -382,7 +390,7 @@ window.GALA = {
         <div class="tline"><div><strong>Individual</strong><small>One guest · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$35</b></div>
         <div class="tline" style="border:0"><div><strong>Couple</strong><small>Two guests · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$60</b></div>
         <div id="buy-now" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"></div>
-        <p style="font-size:.82rem;color:var(--muted);margin:10px 0 0">Reserve below first: it saves your seat, asks your photo choice, and takes you straight to secure checkout. Or reserve now and pay at the door.</p>
+        <p style="font-size:.82rem;color:var(--muted);margin:10px 0 0">Buy right here in under a minute, or reserve below and pay at the door.</p>
       </div>
       <p style="margin-top:16px"><button class="btn small ghost" type="button" data-ics>＋ Add to calendar</button> <a class="btn small ghost" id="gcal" target="_blank" rel="noopener">Google Calendar</a></p>
     </div>
@@ -594,6 +602,24 @@ window.GALA = {
   </div>
 </div></section>
 
+<dialog id="qb" aria-labelledby="qb-title">
+  <form method="dialog" id="qb-form" novalidate>
+    <button type="button" class="x" aria-label="Close" onclick="document.getElementById('qb').close()">&times;</button>
+    <div><span class="eyebrow">Secure checkout</span><h3 id="qb-title">Checkout</h3><div class="qb-amt" id="qb-amt"></div></div>
+    <label>Your name <input name="name" autocomplete="name" required maxlength="120"></label>
+    <label>Email <input name="email" type="email" autocomplete="email" required maxlength="200"></label>
+    <label id="qb-biz-wrap">Business or family name <small>(as you'd like it listed)</small><input name="business" autocomplete="organization" maxlength="160"></label>
+    <fieldset class="consent"><legend>Photo consent <span class="reqstar">*</span></legend>
+      <p>Photos and video will be taken at this event and may be shared on our website and social media.</p>
+      <label class="check"><input type="radio" name="pc" value="yes"> Yes, you may include me in event photos and video.</label>
+      <label class="check"><input type="radio" name="pc" value="no"> No, please don't photograph me.</label>
+    </fieldset>
+    <div class="ferr" role="alert" id="qb-err"></div>
+    <button class="btn" type="submit" id="qb-go">Continue to payment</button>
+    <p class="small">You'll finish paying on Square's secure page. Your QR ticket or sponsor details follow by email.</p>
+  </form>
+</dialog>
+
 <button type="button" id="totop" aria-label="Back to top">&uarr;</button>
 <nav id="mbar" aria-label="Quick actions"><a class="btn" href="#tickets">🎟 Tickets · $35</a><a class="btn ghost" href="#sponsor">Sponsor</a></nav>
 
@@ -663,8 +689,8 @@ $('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':'
   <div class="lvl" aria-label="Level ${i+1} of 5">${Array.from({length:5},(_,k)=>STAR.replace('class="star"',`class="star" style="opacity:${k<=i?1:.18}"`).replace(/id="sg"/,`id="sg${i}${k}"`).replace('url(#sg)',`url(#sg${i}${k})`)).join('')}</div>
   <div class="tag">${t.tag}</div><div class="rule"></div>
   <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up &amp; pay</button></div></div>`).join('');
-$('#buy-now').innerHTML=''; if(0) (C.square.individual?`<a class="btn small" href="${C.square.individual}" target="_blank" rel="noopener">Buy individual · $35</a>`:'')+(C.square.couple?`<a class="btn small" href="${C.square.couple}" target="_blank" rel="noopener">Buy couple · $60</a>`:'');
+  <div class="btns"><button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<button class="btn small ${t.plus?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`).join('');
+$('#buy-now').innerHTML=(C.square.individual?`<button class="btn small" type="button" data-buy="individual">Buy individual · $35</button>`:'')+(C.square.couple?`<button class="btn small" type="button" data-buy="couple">Buy couple · $60</button>`:'');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
 $('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
 $$('[data-tier]').forEach(b=>b.onclick=()=>{ $('#s-tier').value=b.dataset.tier; $('#s-tier').onchange(); $('#f-sponsor').scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>$('#f-sponsor [name=business_name]').focus({preventScroll:true}),500); });
@@ -797,6 +823,35 @@ wire('#f-drawing','#ok-drawing', fd=>{
   t.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
   document.addEventListener('focusin', function(e){ if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)){ typing=true; upd(); } });
   document.addEventListener('focusout', function(){ typing=false; setTimeout(upd,50); });
+})();
+/* quick buy: every Square link, with name + email + photo consent captured first */
+(function(){
+  var G=window.GALA, d=document.getElementById('qb'), f=document.getElementById('qb-form'), err=document.getElementById('qb-err'), cur=null;
+  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000]};
+  function open(k){ if(!ITEMS[k]||!G.square[k]) return; cur=k; f.reset(); err.textContent='';
+    document.getElementById('qb-title').textContent=ITEMS[k][0];
+    document.getElementById('qb-amt').textContent=ITEMS[k][1]+(k==='partner'?' (you choose the amount at checkout)':'');
+    document.getElementById('qb-biz-wrap').style.display=(k==='individual'||k==='couple')?'none':'';
+    if(d.showModal) d.showModal(); else location.href=G.square[k]; }
+  document.addEventListener('click', function(e){ var b=e.target.closest('[data-buy]'); if(b){ e.preventDefault(); open(b.dataset.buy); } });
+  f.addEventListener('submit', async function(e){
+    e.preventDefault(); err.textContent='';
+    var fd=Object.fromEntries(new FormData(f).entries()), name=(fd.name||'').trim(), email=(fd.email||'').trim();
+    if(name.length<2){ err.textContent='Please add your name.'; return; }
+    if(!/^\S+@\S+\.\S+$/.test(email)){ err.textContent='Please add a valid email so we can send your ticket.'; return; }
+    if(!fd.pc){ err.textContent='Please answer the photo consent question (yes or no).'; return; }
+    var go=document.getElementById('qb-go'); go.disabled=true; go.textContent='One moment…';
+    var pc=fd.pc==='yes', k=cur;
+    try{
+      if(k==='individual'||k==='couple'){
+        await fetch('/masquerade/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event_slug:G.slug,full_name:name,email:email,individual_qty:k==='individual'?1:0,couple_qty:k==='couple'?1:0,attire:'surprise',photo_consent:pc,drawing:false})});
+      } else {
+        await fetch(G.supabaseUrl+'/rest/v1/gala_sponsors',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify({event_slug:G.slug,tier:k,amount_cents:ITEMS[k][2],business_name:(fd.business||'').trim()||name,contact_name:name,email:email,photo_consent:pc,message:'Quick checkout via Square'})});
+      }
+    }catch(_){ /* never block payment; staff can confirm details at the door */ }
+    location.href=G.square[k];
+  });
+  var q=new URLSearchParams(location.search).get('buy'); if(q) setTimeout(function(){ open(q); },400);
 })();
 </script>
 </body>
