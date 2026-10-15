@@ -217,6 +217,28 @@ h2.fancy{font-family:"Great Vibes",cursive;font-weight:400;font-size:clamp(2.6re
 .share .row a,.share .row button{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;border:1px solid rgba(230,207,155,.55);background:rgba(7,11,31,.5);color:var(--text);font:inherit;font-weight:700;font-size:.92rem;text-decoration:none;cursor:pointer;min-height:46px}
 .share .row a:hover,.share .row button:hover{border-color:var(--gold);color:var(--gold2)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+/* funnel helpers: back-to-top + mobile action bar */
+#totop{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;border-radius:50%;border:1px solid var(--gold);background:rgba(20,10,40,.88);color:var(--gold2);font-size:1.4rem;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .25s,transform .25s;backdrop-filter:blur(8px)}
+#totop.on{opacity:1;transform:none;pointer-events:auto}
+#mbar{display:none}
+@media(max-width:759px){
+  #mbar{display:flex;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:39;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(10,6,24,.94);border-top:1px solid rgba(201,169,110,.4);backdrop-filter:blur(10px);transform:translateY(110%);transition:transform .25s}
+  #mbar.on{transform:none}
+  #mbar a{flex:1;min-height:46px;padding:10px 8px;font-size:.95rem}
+  #totop{bottom:calc(84px + env(safe-area-inset-bottom,0px));width:44px;height:44px}
+  body{padding-bottom:76px}
+  .feats{grid-template-columns:1fr 1fr;gap:10px}
+  .feats .card.feat{padding:14px 10px}
+  .feats .card.feat:last-child{grid-column:1/-1}
+  .feats .ic{font-size:1.4rem}
+  .feats h3{font-size:1.05rem;margin:4px 0}
+  .feats p{font-size:.85rem;margin:0}
+  .invite:not(.open) p:nth-of-type(n+3):not(.sig){display:none}
+  .invite .more-inv{margin:4px 0 14px}
+  .invite.open .more-inv{display:none}
+}
+@media(min-width:760px){.more-inv{display:none}}
+footer a,.info-card a{overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -315,20 +337,6 @@ window.GALA = {
   </div>
 </div></section>
 
-<!-- share -->
-<section id="share" style="padding-top:10px"><div class="wrap">
-  <div class="share">
-    <h2 class="fancy"><span class="brush">Pass It On</span></h2>
-    <p class="lead" style="margin:10px auto 0">One share can fill a seat, land a sponsor or bring in an auction item. Send it to the people who show up for others.</p>
-    <div class="row">
-      <button type="button" id="sh-native">📲 Share</button>
-      <a id="sh-fb" target="_blank" rel="noopener">Facebook</a>
-      <a id="sh-sms">💬 Text it</a>
-      <a id="sh-mail">✉️ Email it</a>
-      <button type="button" id="sh-copy">🔗 Copy link</button>
-    </div>
-  </div>
-</div></section>
 
 <!-- invitation -->
 <section id="invite"><div class="wrap">
@@ -340,6 +348,7 @@ window.GALA = {
     <p>Whether you come dressed in flannel, formal attire, or your favorite masquerade style, we would love to have you there!</p>
     <p>Your presence and support help us continue our mission of providing hope, recovery, and the opportunity for a better future. This is a wonderful chance to connect with our community, celebrate second chances, and support a cause that truly matters.</p>
     <p>Come for the fun, stay for the mission, and help us make a difference!</p>
+    <button type="button" class="btn small ghost more-inv" onclick="this.parentNode.classList.add('open')">Read the full invitation</button>
     <p class="sig">With gratitude,<br>The Next Right Thing in Recovery Team</p>
   </div>
 </div></section>
@@ -349,7 +358,7 @@ window.GALA = {
 <!-- the evening -->
 <section><div class="wrap">
   <div style="text-align:center;margin-bottom:26px"><span class="eyebrow">The evening</span><h2>Good food. Great company.<br>A brighter tomorrow.</h2></div>
-  <div class="grid g5">
+  <div class="grid g5 feats">
     <div class="card feat"><div class="ic">🍽</div><h3>Dinner</h3><p>Included with every ticket.</p></div>
     <div class="card feat"><div class="ic">🔨</div><h3>Live auction</h3><p>Bid on items from local businesses.</p></div>
     <div class="card feat"><div class="ic">⭐</div><h3>Free drawing</h3><p>No purchase necessary. <a href="#drawing">Enter here</a>.</p></div>
@@ -553,6 +562,21 @@ window.GALA = {
 
 <div class="divider"></div>
 
+<!-- share -->
+<section id="share" style="padding-top:10px"><div class="wrap">
+  <div class="share">
+    <h2 class="fancy"><span class="brush">Pass It On</span></h2>
+    <p class="lead" style="margin:10px auto 0">One share can fill a seat, land a sponsor or bring in an auction item. Send it to the people who show up for others.</p>
+    <div class="row">
+      <button type="button" id="sh-native">📲 Share</button>
+      <a id="sh-fb" target="_blank" rel="noopener">Facebook</a>
+      <a id="sh-sms">💬 Text it</a>
+      <a id="sh-mail">✉️ Email it</a>
+      <button type="button" id="sh-copy">🔗 Copy link</button>
+    </div>
+  </div>
+</div></section>
+
 <!-- FAQ -->
 <section id="faq"><div class="wrap" style="max-width:780px">
   <div style="text-align:center;margin-bottom:18px"><span class="eyebrow">Good to know</span><h2>Questions</h2></div>
@@ -569,6 +593,9 @@ window.GALA = {
     <p style="margin-top:12px"><a class="btn small ghost" href="#share">Share this page</a></p>
   </div>
 </div></section>
+
+<button type="button" id="totop" aria-label="Back to top">&uarr;</button>
+<nav id="mbar" aria-label="Quick actions"><a class="btn" href="#tickets">🎟 Tickets · $35</a><a class="btn ghost" href="#sponsor">Sponsor</a></nav>
 
 <footer><div class="wrap">
   <img src="nrt-logo-light.png" alt="The Next Right Thing in Recovery" width="120" height="112" style="width:110px;height:auto;display:block;margin:0 0 14px" loading="lazy">
@@ -760,6 +787,16 @@ wire('#f-drawing','#ok-drawing', fd=>{
   if(!fd.photo_consent) return PC_MSG;
   return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone)};
 }, 'gala_drawing');
+})();
+</script>
+<script>
+(function(){
+  var t=document.getElementById('totop'), m=document.getElementById('mbar'), typing=false;
+  function upd(){ var y=window.scrollY||0; t.classList.toggle('on', y>600); m.classList.toggle('on', y>480 && !typing); }
+  window.addEventListener('scroll', upd, {passive:true}); upd();
+  t.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  document.addEventListener('focusin', function(e){ if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)){ typing=true; upd(); } });
+  document.addEventListener('focusout', function(){ typing=false; setTimeout(upd,50); });
 })();
 </script>
 </body>
