@@ -197,8 +197,8 @@ window.GALA = {
   // Paste Square payment links here once Cate/Ryan create them. Leave '' to show "pay at the door".
   // Square payment links. Paste each link between the quotes. Empty = that button just doesn't show (pay at the door).
   square: {
-    individual: 'https://square.link/u/MhuK13bT',   // Masquerade Ticket — Individual ($30)
-    couple: 'https://square.link/u/d1jsdFyc',       // Masquerade Ticket — Couple ($50)
+    individual: 'https://square.link/u/MhuK13bT',   // Masquerade Ticket — Individual ($35)
+    couple: 'https://square.link/u/d1jsdFyc',       // Masquerade Ticket — Couple ($60)
     supporter: 'https://square.link/u/3wj1onye',    // Recovery Supporter Sponsorship ($100)
     hope: 'https://square.link/u/3Ii8HU3Q',         // Hope Sponsor Sponsorship ($250)
     changemaker: 'https://square.link/u/q4TJOo8u',  // Change Maker Sponsorship ($500)
@@ -242,7 +242,7 @@ window.GALA = {
       <div><b id="cd-d">–</b><span>Days</span></div><div><b id="cd-h">–</b><span>Hours</span></div><div><b id="cd-m">–</b><span>Min</span></div>
     </div>
     <div class="cta">
-      <a class="btn" href="#tickets">Tickets · $30 · Couples $50</a>
+      <a class="btn" href="#tickets">Tickets · $35 · Couples $60</a>
       <a class="btn ghost" href="#sponsor">Become a sponsor</a>
     </div>
   </div>
@@ -270,7 +270,7 @@ window.GALA = {
   <div class="info-grid">
     <div class="info-card"><div class="k">When</div><div class="v">Friday, Nov 13, 2026</div><p>Doors 6:00 PM · Wraps 10:00 PM</p></div>
     <div class="info-card"><div class="k">Where</div><div class="v">7669 S Redwood Rd</div><p>West Jordan, UT 84084 · <a href="https://maps.google.com/?q=7669+S+Redwood+Rd+West+Jordan+UT+84084" target="_blank" rel="noopener">Directions</a></p></div>
-    <div class="info-card"><div class="k">Tickets</div><div class="v">$30 · $50 couples</div><p>Dinner included. Reserve online, pay online or at the door. <a href="#tickets">Reserve →</a></p></div>
+    <div class="info-card"><div class="k">Tickets</div><div class="v">$35 · $60 couples</div><p>Dinner included. Reserve online, pay online or at the door. <a href="#tickets">Reserve →</a></p></div>
     <div class="info-card info-wide">
       <div><div class="k">Dress code</div><div class="v">Flannel to Formal</div><p>Come in flannel, a tux, your best masquerade look — or all three. Masks encouraged, never required.</p>
         <div class="pills"><span>🍽 Dinner</span><span>🔨 Live auction</span><span>⭐ Free drawing</span><span>♫ Music</span><span>📷 Photo booth</span><span>🏠 Open house</span></div></div>
@@ -337,8 +337,10 @@ window.GALA = {
       <h2 class="fancy">Save your seat</h2>
       <p class="lead">Dinner is included with every ticket. Reserve now so the kitchen knows you're coming — pay online or at the door.</p>
       <div class="card" style="margin-top:16px">
-        <div class="tline"><div><strong>Individual</strong><small>One guest · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$30</b></div>
-        <div class="tline" style="border:0"><div><strong>Couple</strong><small>Two guests · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$50</b></div>
+        <div class="tline"><div><strong>Individual</strong><small>One guest · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$35</b></div>
+        <div class="tline" style="border:0"><div><strong>Couple</strong><small>Two guests · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$60</b></div>
+        <div id="buy-now" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"></div>
+        <p style="font-size:.82rem;color:var(--muted);margin:10px 0 0">Pay now, then reserve below so we have your name and you get your QR ticket. Or reserve now and pay at the door.</p>
       </div>
       <p style="margin-top:16px"><button class="btn small ghost" type="button" data-ics>＋ Add to calendar</button> <a class="btn small ghost" id="gcal" target="_blank" rel="noopener">Google Calendar</a></p>
     </div>
@@ -348,7 +350,7 @@ window.GALA = {
           <div><label>Individual tickets</label><div class="stepper" data-step="individual_qty"><button type="button" aria-label="Fewer">−</button><output>1</output><button type="button" aria-label="More">+</button></div></div>
           <div><label>Couple tickets</label><div class="stepper" data-step="couple_qty"><button type="button" aria-label="Fewer">−</button><output>0</output><button type="button" aria-label="More">+</button></div></div>
         </div>
-        <div class="total"><span><span id="r-guests">1 guest</span></span><b id="r-total">$30</b></div>
+        <div class="total"><span><span id="r-guests">1 guest</span></span><b id="r-total">$35</b></div>
         <label>Your name <input name="full_name" autocomplete="name" required maxlength="120"></label>
         <div class="row2">
           <label>Email <input name="email" type="email" autocomplete="email" maxlength="200"></label>
@@ -502,13 +504,13 @@ window.GALA = {
 <section id="faq"><div class="wrap" style="max-width:780px">
   <div style="text-align:center;margin-bottom:18px"><span class="eyebrow">Good to know</span><h2>Questions</h2></div>
   <details><summary>Can I pay at the door?</summary><p>Yes. Reserving online just lets the kitchen plan dinner. You can pay online (when available) or at the door.</p></details>
-  <details><summary>Is my sponsorship or ticket tax-deductible?</summary><p>Contributions benefit The Right Thing in Recovery, a 501(c)(3) nonprofit organization (EIN 93-4316358), and are tax-deductible to the extent allowed by law. If you receive tickets, dinner, or other benefits in return, your receipt will show their value, and only the amount above that value is deductible. Please consult your tax advisor.</p></details>
+  <details><summary>Is my sponsorship or ticket tax-deductible?</summary><p>Contributions benefit The Right Thing in Recovery. Every gift gets a receipt, and if you receive tickets, dinner, or other benefits in return, your receipt will show their value. For questions about deductibility, please consult your tax advisor.</p></details>
   <details><summary>What should I wear?</summary><p>Flannel, formal, masquerade — or all three. Masks encouraged, never required.</p></details>
   <details><summary>Photos &amp; privacy</summary><p>We love a good photo booth, and we protect the people we serve. Please don't photograph, post, or tag anyone without asking first. Our staff will never share images of people in our care without their written consent.</p></details>
   <details><summary>I want to help but can't attend</summary><p>Become a sponsor, donate an item, or enter the free drawing — all from this page. Questions? Contact <a class="cname-mail"></a> or call <a href="tel:8018164977">801-816-4977</a>.</p></details>
   <div style="margin-top:28px"><div class="eyebrow" style="margin-bottom:10px">Share the flyers</div>
     <div class="flyers">
-      <a href="flyer-event.jpg" download><img src="flyer-event.jpg" alt="Event flyer: Flannel to Formal Masquerade Fundraiser open house, Friday November 13 2026, 6 to 10 PM, 7669 S Redwood Rd, tickets $30 individual, $50 couples, dinner included" loading="lazy"></a>
+      <a href="flyer-event.jpg" download><img src="flyer-event.jpg" alt="Event flyer: Flannel to Formal Masquerade Fundraiser open house, Friday November 13 2026, 6 to 10 PM, 7669 S Redwood Rd, tickets $35 individual, $60 couples, dinner included" loading="lazy"></a>
       <a href="flyer-sponsors.jpg" download><img src="flyer-sponsors.jpg" alt="Sponsor opportunities flyer with five sponsorship levels from $100 to $2,500 and up, plus in-kind sponsorship" loading="lazy"></a>
     </div>
     <p style="margin-top:12px"><a class="btn small ghost" href="#share">Share this page</a></p>
@@ -563,7 +565,7 @@ $$('[data-ics]').forEach(b=>b.onclick=()=>{
 
 /* share */
 (function(){const url='https://nextrighthing.com/masquerade/';
-  const msg='You should come to this with me: the Flannel to Formal Masquerade, Fri Nov 13 in West Jordan. Dinner, live auction, music and a free drawing, all for recovery. $30 a seat: ';
+  const msg='You should come to this with me: the Flannel to Formal Masquerade, Fri Nov 13 in West Jordan. Dinner, live auction, music and a free drawing, all for recovery. $35 a seat: ';
   $('#sh-fb').href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url);
   $('#sh-sms').href='sms:?&body='+encodeURIComponent(msg+url);
   $('#sh-mail').href='mailto:?subject='+encodeURIComponent('Come to the Flannel to Formal Masquerade with me')+'&body='+encodeURIComponent(msg+url);
@@ -579,7 +581,8 @@ const STAR='<svg class="star" viewBox="0 0 100 100" aria-hidden="true"><defs><li
 $('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':''} ${t.id==='changemaker'?'cm':''}">${t.plus?'<span class="badge">Premier</span>':''}
   <div class="nm">${t.name}</div><div class="amt">$${t.amt.toLocaleString()}${t.plus?'+':''}</div>${STAR}
   <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul><div class="tag">${t.tag}</div>
-  <button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Choose</button></div>`).join('');
+  <button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<a class="btn small ghost" style="margin:8px 14px 0" href="${C.square[t.id]}" target="_blank" rel="noopener">Pay $${t.amt.toLocaleString()} now</a>`:''}</div>`).join('');
+$('#buy-now').innerHTML=(C.square.individual?`<a class="btn small" href="${C.square.individual}" target="_blank" rel="noopener">Buy individual · $35</a>`:'')+(C.square.couple?`<a class="btn small" href="${C.square.couple}" target="_blank" rel="noopener">Buy couple · $60</a>`:'');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
 $('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
 $$('[data-tier]').forEach(b=>b.onclick=()=>{ $('#s-tier').value=b.dataset.tier; $('#s-tier').onchange(); $('#f-sponsor').scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>$('#f-sponsor [name=business_name]').focus({preventScroll:true}),500); });
@@ -588,7 +591,7 @@ $$('[data-tier]').forEach(b=>b.onclick=()=>{ $('#s-tier').value=b.dataset.tier; 
 const qty={individual_qty:1,couple_qty:0};
 function renderQty(){
   $$('[data-step]').forEach(s=>s.querySelector('output').textContent=qty[s.dataset.step]);
-  const guests=qty.individual_qty+qty.couple_qty*2, total=qty.individual_qty*30+qty.couple_qty*50;
+  const guests=qty.individual_qty+qty.couple_qty*2, total=qty.individual_qty*35+qty.couple_qty*60;
   $('#r-guests').textContent = guests+' guest'+(guests===1?'':'s'); $('#r-total').textContent='$'+total;
 }
 $$('[data-step]').forEach(s=>{ const [minus,,plus]=s.children, k=s.dataset.step, max=k==='couple_qty'?10:20;
@@ -660,13 +663,21 @@ wire('#f-rsvp','#ok-rsvp', fd=>{
   if(qty.individual_qty+qty.couple_qty===0) return 'Choose at least one ticket.';
   return {event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), dietary:clean(fd.dietary), attire:fd.attire||'surprise'};
 }, '@rsvp', async (fd,row,res)=>{
-  const total=row.individual_qty*30+row.couple_qty*50;
+  const total=row.individual_qty*35+row.couple_qty*60;
   $('#ok-rsvp-msg').textContent = `Seat${row.individual_qty+row.couple_qty*2>1?'s':''} reserved for ${row.full_name}. Your total is $${total} — pay online now or at the door.`;
   const links=[]; if(row.individual_qty) links.push(payBtn(C.square.individual, row.individual_qty>1?`Pay for ${row.individual_qty} individual tickets`:'Pay for individual ticket'));
   if(row.couple_qty) links.push(payBtn(C.square.couple, row.couple_qty>1?`Pay for ${row.couple_qty} couple tickets`:'Pay for couple ticket'));
   if(res && res.id){ links.unshift(`<a class="btn" href="ticket?id=${encodeURIComponent(res.id)}">🎟 View your ticket</a>`);
     if(row.email) $('#ok-rsvp-msg').textContent += ` We just emailed your ticket to ${row.email}.`; }
   $('#pay-now').innerHTML = links.join('');
+  const go = (row.individual_qty===1 && !row.couple_qty) ? C.square.individual : (row.couple_qty===1 && !row.individual_qty) ? C.square.couple : '';
+  if(go && !DEMO){
+    const note=document.createElement('p'); note.id='pay-redirect'; note.style.marginTop='12px';
+    let n=4; note.innerHTML=`Taking you to secure checkout in <b id="pay-count">${n}</b>… <button type="button" class="btn" id="pay-stay" style="padding:6px 14px;font-size:.85rem">I'll pay at the door</button>`;
+    $('#pay-now').after(note);
+    const t=setInterval(()=>{ n--; const c=$('#pay-count'); if(c) c.textContent=n; if(n<=0){ clearInterval(t); location.href=go; } },1000);
+    $('#pay-stay').onclick=()=>{ clearInterval(t); note.textContent='No problem — pay at the door. Your seat is saved.'; };
+  }
 });
 
 wire('#f-sponsor','#ok-sponsor', fd=>{

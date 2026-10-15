@@ -11,6 +11,6 @@ export async function onRequestGet({ request, env }) {
   if (!rows.length || rows[0].pay_status === 'cancelled') return json({ error: 'not found' }, 404);
   const t = rows[0];
   return json({ id: t.id, code: 'MQ-' + t.id.replace(/-/g, '').slice(0, 8).toUpperCase(), name: t.full_name,
-    seats: t.individual_qty + t.couple_qty * 2, total: t.individual_qty * 30 + t.couple_qty * 50,
+    seats: t.individual_qty + t.couple_qty * 2, total: t.individual_qty * 35 + t.couple_qty * 60,
     paid: t.pay_status === 'paid' || t.pay_status === 'comp', checked_in: t.checked_in });
 }

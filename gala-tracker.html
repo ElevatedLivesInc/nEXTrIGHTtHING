@@ -158,7 +158,7 @@ async function load(){
 }
 
 const guestsOf=r=>r.individual_qty+r.couple_qty*2;
-const ticketCents=r=>(r.individual_qty*30+r.couple_qty*50)*100;
+const ticketCents=r=>(r.individual_qty*35+r.couple_qty*60)*100;
 
 function render(){
   const live=D.rsvps.filter(r=>r.pay_status!=='cancelled');
@@ -175,6 +175,8 @@ function render(){
   renderTodo(); renderSponsors(); renderGuests(); renderInkind(); renderDrawing(); renderScript();
 }
 
+const PAYLINKS=[['Ticket $35','https://square.link/u/MhuK13bT'],['Couple $60','https://square.link/u/d1jsdFyc'],['Supporter $100','https://square.link/u/3wj1onye'],['Hope $250','https://square.link/u/3Ii8HU3Q'],['Change Maker $500','https://square.link/u/q4TJOo8u'],['Champion $1,000','https://square.link/u/YbHo3FMy'],['Partner $2,500','https://square.link/u/YW3KrESO'],['Event page','https://nextrighthing.com/masquerade/']];
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-copylink]');if(!b)return;navigator.clipboard.writeText(b.dataset.copylink).then(()=>toast('Copied: '+b.textContent));});
 function renderTodo(){
   const sp=D.sponsors.filter(s=>s.status!=='declined');
   const needLogo=sp.filter(s=>s.tier!=='supporter'&&!s.logo_received);
@@ -186,7 +188,9 @@ function renderTodo(){
   const ikIn=D.inkind.filter(i=>i.status==='pledged'), ikR=D.inkind.filter(i=>i.status==='received');
   const unpaidG=D.rsvps.filter(r=>r.pay_status==='reserved');
   const li=(arr,f)=>arr.length?arr.map(f).join(''):'<li class="meta">All clear ✓</li>';
-  $('#tab-todo').innerHTML=`<h2 style="color:var(--gold2)">What needs doing</h2><p class="meta">Every promise on the sponsor flyer, tracked until it's kept. That's what makes the next sponsorship easy to sell.</p>
+  $('#tab-todo').innerHTML=`<div class="item" style="margin-bottom:14px"><b style="color:var(--gold2)">Payment links</b> <span class="meta">tap to copy, then text or email it to a guest or sponsor</span>
+   <div class="bar" style="margin:10px 0 0">${PAYLINKS.map(([n,u])=>`<button class="btn g" data-copylink="${u}">${n}</button>`).join('')}</div></div>
+  <h2 style="color:var(--gold2)">What needs doing</h2><p class="meta">Every promise on the sponsor flyer, tracked until it's kept. That's what makes the next sponsorship easy to sell.</p>
   <div class="todo">
    <h3 style="margin-top:14px">New sponsors to approve for the public wall (${needApproval.length})</h3><ul>${li(needApproval,s=>`<li><b>${esc(s.display_name||s.business_name)}</b> — ${TIERS[s.tier].name}</li>`)}</ul>
    <h3>Logos still needed for printing (${needLogo.length})</h3><ul>${li(needLogo,s=>`<li><b>${esc(s.business_name)}</b> — ${esc(s.contact_name||'')} ${s.email?`<a href="mailto:${esc(s.email)}?subject=Your%20logo%20for%20the%20Masquerade">${esc(s.email)}</a>`:esc(s.phone||'')}</li>`)}</ul>
@@ -200,7 +204,7 @@ function renderTodo(){
 }
 
 function receiptLine(s){
-  const tv=(D.event&&D.event.ticket_value_cents)||3000, ben=(s.tickets_issued||TIERS[s.tier].tickets)*tv, paid=s.paid_cents||0;
+  const tv=(D.event&&D.event.ticket_value_cents)||3500, ben=(s.tickets_issued||TIERS[s.tier].tickets)*tv, paid=s.paid_cents||0;
   return {ben,ded:Math.max(0,paid-ben),text:`The Right Thing in Recovery, a 501(c)(3) nonprofit (EIN 93-4316358), gratefully acknowledges ${s.display_name||s.business_name}'s contribution of ${$$$(paid)} to the Flannel to Formal Masquerade Fundraiser. In exchange, the donor received ${(s.tickets_issued||TIERS[s.tier].tickets)} event ticket(s) including dinner, with an estimated value of ${$$$(ben)}. The tax-deductible portion of this contribution is ${$$$(Math.max(0,paid-ben))}.`};
 }
 

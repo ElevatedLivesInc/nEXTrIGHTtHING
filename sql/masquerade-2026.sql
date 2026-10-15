@@ -15,7 +15,7 @@ create table if not exists public.gala_event (
   entity_id     text not null default 'rtir-501c3',
   starts_at     timestamptz not null,
   goal_cents    integer,                 -- set by staff; null = no goal shown
-  ticket_value_cents integer not null default 3000, -- per-person benefit value for receipts (CPA to confirm)
+  ticket_value_cents integer not null default 3500, -- per-person benefit value for receipts (CPA to confirm)
   created_at    timestamptz not null default now()
 );
 
@@ -157,7 +157,7 @@ as $$
     'goal_cents', (select goal_cents from gala_event where slug = p_slug),
     'raised_cents',
       coalesce((select sum(amount_cents) from gala_sponsors where event_slug = p_slug and status <> 'declined'),0)
-    + coalesce((select sum(individual_qty*3000 + couple_qty*5000) from gala_rsvps where event_slug = p_slug and pay_status in ('reserved','paid','at_door') and source = 'web'),0)
+    + coalesce((select sum(individual_qty*3500 + couple_qty*6000) from gala_rsvps where event_slug = p_slug and pay_status in ('reserved','paid','at_door') and source = 'web'),0)
     + coalesce((select sum(coalesce(est_value_cents,0)) from gala_inkind where event_slug = p_slug and status in ('received','receipted','used')),0),
     'guests', coalesce((select sum(individual_qty + couple_qty*2) from gala_rsvps where event_slug = p_slug and pay_status <> 'cancelled'),0),
     'sponsor_count', (select count(*) from gala_sponsors where event_slug = p_slug and status <> 'declined'),

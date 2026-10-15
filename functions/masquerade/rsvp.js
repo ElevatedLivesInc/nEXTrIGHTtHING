@@ -47,7 +47,7 @@ export async function onRequestPost({ request, env }) {
     const origin = new URL(request.url).origin;
     const link = origin + '/masquerade/ticket?id=' + saved.id;
     const seats = row.individual_qty + row.couple_qty * 2;
-    const total = row.individual_qty * 30 + row.couple_qty * 50;
+    const total = row.individual_qty * 35 + row.couple_qty * 60;
     try {
       const r = await fetch('https://api.resend.com/emails', {
         method: 'POST',
