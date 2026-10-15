@@ -373,7 +373,7 @@ window.GALA = {
         <div class="tline"><div><strong>Individual</strong><small>One guest · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$35</b></div>
         <div class="tline" style="border:0"><div><strong>Couple</strong><small>Two guests · dinner included</small></div><b style="font-family:'Cormorant Garamond';font-size:1.8rem;color:var(--gold2)">$60</b></div>
         <div id="buy-now" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"></div>
-        <p style="font-size:.82rem;color:var(--muted);margin:10px 0 0">Pay now, then reserve below so we have your name and you get your QR ticket. Or reserve now and pay at the door.</p>
+        <p style="font-size:.82rem;color:var(--muted);margin:10px 0 0">Reserve below first: it saves your seat, asks your photo choice, and takes you straight to secure checkout. Or reserve now and pay at the door.</p>
       </div>
       <p style="margin-top:16px"><button class="btn small ghost" type="button" data-ics>＋ Add to calendar</button> <a class="btn small ghost" id="gcal" target="_blank" rel="noopener">Google Calendar</a></p>
     </div>
@@ -636,8 +636,8 @@ $('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':'
   <div class="lvl" aria-label="Level ${i+1} of 5">${Array.from({length:5},(_,k)=>STAR.replace('class="star"',`class="star" style="opacity:${k<=i?1:.18}"`).replace(/id="sg"/,`id="sg${i}${k}"`).replace('url(#sg)',`url(#sg${i}${k})`)).join('')}</div>
   <div class="tag">${t.tag}</div><div class="rule"></div>
   <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<a class="btn small ghost" href="${C.square[t.id]}" target="_blank" rel="noopener">Pay $${t.amt.toLocaleString()} now</a>`:''}</div></div>`).join('');
-$('#buy-now').innerHTML=(C.square.individual?`<a class="btn small" href="${C.square.individual}" target="_blank" rel="noopener">Buy individual · $35</a>`:'')+(C.square.couple?`<a class="btn small" href="${C.square.couple}" target="_blank" rel="noopener">Buy couple · $60</a>`:'');
+  <div class="btns"><button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up &amp; pay</button></div></div>`).join('');
+$('#buy-now').innerHTML=''; if(0) (C.square.individual?`<a class="btn small" href="${C.square.individual}" target="_blank" rel="noopener">Buy individual · $35</a>`:'')+(C.square.couple?`<a class="btn small" href="${C.square.couple}" target="_blank" rel="noopener">Buy couple · $60</a>`:'');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
 $('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
 $$('[data-tier]').forEach(b=>b.onclick=()=>{ $('#s-tier').value=b.dataset.tier; $('#s-tier').onchange(); $('#f-sponsor').scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>$('#f-sponsor [name=business_name]').focus({preventScroll:true}),500); });
