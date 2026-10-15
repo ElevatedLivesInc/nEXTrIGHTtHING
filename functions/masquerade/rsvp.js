@@ -24,8 +24,10 @@ export async function onRequestPost({ request, env }) {
     guest_names: str(b.guest_names, 600),
     dietary: str(b.dietary, 300),
     attire: ['flannel', 'formal', 'masquerade', 'surprise'].includes(b.attire) ? b.attire : 'surprise',
-    pay_status: 'reserved', source: 'web'
+    pay_status: 'reserved', source: 'web',
+    photo_consent: b.photo_consent === true ? true : b.photo_consent === false ? false : null
   };
+  if (row.photo_consent === null) return json({ error: 'Please answer the photo consent question (yes or no).' }, 400);
   if (!row.full_name || row.full_name.length < 2) return json({ error: 'Please add your name.' }, 400);
   if (!row.email && !row.phone) return json({ error: 'Please add an email or a phone number.' }, 400);
   if (row.email && !/^\S+@\S+\.\S+$/.test(row.email)) return json({ error: 'That email does not look right.' }, 400);
