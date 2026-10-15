@@ -116,6 +116,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--lav);outline-off
 .total{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:12px;background:rgba(201,169,110,.1);border:1px solid var(--line)}
 .total b{font-family:"Cormorant Garamond",serif;font-size:1.6rem;color:var(--gold2)}
 .check{display:flex;gap:10px;align-items:flex-start;font-weight:500}
+.consent{border:1px solid rgba(201,169,110,.45);border-radius:14px;padding:12px 14px 6px;margin:6px 0 10px;background:rgba(201,169,110,.06)}
+.consent legend{padding:0 6px;font-weight:700;color:var(--gold2);font-size:.9rem;letter-spacing:.04em}
+.consent p{margin:0 0 8px;font-size:.88rem;color:var(--muted)}
+.consent .check{margin:6px 0}
+.reqstar{color:var(--err)}
 .check input{width:20px;height:20px;margin-top:2px;flex:none}
 .stepper{display:flex;align-items:center;gap:8px}
 .stepper button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:1.3rem;cursor:pointer}
@@ -389,6 +394,11 @@ window.GALA = {
         <label>Dietary needs <small>(optional — helps the kitchen)</small><input name="dietary" maxlength="300"></label>
         <label>Coming as… <select name="attire"><option value="surprise">It's a surprise</option><option value="flannel">Flannel</option><option value="formal">Formal</option><option value="masquerade">Full masquerade</option></select></label>
         <label class="check"><input type="checkbox" name="drawing" checked> Also enter me in the free opportunity drawing</label>
+        <fieldset class="consent"><legend>Photo consent <span class="reqstar">*</span></legend>
+          <p>Photos and video will be taken at this event and may be shared on our website and social media. This answer is for you. Your guests can tell us their choice at check-in.</p>
+          <label class="check"><input type="radio" name="photo_consent" value="yes" required> Yes, you may include me in event photos and video.</label>
+          <label class="check"><input type="radio" name="photo_consent" value="no" required> No, please don't photograph me.</label>
+        </fieldset>
         <div class="ferr" role="alert"></div>
         <button class="btn" type="submit">Reserve my seat</button>
       </form>
@@ -430,6 +440,11 @@ window.GALA = {
         <label>Website or social link <small>(optional)</small><input name="website" type="url" maxlength="300" placeholder="https://"></label>
         <label>List us as <small>(how your name should appear)</small><input name="display_name" maxlength="160"></label>
         <label>Anything we should know? <small>(optional)</small><textarea name="message" rows="3" maxlength="1000"></textarea></label>
+        <fieldset class="consent"><legend>Photo consent <span class="reqstar">*</span></legend>
+          <p>Photos and video will be taken at this event and may be shared on our website and social media. This answer is for the contact person. Anyone attending on your sponsor tickets can tell us their choice at check-in.</p>
+          <label class="check"><input type="radio" name="photo_consent" value="yes" required> Yes, you may include me in event photos and video.</label>
+          <label class="check"><input type="radio" name="photo_consent" value="no" required> No, please don't photograph me.</label>
+        </fieldset>
         <div class="ferr" role="alert"></div>
         <button class="btn" type="submit">Become a sponsor</button>
       </form>
@@ -478,6 +493,11 @@ window.GALA = {
           <label>Estimated value <small>($, optional)</small><input name="est_value" type="number" min="0" step="1" inputmode="numeric"></label>
         </div>
         <label>Getting it to us <select name="delivery"><option value="dropoff">I'll drop it off</option><option value="pickup">Please pick it up</option><option value="day_of">I'll bring it the day of</option></select></label>
+        <fieldset class="consent"><legend>Photo consent <span class="reqstar">*</span></legend>
+          <p>Photos and video will be taken at this event and may be shared on our website and social media.</p>
+          <label class="check"><input type="radio" name="photo_consent" value="yes" required> Yes, you may include me in event photos and video.</label>
+          <label class="check"><input type="radio" name="photo_consent" value="no" required> No, please don't photograph me.</label>
+        </fieldset>
         <div class="ferr" role="alert"></div>
         <button class="btn" type="submit">Pledge my donation</button>
       </form>
@@ -518,6 +538,11 @@ window.GALA = {
         </div>
         <div class="req">One of these is required so we can reach a winner.</div>
         <label class="check"><input type="checkbox" name="adult" required> I'm 18 or older</label>
+        <fieldset class="consent"><legend>Photo consent <span class="reqstar">*</span></legend>
+          <p>Photos and video will be taken at this event and may be shared on our website and social media.</p>
+          <label class="check"><input type="radio" name="photo_consent" value="yes" required> Yes, you may include me in event photos and video.</label>
+          <label class="check"><input type="radio" name="photo_consent" value="no" required> No, please don't photograph me.</label>
+        </fieldset>
         <div class="ferr" role="alert"></div>
         <button class="btn" type="submit">Enter free</button>
       </form>
@@ -534,7 +559,7 @@ window.GALA = {
   <details><summary>Can I pay at the door?</summary><p>Yes. Reserving online just lets the kitchen plan dinner. You can pay online (when available) or at the door.</p></details>
   <details><summary>Is my sponsorship or ticket tax-deductible?</summary><p>Contributions benefit The Right Thing in Recovery. Every gift gets a receipt, and if you receive tickets, dinner, or other benefits in return, your receipt will show their value. For questions about deductibility, please consult your tax advisor.</p></details>
   <details><summary>What should I wear?</summary><p>Flannel, formal, masquerade — or all three. Masks encouraged, never required.</p></details>
-  <details><summary>Photos &amp; privacy</summary><p>We love a good photo booth, and we protect the people we serve. Please don't photograph, post, or tag anyone without asking first. Our staff will never share images of people in our care without their written consent.</p></details>
+  <details><summary>Photos &amp; privacy</summary><p>We love a good photo booth, and we protect the people we serve. Please don't photograph, post, or tag anyone without asking first. Our staff will never share images of people in our care without their written consent. Every ticket, sponsorship and entry form asks for your photo choice, and you can tell us or change it at check-in.</p></details>
   <details><summary>I want to help but can't attend</summary><p>Become a sponsor, donate an item, or enter the free drawing — all from this page. Questions? Contact <a class="cname-mail"></a> or call <a href="tel:8018164977">801-816-4977</a>.</p></details>
   <div style="margin-top:28px"><div class="eyebrow" style="margin-bottom:10px">Share the flyers</div>
     <div class="flyers">
@@ -659,6 +684,7 @@ async function loadBoard(){
 loadBoard(); setInterval(()=>{ if(!DEMO && !document.hidden) loadBoard(); }, 60000);
 
 /* forms */
+const PC_MSG = 'Please answer the photo consent question (yes or no).';
 const clean = v => { v=(v||'').trim(); return v===''?null:v; };
 function wire(form, okBox, build, table, after){
   const f=$(form), err=$('.ferr',f);
@@ -691,7 +717,8 @@ const payBtn = (url,label) => url ? `<a class="btn" href="${esc(url)}" target="_
 wire('#f-rsvp','#ok-rsvp', fd=>{
   if(!clean(fd.full_name)) return 'Please add your name.';
   if(qty.individual_qty+qty.couple_qty===0) return 'Choose at least one ticket.';
-  return {event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), dietary:clean(fd.dietary), attire:fd.attire||'surprise'};
+  if(!fd.photo_consent) return PC_MSG;
+  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), dietary:clean(fd.dietary), attire:fd.attire||'surprise'};
 }, '@rsvp', async (fd,row,res)=>{
   const total=row.individual_qty*35+row.couple_qty*60;
   $('#ok-rsvp-msg').textContent = `Seat${row.individual_qty+row.couple_qty*2>1?'s':''} reserved for ${row.full_name}. Your total is $${total} — pay online now or at the door.`;
@@ -712,23 +739,26 @@ wire('#f-rsvp','#ok-rsvp', fd=>{
 
 wire('#f-sponsor','#ok-sponsor', fd=>{
   if(!clean(fd.business_name)) return 'Please add the business or family name.';
+  if(!fd.photo_consent) return PC_MSG;
   const t=TIERS.find(x=>x.id===fd.tier); let amt=t.amt;
   if(t.id==='partner'){ amt=parseInt(fd.amount,10)||0; if(amt<2500) return 'Recovery Partner starts at $2,500.'; }
   if(fd.website && !/^https?:\/\//i.test(fd.website.trim())) fd.website='https://'+fd.website.trim();
-  return {event_slug:C.slug, tier:t.id, amount_cents:amt*100, business_name:clean(fd.business_name), contact_name:clean(fd.contact_name), email:clean(fd.email), phone:clean(fd.phone), website:clean(fd.website), display_name:clean(fd.display_name), message:clean(fd.message)};
+  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, tier:t.id, amount_cents:amt*100, business_name:clean(fd.business_name), contact_name:clean(fd.contact_name), email:clean(fd.email), phone:clean(fd.phone), website:clean(fd.website), display_name:clean(fd.display_name), message:clean(fd.message)};
 }, 'gala_sponsors', async (fd,row)=>{ $('#ok-sp-name').textContent=row.display_name||row.business_name; $('#sp-pay').innerHTML=payBtn(C.square[row.tier],'Pay your sponsorship online'); });
 
 wire('#f-inkind','#ok-inkind', fd=>{
   if(!clean(fd.donor_name)) return 'Please add your name.';
   if(!clean(fd.description)) return 'Tell us what you\'d like to donate.';
+  if(!fd.photo_consent) return PC_MSG;
   const v=parseInt(fd.est_value,10);
-  return {event_slug:C.slug, donor_name:clean(fd.donor_name), business_name:clean(fd.business_name), email:clean(fd.email), phone:clean(fd.phone), description:clean(fd.description), category:fd.category, est_value_cents:isNaN(v)?null:v*100, delivery:fd.delivery};
+  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, donor_name:clean(fd.donor_name), business_name:clean(fd.business_name), email:clean(fd.email), phone:clean(fd.phone), description:clean(fd.description), category:fd.category, est_value_cents:isNaN(v)?null:v*100, delivery:fd.delivery};
 }, 'gala_inkind');
 
 wire('#f-drawing','#ok-drawing', fd=>{
   if(!clean(fd.full_name)) return 'Please add your name.';
   if(!fd.adult) return 'Entrants must be 18 or older.';
-  return {event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone)};
+  if(!fd.photo_consent) return PC_MSG;
+  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone)};
 }, 'gala_drawing');
 })();
 </script>
