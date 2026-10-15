@@ -180,6 +180,32 @@ h2.fancy{font-family:"Great Vibes",cursive;font-weight:400;font-size:clamp(2.6re
 .tier .btn{margin:0 14px}
 .tier .btn.ghost{color:#4c1d95;border-color:#7c3aed}
 .tier.top{box-shadow:0 0 0 2px var(--gold),0 14px 40px rgba(201,169,110,.25)}
+/* v2 polish: invitation-style cards */
+.tier{border-radius:20px;background:linear-gradient(180deg,#fdfbff 0%,#f1eaff 55%,#e6dbff 100%);box-shadow:0 0 0 1px rgba(201,169,110,.55),0 18px 44px rgba(0,0,0,.4);transition:transform .25s ease,box-shadow .25s ease}
+.tier:before{content:"";position:absolute;inset:6px;border:1px solid rgba(201,169,110,.45);border-radius:15px;pointer-events:none}
+.tier:hover{transform:translateY(-6px);box-shadow:0 0 0 1px var(--gold),0 26px 60px rgba(109,40,217,.45)}
+.tier .nm{position:relative;z-index:1;box-shadow:0 6px 14px rgba(76,29,149,.35)}
+.tier .amt{font-size:2.9rem;margin:14px 0 0;background:linear-gradient(180deg,#5b21b6,#2e1065);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tier .lvl{display:flex;justify-content:center;gap:4px;margin:4px 0 2px}
+.tier .lvl svg{width:16px;height:16px;margin:0}
+.tier.top .btn.ghost{color:var(--gold2);border-color:var(--gold)}
+.tier .tag{order:0;margin:2px 14px 12px;font-size:1.55rem;line-height:1.1;color:#7c3aed}
+.tier .rule{height:1px;margin:0 22px 12px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.tier ul{list-style:none;padding:0 20px;margin:0 0 18px}
+.tier li{position:relative;padding-left:22px;margin:.55em 0}
+.tier li:before{content:"\2726";position:absolute;left:0;top:0;color:#b08d4f;font-size:.95rem}
+.tier .btns{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:0 4px}
+.tier .btns .btn{margin:0 14px;white-space:nowrap;padding-left:10px;padding-right:10px;font-size:.88rem}
+#tiers{padding-top:12px}
+.tier.top{background:radial-gradient(120% 80% at 50% 0%,#3b1a6b 0%,#1a0b33 55%,#0e0620 100%);color:#efe7ff;transform:translateY(-8px);box-shadow:0 0 0 2px var(--gold),0 24px 60px rgba(201,169,110,.3)}
+.tier.top:hover{transform:translateY(-14px)}
+.tier.top:before{border-color:rgba(230,207,155,.55)}
+.tier.top .nm{background:linear-gradient(95deg,#b08d4f,#e6cf9b);color:#1a0b33}
+.tier.top .amt{background:linear-gradient(180deg,#f5e3b3,#c9a96e);-webkit-background-clip:text;background-clip:text}
+.tier.top .tag{color:var(--gold2)}
+.tier.top ul,.tier.top li{color:#efe7ff}
+.tier.top li:before{color:var(--gold2)}
+@media(prefers-reduced-motion:reduce){.tier,.tier:hover,.tier.top,.tier.top:hover{transform:none}}
 .top nav{scrollbar-width:none}.top nav::-webkit-scrollbar{display:none}
 .share{text-align:center;background:linear-gradient(160deg,rgba(124,58,237,.28),rgba(201,169,110,.08));border:1px solid rgba(185,167,232,.4);border-radius:22px;padding:30px 20px}
 .share .row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px}
@@ -581,9 +607,11 @@ $$('[data-ics]').forEach(b=>b.onclick=()=>{
 /* tiers */
 const STAR='<svg class="star" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs><path d="M50 6 62 38 96 39 69 60 79 93 50 74 21 93 31 60 4 39 38 38Z" fill="url(#sg)" stroke="#4c1d95" stroke-width="2"/><g fill="#fff" opacity=".85"><circle cx="50" cy="22" r="2.4"/><circle cx="50" cy="34" r="2.4"/><circle cx="26" cy="43" r="2.2"/><circle cx="74" cy="43" r="2.2"/><circle cx="35" cy="74" r="2.2"/><circle cx="65" cy="74" r="2.2"/><circle cx="50" cy="52" r="3.2"/></g></svg>';
 $('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':''} ${t.id==='changemaker'?'cm':''}">${t.plus?'<span class="badge">Premier</span>':''}
-  <div class="nm">${t.name}</div><div class="amt">$${t.amt.toLocaleString()}${t.plus?'+':''}</div>${STAR}
-  <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul><div class="tag">${t.tag}</div>
-  <button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<a class="btn small ghost" style="margin:8px 14px 0" href="${C.square[t.id]}" target="_blank" rel="noopener">Pay $${t.amt.toLocaleString()} now</a>`:''}</div>`).join('');
+  <div class="nm">${t.name}</div><div class="amt">$${t.amt.toLocaleString()}${t.plus?'+':''}</div>
+  <div class="lvl" aria-label="Level ${i+1} of 5">${Array.from({length:5},(_,k)=>STAR.replace('class="star"',`class="star" style="opacity:${k<=i?1:.18}"`).replace(/id="sg"/,`id="sg${i}${k}"`).replace('url(#sg)',`url(#sg${i}${k})`)).join('')}</div>
+  <div class="tag">${t.tag}</div><div class="rule"></div>
+  <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>
+  <div class="btns"><button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<a class="btn small ghost" href="${C.square[t.id]}" target="_blank" rel="noopener">Pay $${t.amt.toLocaleString()} now</a>`:''}</div></div>`).join('');
 $('#buy-now').innerHTML=(C.square.individual?`<a class="btn small" href="${C.square.individual}" target="_blank" rel="noopener">Buy individual · $35</a>`:'')+(C.square.couple?`<a class="btn small" href="${C.square.couple}" target="_blank" rel="noopener">Buy couple · $60</a>`:'');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
 $('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
