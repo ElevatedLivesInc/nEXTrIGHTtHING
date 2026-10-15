@@ -7,10 +7,10 @@ import { allowedFor } from '../_lib/roster.js';
 
 const SLUG = 'masquerade-2026';
 const TABLES = {
-  gala_rsvps: ['full_name','email','phone','individual_qty','couple_qty','guest_names','dietary','attire','pay_status','source','sponsor_id','checked_in','staff_notes'],
-  gala_sponsors: ['business_name','contact_name','email','phone','website','tier','amount_cents','paid_cents','status','display_name','logo_url','logo_received','show_publicly','message','benefits_done','tickets_issued','receipt_number','staff_notes'],
-  gala_inkind: ['donor_name','business_name','email','phone','category','description','est_value_cents','delivery','status','show_publicly','receipt_number','staff_notes'],
-  gala_drawing: ['full_name','email','phone','is_winner'],
+  gala_rsvps: ['full_name','email','phone','individual_qty','couple_qty','guest_names','dietary','attire','pay_status','source','sponsor_id','checked_in','staff_notes','photo_consent'],
+  gala_sponsors: ['business_name','contact_name','email','phone','website','tier','amount_cents','paid_cents','status','display_name','logo_url','logo_received','show_publicly','message','benefits_done','tickets_issued','receipt_number','staff_notes','photo_consent'],
+  gala_inkind: ['donor_name','business_name','email','phone','category','description','est_value_cents','delivery','status','show_publicly','receipt_number','staff_notes','photo_consent'],
+  gala_drawing: ['full_name','email','phone','is_winner','photo_consent'],
 };
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const pick = (obj, allowed) => { const out = {}; for (const k of allowed) if (obj && Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k]; return out; };
