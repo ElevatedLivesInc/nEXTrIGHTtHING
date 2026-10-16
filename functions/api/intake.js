@@ -78,7 +78,7 @@ export async function onRequestPost(context) {
           'Authorization': 'Bearer ' + env.RESEND_API_KEY
         },
         body: JSON.stringify({
-          from: env.RESEND_FROM || TENANT.orgLegalName+' <intake@'+TENANT.emailDomain+'>',
+          from: TENANT.orgLegalName+' <intake@'+TENANT.emailDomain+'>', // never RESEND_FROM: that is the 501(c)(3) donation sender
           to: [record.email],
           subject: 'We got your message — '+TENANT.orgLegalName,
           html: '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:'+TENANT.colors.navy+';line-height:1.7">'
@@ -104,7 +104,7 @@ export async function onRequestPost(context) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + env.RESEND_API_KEY },
         body: JSON.stringify({
-          from: env.RESEND_FROM || TENANT.defaultFromName + ' <' + TENANT.defaultFromAddress + '>',
+          from: TENANT.defaultFromName + ' <' + TENANT.defaultFromAddress + '>',
           to: DIGESTS.intake,
           subject: urgent ? 'URGENT: new intake request needs a call now' : 'New intake request waiting',
           html: '<div style="font-family:Georgia,serif;color:' + TENANT.colors.navy + ';line-height:1.7">'
