@@ -13,7 +13,7 @@ const TABLES = {
   gala_drawing: ['full_name','email','phone','is_winner','photo_consent'],
   gala_auction_items: ['sort','title','donor','description','value_label','icon','start_bid_cents','increment_cents','active','winner_paid','staff_notes'],
   gala_bids: ['voided'],
-  gala_stars: ['paid','dedication'],
+  gala_stars: ['paid','dedication','hidden'],
 };
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const pick = (obj, allowed) => { const out = {}; for (const k of allowed) if (obj && Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k]; return out; };
