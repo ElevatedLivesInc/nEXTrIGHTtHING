@@ -11,6 +11,8 @@ const TABLES = {
   gala_sponsors: ['business_name','contact_name','email','phone','website','tier','amount_cents','paid_cents','status','display_name','logo_url','logo_received','show_publicly','message','benefits_done','tickets_issued','receipt_number','staff_notes','photo_consent'],
   gala_inkind: ['donor_name','business_name','email','phone','category','description','est_value_cents','delivery','status','show_publicly','receipt_number','staff_notes','photo_consent'],
   gala_drawing: ['full_name','email','phone','is_winner','photo_consent'],
+  gala_auction_items: ['sort','title','donor','description','value_label','icon','start_bid_cents','increment_cents','active','winner_paid','staff_notes'],
+  gala_bids: ['voided'],
 };
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const pick = (obj, allowed) => { const out = {}; for (const k of allowed) if (obj && Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k]; return out; };
@@ -37,10 +39,11 @@ export async function onRequestGet({ request, env }) {
   const g = await gate(request, env); if (g.res) return g.res;
   try {
     const q = 'event_slug=eq.' + SLUG + '&order=created_at.desc';
-    const [event, rsvps, sponsors, inkind, drawing] = await Promise.all([
+    const [event, rsvps, sponsors, inkind, drawing, auction, bids] = await Promise.all([
       sb(env, 'gala_event?slug=eq.' + SLUG), sb(env, 'gala_rsvps?' + q), sb(env, 'gala_sponsors?' + q), sb(env, 'gala_inkind?' + q), sb(env, 'gala_drawing?' + q),
+      sb(env, 'gala_auction_items?event_slug=eq.' + SLUG + '&order=sort.asc,title.asc'), sb(env, 'gala_bids?event_slug=eq.' + SLUG + '&order=amount_cents.desc,created_at.asc'),
     ]);
-    return json({ who: g.who, event: event[0] || null, rsvps, sponsors, inkind, drawing });
+    return json({ who: g.who, event: event[0] || null, rsvps, sponsors, inkind, drawing, auction, bids });
   } catch (e) { return json({ error: 'load failed', detail: String(e.message || e) }, 500); }
 }
 
