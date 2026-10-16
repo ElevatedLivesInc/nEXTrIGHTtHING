@@ -161,6 +161,8 @@ async function load(){
 }
 
 const guestsOf=r=>r.individual_qty+r.couple_qty*2;
+const WHO=r=>r?r.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '):'';
+const VIA=x=>x&&x.referred_by?` <span class="pill" style="background:rgba(201,169,110,.18);color:var(--gold2)" title="Came in through this person's link">via ${esc(WHO(x.referred_by))}</span>`:'';
 const PC=v=>v===true?'<span class="pill p-paid" title="Photo consent: yes">📷 Photos OK</span>':v===false?'<span class="pill p-declined" title="Photo consent: no" style="background:#5a1620;color:#ffd5d5">🚫 No photos</span>':'<span class="pill p-reserved" title="Not answered">📷 Ask</span>';
 const ticketCents=r=>(r.individual_qty*35+r.couple_qty*60)*100;
 
@@ -205,7 +207,21 @@ function renderTodo(){
    <h3>Promised recognition not yet delivered (${owed.length})</h3><ul>${li(owed,([s,l])=>`<li><b>${esc(s.business_name)}</b> — ${esc(l)}</li>`)}</ul>
    <h3>In-kind: pick up / drop off (${ikIn.length}) · receipt (${ikR.length})</h3><ul>${li([...ikIn,...ikR],i=>`<li><b>${esc(i.business_name||i.donor_name)}</b> — ${esc(i.description)} <span class="pill p-${i.status}">${i.status}</span></li>`)}</ul>
    <h3>Guests reserved but not paid (${unpaidG.length})</h3><ul>${li(unpaidG,r=>`<li>${esc(r.full_name)} — ${$$$(ticketCents(r))}</li>`)}</ul>
-  </div>`;
+  </div>${whoBlock()}`;
+}
+
+function whoBlock(){
+  const m={}, add=(r,f)=>{ const k=r||'_'; m[k]=m[k]||{sp:0,spc:0,paid:0,g:0,ik:0,st:0}; f(m[k]); };
+  D.sponsors.filter(s=>s.status!=='declined').forEach(s=>add(s.referred_by,o=>{o.sp++;o.spc+=s.amount_cents||0;o.paid+=s.paid_cents||0;}));
+  D.rsvps.forEach(r=>add(r.referred_by,o=>o.g++));
+  D.inkind.forEach(i=>add(i.referred_by,o=>o.ik++));
+  (D.stars||[]).forEach(x=>add(x.referred_by,o=>o.st+=x.amount_cents||0));
+  const keys=Object.keys(m).sort((a,b)=>a==='_'?1:b==='_'?-1:m[b].spc-m[a].spc);
+  if(!keys.length) return '';
+  return `<div class="panel" style="margin-top:14px"><h2 style="color:var(--gold2)">Who brought it in</h2>
+   <p class="meta">Each person shares their own link or PDF. Anything that comes in through it is credited to them, even if it gets forwarded. "Direct" means no one's link was used.</p>
+   <div style="overflow-x:auto"><table><tr><th>Through</th><th>Sponsors</th><th>Pledged</th><th>Paid</th><th>Guests</th><th>Items</th><th>Starfish</th></tr>
+   ${keys.map(k=>{const o=m[k];return `<tr><td><b>${k==='_'?'Direct':esc(WHO(k))}</b></td><td>${o.sp}</td><td>${$$$(o.spc)}</td><td>${$$$(o.paid)}</td><td>${o.g}</td><td>${o.ik}</td><td>${$$$(o.st)}</td></tr>`;}).join('')}</table></div></div>`;
 }
 
 function receiptLine(s){
@@ -222,7 +238,7 @@ function renderSponsors(){
    <button class="btn g" data-add="sponsor">+ Add sponsor</button><button class="btn g" data-csv="sponsors">CSV</button></div>
    <div class="list">${rows.map(s=>{ const done=s.benefits_done||{}, bl=benefitsFor(s.tier), n=bl.filter(([k])=>done[k]).length, r=receiptLine(s);
     return `<div class="item" data-id="${s.id}"><div class="hd"><div><h3>${esc(s.display_name||s.business_name)} ${PC(s.photo_consent)}</h3>
-      <div class="meta">${TIERS[s.tier].name} · ${$$$(s.amount_cents)} · ${esc(s.contact_name||'')} ${s.email?`· <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`:''} ${s.phone?`· <a href="tel:${esc(s.phone)}">${esc(s.phone)}</a>`:''} ${s.website?`· <a href="${esc(s.website)}" target="_blank" rel="noopener">site</a>`:''}</div>
+      <div class="meta">${TIERS[s.tier].name}${VIA(s)} · ${$$$(s.amount_cents)} · ${esc(s.contact_name||'')} ${s.email?`· <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`:''} ${s.phone?`· <a href="tel:${esc(s.phone)}">${esc(s.phone)}</a>`:''} ${s.website?`· <a href="${esc(s.website)}" target="_blank" rel="noopener">site</a>`:''}</div>
       ${s.message?`<div class="meta" style="margin-top:4px">“${esc(s.message)}”</div>`:''}</div>
       <div style="text-align:right"><span class="pill p-${s.status}">${s.status}</span><div class="prog" style="margin-top:6px">${n}/${bl.length} delivered</div></div></div>
      <div class="fields">
@@ -256,7 +272,7 @@ function renderGuests(){
    ${diet.length?`<div class="item" style="margin-bottom:10px"><b>Kitchen notes:</b> ${diet.map(r=>`${esc(r.full_name)} (${guestsOf(r)}) — ${esc(r.dietary)}`).join(' · ')}</div>`:''}
    <div style="overflow-x:auto"><table><thead><tr><th>In</th><th>Name</th><th>Photos</th><th>Seats</th><th>Owes</th><th>Payment</th><th>Contact</th></tr></thead><tbody>
    ${rows.map(r=>`<tr data-id="${r.id}"><td><input type="checkbox" data-f="checked_in" ${r.checked_in?'checked':''} aria-label="Checked in"></td>
-    <td><b>${esc(r.full_name)}</b>${r.guest_names?`<div class="meta">+ ${esc(r.guest_names)}</div>`:''}${r.attire&&r.attire!=='surprise'?`<div class="meta">${esc(r.attire)}</div>`:''}</td>
+    <td><b>${esc(r.full_name)}</b>${VIA(r)}${r.guest_names?`<div class="meta">+ ${esc(r.guest_names)}</div>`:''}${r.attire&&r.attire!=='surprise'?`<div class="meta">${esc(r.attire)}</div>`:''}</td>
     <td><select data-f="photo_consent" data-bool aria-label="Photo consent"><option value="" ${r.photo_consent==null?'selected':''}>Ask</option><option value="true" ${r.photo_consent===true?'selected':''}>Yes</option><option value="false" ${r.photo_consent===false?'selected':''}>No</option></select></td>
     <td>${guestsOf(r)}</td><td>${r.source==='web'?$$$(ticketCents(r)):'—'}</td>
     <td><select data-f="pay_status">${['reserved','paid','at_door','comp','cancelled'].map(o=>`<option ${r.pay_status===o?'selected':''}>${o}</option>`).join('')}</select></td>
@@ -269,7 +285,7 @@ function renderGuests(){
 function renderInkind(){
   $('#tab-inkind').innerHTML=`<div class="bar"><button class="btn g" data-add="inkind">+ Add item</button><button class="btn g" data-csv="inkind">CSV</button></div>
    <div class="list">${D.inkind.map(i=>`<div class="item" data-id="${i.id}"><div class="hd"><div><h3>${esc(i.business_name||i.donor_name)} ${PC(i.photo_consent)}</h3>
-     <div class="meta">${esc(i.description)} · ${esc(i.category||'')} · ${esc(i.delivery||'')} ${i.email?`· <a href="mailto:${esc(i.email)}">${esc(i.email)}</a>`:''} ${i.phone?`· <a href="tel:${esc(i.phone)}">${esc(i.phone)}</a>`:''}</div></div><span class="pill p-${i.status}">${i.status}</span></div>
+     <div class="meta">${esc(i.description)}${VIA(i)} · ${esc(i.category||'')} · ${esc(i.delivery||'')} ${i.email?`· <a href="mailto:${esc(i.email)}">${esc(i.email)}</a>`:''} ${i.phone?`· <a href="tel:${esc(i.phone)}">${esc(i.phone)}</a>`:''}</div></div><span class="pill p-${i.status}">${i.status}</span></div>
      <div class="fields"><label>Status<select data-f="status">${['pledged','received','receipted','used','declined'].map(o=>`<option ${i.status===o?'selected':''}>${o}</option>`).join('')}</select></label>
       <label>Est. value ($)<input type="number" inputmode="numeric" data-f="est_value_cents" data-money value="${i.est_value_cents==null?'':Math.round(i.est_value_cents/100)}"></label>
       <label>Receipt #<input data-f="receipt_number" value="${esc(i.receipt_number||'')}"></label></div>
@@ -308,7 +324,7 @@ function renderStars(){
    <p class="meta">Each row was entered before Square checkout. Tick "Paid" once you see the matching payment in Square. Print the names from the CSV. Big-screen wall for the event TV: <a href="/masquerade/wall" target="_blank" style="color:var(--gold2)">nextrighthing.com/masquerade/wall</a></p>
    <div class="bar" style="margin-top:10px"><button class="btn g" id="stars-csv">CSV for the wall</button></div>
    <div class="list">${st.map(x=>`<div class="item" data-id="${x.id}"><div class="hd"><div><h3>${'⭐'.repeat(x.stars===5?5:1)} ${esc(x.dedication||x.full_name)}</h3>
-     <div class="meta">${esc(x.full_name)} ${x.email?`· <a href="mailto:${esc(x.email)}">${esc(x.email)}</a>`:''} · ${$$$(x.amount_cents)} · ${new Date(x.created_at).toLocaleString()} ${PC(x.photo_consent)}</div></div>
+     <div class="meta">${esc(x.full_name)}${VIA(x)} ${x.email?`· <a href="mailto:${esc(x.email)}">${esc(x.email)}</a>`:''} · ${$$$(x.amount_cents)} · ${new Date(x.created_at).toLocaleString()} ${PC(x.photo_consent)}</div></div>
      <span class="pill ${x.paid?'p-paid':'p-reserved'}">${x.paid?'Paid':'Check Square'}</span></div>
      <div class="fields"><label>Shown on wall as<input data-f="dedication" value="${esc(x.dedication||'')}" placeholder="${esc(x.full_name)}"></label></div>
      <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="paid" ${x.paid?'checked':''}> Paid in Square</label>
@@ -373,7 +389,8 @@ async function add(kind){
   let table,row,list;
   if(kind==='sponsor'){ const n=ask('Business or family name'); if(!n) return; const t=ask('Tier: supporter, hope, changemaker, champion, partner','hope'); if(!TIERS[t]) return toast('Unknown tier');
     const c=ask('Email or phone'); if(!c) return; const amt=t==='partner'?parseInt(ask('Amount ($)','2500'),10)||2500:TIERS[t].amt;
-    table='gala_sponsors'; list='sponsors'; row={business_name:n,tier:t,amount_cents:amt*100,[c.includes('@')?'email':'phone']:c,status:'pledged'}; }
+    const w=(ask('Who brought them in? (first name, or leave blank)','')||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,30);
+    table='gala_sponsors'; list='sponsors'; row={business_name:n,tier:t,amount_cents:amt*100,[c.includes('@')?'email':'phone']:c,status:'pledged'}; if(w) row.referred_by=w; }
   else if(kind==='guest'){ const n=ask('Guest name'); if(!n) return; const c=ask('Email or phone'); if(!c) return; const ty=ask('Type "1" for individual or "2" for couple','1');
     const st=ask('Payment: paid, at_door or comp','at_door'); table='gala_rsvps'; list='rsvps';
     row={full_name:n,[c.includes('@')?'email':'phone']:c,individual_qty:ty==='2'?0:1,couple_qty:ty==='2'?1:0,pay_status:['paid','at_door','comp'].includes(st)?st:'at_door',source:'staff'}; }
