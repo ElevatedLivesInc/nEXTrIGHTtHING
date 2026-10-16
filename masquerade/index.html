@@ -135,6 +135,24 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--lav);outline-off
 .wall a,.wall span{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);text-decoration:none;font-weight:600}
 .wall img{height:28px;max-width:110px;object-fit:contain;background:#fff;border-radius:6px;padding:2px 4px}
 .wall-empty{color:var(--muted);font-style:italic}
+.sw-pres{position:relative;border-radius:22px;padding:26px 22px;text-align:center;margin:0 auto 18px;max-width:880px;background:radial-gradient(120% 140% at 50% 0%,rgba(124,58,237,.45),rgba(14,6,32,.95) 70%);border:1.5px solid var(--gold);box-shadow:0 0 40px rgba(230,207,155,.18)}
+.sw-pres .k{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);font-weight:700}
+.sw-pres .n{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3rem);color:#fff6dc;line-height:1.1;margin:6px 0 4px;text-shadow:0 0 22px rgba(230,207,155,.45)}
+.sw-pres.open{border-style:dashed;background:rgba(124,58,237,.12)}
+.sw-pres.open .n{color:rgba(255,246,220,.55)}
+.sw-pres img{max-height:80px;max-width:240px;display:block;margin:10px auto 0}
+.sw-stew{max-width:640px;margin:0 auto 22px;text-align:center;border-radius:18px;padding:18px;border:1px solid rgba(230,207,155,.55);border-top:2px solid var(--gold);background:rgba(255,255,255,.04)}
+.sw-stew .k{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2)}
+.sw-stew .n{font-family:'Cormorant Garamond',serif;font-size:2rem;color:#fff;margin-top:4px}
+.sw-label{text-align:center;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);margin:22px 0 12px}
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sw-t{display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px 10px;border-radius:16px;text-align:center;text-decoration:none;color:var(--text);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(201,169,110,.32);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+a.sw-t:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 10px 26px rgba(0,0,0,.45),0 0 18px rgba(230,207,155,.18)}
+.sw-logo{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#fff;overflow:hidden;box-shadow:0 0 0 2px rgba(230,207,155,.6),0 0 16px rgba(185,140,255,.35);font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.5rem;color:#3b1a6b}
+.sw-logo img{width:70%;height:70%;object-fit:contain}
+.sw-t .n{font-weight:700;font-size:.92rem;line-height:1.25}
+.sw-t .go{font-size:.7rem;color:var(--gold2);letter-spacing:.08em}
+#wall .wall-tier{margin-top:10px}
 
 .ideas{columns:2;padding-left:18px;color:var(--muted);font-size:.92rem;margin:.6rem 0 0}
 details{border-bottom:1px solid rgba(255,255,255,.1);padding:14px 0}
@@ -580,11 +598,28 @@ window.GALA = {
       </div>
     </div>
     <div class="card" id="wall-card">
-      <h3 style="color:var(--gold2)">Our sponsors</h3>
-      <p style="color:var(--muted);font-size:.9rem;margin-top:.3rem">The businesses and families making this night possible.</p>
-      <div id="wall"><p class="wall-empty">Be the first name on the board.</p></div>
+      <h3 style="color:var(--gold2)">Where your name goes</h3>
+      <p style="color:var(--muted);font-size:.95rem;margin-top:.4rem;line-height:1.6">Every sponsor joins our <a href="#sponsor-wall" style="color:var(--gold2)">sponsor wall</a>, right here on this page, with a link to your website. Higher levels add your logo on event signage, a social media spotlight and recognition from the stage. Our Presenting Sponsor&rsquo;s name goes on the night itself.</p>
+      <a class="btn ghost small" href="#sponsor-wall" style="margin-top:12px;display:inline-block">See the sponsor wall &darr;</a>
     </div>
   </div>
+</div></section>
+
+<div class="divider"></div>
+
+<!-- sponsor wall -->
+<section id="sponsor-wall"><div class="wrap">
+  <div style="text-align:center;max-width:760px;margin:0 auto 22px">
+    <span class="eyebrow">Sponsor wall</span>
+    <h2 class="fancy"><span class="brush">Thank You to Our Sponsors</span></h2>
+    <p class="lead" style="margin:10px auto 0">The businesses and families making this night possible.</p>
+  </div>
+  <div id="sw-presenting"></div>
+  <div id="sw-steward"></div>
+  <div id="wall"></div>
+  <div class="sw-label" id="sw-donors-h" hidden>Event partners &amp; donors</div>
+  <div class="sw-grid" id="sw-donors"></div>
+  <div class="cta" style="margin-top:22px"><a class="btn" href="#sponsor">Put your name on the wall</a><a class="btn ghost" href="#inkind">Donate an item</a></div>
 </div></section>
 
 <div class="divider"></div>
@@ -835,6 +870,38 @@ function renderBoard(d){
       return `<div class="wall-tier"><h4>${t.name}s</h4><div class="wall">${list.map(s=>{ const u=safeUrl(s.url), l=safeUrl(s.logo);
         const inner=(l?`<img src="${esc(l)}" alt="">`:'')+esc(s.name); return u?`<a href="${esc(u)}" target="_blank" rel="noopener">${inner}</a>`:`<span>${inner}</span>`; }).join('')}</div></div>`; }).join(''); }
   const ik=d.inkind||[]; if(ik.length) $('#wall-inkind').innerHTML = ik.map(n=>`<span>${esc(n)}</span>`).join('');
+  sponsorWall(d);
+}
+/* sponsor wall: names + links; logos come from the sponsor (or their site icon until then). Never shows what anyone gave. */
+const STEWARD="Massimo's";
+const PARTNERS=["Pat's BBQ","Kirk's Photography"];
+const SITES={"Pat's BBQ":'https://www.patsbbq.com',"Hale Centre Theatre":'https://www.hct.org',"Snowbird":'https://www.snowbird.com',"The Grand America Hotel":'https://www.grandamerica.com',"Minky Couture":'https://www.softminkyblankets.com',"Beans & Brews":'https://www.beansandbrews.com',"Let's Roam":'https://www.letsroam.com',"Cinemark Theatres":'https://www.cinemark.com',"Scheels":'https://www.scheels.com',"Shake Shack":'https://shakeshack.com'};
+let _auDonors=null;
+function swLogo(name,url,logo){
+  const ini=esc((name.replace(/^The /,'').match(/[A-Za-z0-9]/)||['★'])[0].toUpperCase());
+  let src=safeUrl(logo); if(!src&&url){ try{ src='https://www.google.com/s2/favicons?sz=128&domain='+new URL(url).hostname; }catch(e){} }
+  return `<span class="sw-logo">${src?`<img src="${esc(src)}" alt="" loading="lazy" onload="if(this.naturalWidth<48){this.parentNode.textContent='${ini}'}" onerror="this.parentNode.textContent='${ini}'">`:ini}</span>`;
+}
+function swTile(name,url,logo){
+  const u=safeUrl(url); const inner=swLogo(name,u,logo)+`<span class="n">${esc(name)}</span>`+(u?'<span class="go">Visit &rarr;</span>':'');
+  return u?`<a class="sw-t" href="${esc(u)}" target="_blank" rel="noopener">${inner}</a>`:`<div class="sw-t">${inner}</div>`;
+}
+async function sponsorWall(d){
+  const sp=d.sponsors||[];
+  const pres=sp.filter(s=>s.tier==='presenting');
+  $('#sw-presenting').innerHTML = pres.length
+    ? pres.map(s=>{ const u=safeUrl(s.url), l=safeUrl(s.logo); const body=`<div class="k">Presented by</div><div class="n">${esc(s.name)}</div>${l?`<img src="${esc(l)}" alt="">`:''}`; return u?`<a href="${esc(u)}" target="_blank" rel="noopener" style="text-decoration:none;display:block" class="sw-pres">${body}</a>`:`<div class="sw-pres">${body}</div>`; }).join('')
+    : `<div class="sw-pres open"><div class="k">Presenting Sponsor &middot; only one</div><div class="n">Your name here</div><p style="margin:6px 0 12px;color:var(--muted)">&ldquo;Flannel to Formal Masquerade, presented by you.&rdquo; On this page, on the signage, and on the night.</p><button class="btn small" type="button" data-buy="presenting">Become our Presenting Sponsor</button></div>`;
+  // cash sponsors (other tiers) already render into #wall by tier; hide presenting there
+  $$('#wall .wall-tier').forEach(el=>{ if(/^Presenting/.test(el.querySelector('h4').textContent)) el.remove(); });
+  const ik=(d.inkind||[]).slice();
+  if(_auDonors===null){ try{ const a=await api('rpc/gala_auction_public',{p_slug:C.slug}); _auDonors=[...new Set((a.items||[]).map(i=>i.donor).filter(Boolean))]; }catch(e){ _auDonors=[]; } }
+  const cash=new Set(sp.map(s=>s.name));
+  const all=[...new Set([...ik,..._auDonors])].filter(n=>n&&!cash.has(n));
+  $('#sw-steward').innerHTML = all.includes(STEWARD) ? `<div class="sw-stew"><div class="k">Our first Stewardship Sponsor</div><div class="n">${esc(STEWARD)}</div></div>` : '';
+  const rest=all.filter(n=>n!==STEWARD).sort((a,b)=>{ const pa=PARTNERS.indexOf(a), pb=PARTNERS.indexOf(b); if(pa>-1||pb>-1) return (pa<0?99:pa)-(pb<0?99:pb); return a.replace(/^The /,'').localeCompare(b.replace(/^The /,'')); });
+  $('#sw-donors').innerHTML = rest.map(n=>swTile(n,SITES[n])).join('');
+  $('#sw-donors-h').hidden = !rest.length;
 }
 async function loadBoard(){
   try{ const d = await api('rpc/gala_public',{p_slug:C.slug}); renderBoard(d); }
