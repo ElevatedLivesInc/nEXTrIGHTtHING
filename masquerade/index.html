@@ -135,6 +135,24 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--lav);outline-off
 .wall a,.wall span{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);text-decoration:none;font-weight:600}
 .wall img{height:28px;max-width:110px;object-fit:contain;background:#fff;border-radius:6px;padding:2px 4px}
 .wall-empty{color:var(--muted);font-style:italic}
+.sw-pres{position:relative;border-radius:22px;padding:26px 22px;text-align:center;margin:0 auto 18px;max-width:880px;background:radial-gradient(120% 140% at 50% 0%,rgba(124,58,237,.45),rgba(14,6,32,.95) 70%);border:1.5px solid var(--gold);box-shadow:0 0 40px rgba(230,207,155,.18)}
+.sw-pres .k{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);font-weight:700}
+.sw-pres .n{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3rem);color:#fff6dc;line-height:1.1;margin:6px 0 4px;text-shadow:0 0 22px rgba(230,207,155,.45)}
+.sw-pres.open{border-style:dashed;background:rgba(124,58,237,.12)}
+.sw-pres.open .n{color:rgba(255,246,220,.55)}
+.sw-pres img{max-height:80px;max-width:240px;display:block;margin:10px auto 0}
+.sw-stew{max-width:640px;margin:0 auto 22px;text-align:center;border-radius:18px;padding:18px;border:1px solid rgba(230,207,155,.55);border-top:2px solid var(--gold);background:rgba(255,255,255,.04)}
+.sw-stew .k{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2)}
+.sw-stew .n{font-family:'Cormorant Garamond',serif;font-size:2rem;color:#fff;margin-top:4px}
+.sw-label{text-align:center;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);margin:22px 0 12px}
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sw-t{display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px 10px;border-radius:16px;text-align:center;text-decoration:none;color:var(--text);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(201,169,110,.32);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+a.sw-t:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 10px 26px rgba(0,0,0,.45),0 0 18px rgba(230,207,155,.18)}
+.sw-logo{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#fff;overflow:hidden;box-shadow:0 0 0 2px rgba(230,207,155,.6),0 0 16px rgba(185,140,255,.35);font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.5rem;color:#3b1a6b}
+.sw-logo img{width:70%;height:70%;object-fit:contain}
+.sw-t .n{font-weight:700;font-size:.92rem;line-height:1.25}
+.sw-t .go{font-size:.7rem;color:var(--gold2);letter-spacing:.08em}
+#wall .wall-tier{margin-top:10px}
 
 .ideas{columns:2;padding-left:18px;color:var(--muted);font-size:.92rem;margin:.6rem 0 0}
 details{border-bottom:1px solid rgba(255,255,255,.1);padding:14px 0}
@@ -205,6 +223,8 @@ h2.fancy{font-family:"Great Vibes",cursive;font-weight:400;font-size:clamp(2.6re
 .tier.top{background:radial-gradient(120% 80% at 50% 0%,#3b1a6b 0%,#1a0b33 55%,#0e0620 100%);color:#efe7ff;transform:translateY(-8px);box-shadow:0 0 0 2px var(--gold),0 24px 60px rgba(201,169,110,.3)}
 .tier.top:hover{transform:translateY(-14px)}
 .tier.top:before{border-color:rgba(230,207,155,.55)}
+.tier.feature{grid-column:1/-1;margin-bottom:10px}
+@media(min-width:760px){.tier.feature ul{columns:2;column-gap:28px;max-width:760px;margin-left:auto;margin-right:auto}}
 .tier.top .nm{background:linear-gradient(95deg,#b08d4f,#e6cf9b);color:#1a0b33}
 .tier.top .amt{background:linear-gradient(180deg,#f5e3b3,#c9a96e);-webkit-background-clip:text;background-clip:text}
 .tier.top .tag{color:var(--gold2)}
@@ -273,7 +293,35 @@ footer a,.info-card a{overflow-wrap:anywhere}
 .caterer em{display:block;font-style:normal;font-size:.85rem;color:var(--muted)}
 .caterer small{display:block;margin-top:4px;font-size:.8rem;color:var(--gold2)}
 @media(max-width:520px){.caterer{flex-direction:column;text-align:center}}
-.sf-story{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.5;color:var(--text);border-left:2px solid var(--gold);padding-left:14px;margin:14px 0}
+.sf-story{font-family:'Cormorant Garamond',serif;font-size:1.2rem;line-height:1.5;color:var(--text);border-left:2px solid var(--gold);padding-left:14px;margin:22px auto 10px;max-width:760px}
+.sf-panel{border:1px solid rgba(201,169,110,.45);border-radius:22px;padding:16px;background:radial-gradient(120% 90% at 50% 0%,rgba(91,33,182,.35),rgba(10,6,24,.9) 70%)}
+.sf-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.sf-count{font-size:.95rem;color:var(--muted)}.sf-count b{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold2);margin-right:4px}
+.sf-modes{display:flex;gap:6px}
+.sf-mode{border:1px solid var(--gold);background:transparent;color:var(--gold2);border-radius:999px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer;min-height:40px}
+.sf-mode.on{background:linear-gradient(135deg,#d8bb80,#b08d4f);color:#1a1404}
+.sf-hint{margin:8px 0 6px;font-size:.85rem;color:var(--muted);text-align:center}
+.sf-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:4px;padding:6px 0}
+.sf{position:relative;aspect-ratio:1;border:0;background:none;padding:2px;cursor:pointer;border-radius:12px;-webkit-tap-highlight-color:transparent}
+.sf svg{width:100%;height:100%;display:block;transition:transform .2s ease,filter .3s ease}
+.sf .body{fill:rgba(185,167,232,.13);stroke:rgba(185,167,232,.35);stroke-width:1.2}
+.sf .dots{fill:rgba(255,255,255,.12)}
+.sf:hover svg{transform:scale(1.12)}
+.sf.lit{cursor:default}
+.sf.lit .body{fill:url(#sfg);stroke:#f5e3b3;stroke-width:1}
+.sf.lit .dots{fill:rgba(255,255,255,.85)}
+.sf.lit svg{filter:drop-shadow(0 0 6px rgba(230,207,155,.85)) drop-shadow(0 0 14px rgba(185,140,255,.55));animation:sfTw 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+.sf.pick .body{fill:rgba(230,207,155,.35);stroke:#e6cf9b;stroke-width:2}
+.sf.pick svg{animation:sfPulse 1s ease-in-out infinite}
+.sf.new svg{animation:sfPop .9s ease-out 1,sfTw 3.2s ease-in-out .9s infinite}
+@keyframes sfTw{0%,100%{filter:drop-shadow(0 0 5px rgba(230,207,155,.7)) drop-shadow(0 0 12px rgba(185,140,255,.45))}50%{filter:drop-shadow(0 0 9px rgba(255,236,190,1)) drop-shadow(0 0 20px rgba(185,140,255,.8))}}
+@keyframes sfPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+@keyframes sfPop{0%{transform:scale(.4) rotate(-40deg);opacity:.3}70%{transform:scale(1.25) rotate(8deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.sf-cap{min-height:1.6em;text-align:center;font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--gold2);margin:4px 0 8px}
+.sf-go{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sf-go .btn[disabled]{opacity:.5;cursor:not-allowed}
+@media(max-width:520px){.sf-wall{grid-template-columns:repeat(10,1fr);gap:1px}}
+@media(prefers-reduced-motion:reduce){.sf svg{animation:none!important}}
 .sf-stars{font-size:1.8rem;letter-spacing:.3em;color:var(--gold2);margin-bottom:12px}
 .sf-btns{display:grid;gap:10px}
 .ros{list-style:none;padding:0;margin:0 auto 22px;max-width:900px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;counter-reset:none}
@@ -282,6 +330,21 @@ footer a,.info-card a{overflow-wrap:anywhere}
 .ros span{display:block;font-size:.8rem;color:var(--muted);margin-top:4px}
 @media(max-width:759px){.ros{grid-template-columns:1fr;gap:6px}.ros li{display:flex;align-items:center;gap:12px;text-align:left;padding:8px 12px}.ros b{min-width:56px}.ros span{margin:0}}
 </style>
+<script>
+/* referral credit: ?ref=name on any link is remembered for 60 days and added to every sign-up */
+(function(){
+  var K='nrt_ref', ref=null;
+  try{ var q=new URLSearchParams(location.search).get('ref'); if(q){ q=q.toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,30); if(q) localStorage.setItem(K,JSON.stringify({r:q,t:Date.now()})); }
+    var s=JSON.parse(localStorage.getItem(K)||'null'); if(s&&s.r&&Date.now()-s.t<60*864e5) ref=s.r; }catch(e){}
+  window.NRT_REF=ref; if(!ref||!window.fetch) return;
+  var of=window.fetch;
+  window.fetch=function(u,o){ try{ var url=typeof u==='string'?u:((u&&u.url)||'');
+    if(o&&o.method==='POST'&&typeof o.body==='string'){
+      var k=(/\/rest\/v1\/gala_(sponsors|inkind)(\?|$)/.test(url)||/\/masquerade\/rsvp$/.test(url))?'referred_by':(/\/rpc\/gala_light_stars/.test(url)?'p_ref':null);
+      if(k){ var b=JSON.parse(o.body); (Array.isArray(b)?b:[b]).forEach(function(x){ if(x&&typeof x==='object'&&!x[k]) x[k]=ref; }); o=Object.assign({},o,{body:JSON.stringify(b)}); } } }catch(e){}
+    return of.call(this,u,o); };
+})();
+</script>
 </head>
 <body>
 
@@ -301,6 +364,7 @@ window.GALA = {
     changemaker: 'https://square.link/u/q4TJOo8u',  // Change Maker Sponsorship ($500)
     champion: 'https://square.link/u/YbHo3FMy',     // Community Champion Sponsorship ($1,000)
     partner: 'https://square.link/u/YW3KrESO',      // Recovery Partner Sponsorship ($2,500+, buyer enters amount)
+    presenting: '',                                  // Presenting Sponsor ($5,000) - paste the Square link here; until then the button opens the sign-up form
     star1: 'https://square.link/u/MTPdsF4V',   // Starfish Wall: Light 1 Starfish ($5)
     star5: 'https://square.link/u/mzHxX1Be'    // Starfish Wall: Light 5 Starfish ($20)
   },
@@ -377,7 +441,7 @@ window.GALA = {
       <img src="flannel-to-formal.jpg" alt="A red flannel shirt next to a black tuxedo" loading="lazy" width="539" height="173">
     </div>
     <div class="info-card"><div class="k">Benefits</div><div class="v">The Right Thing in Recovery</div><p>Our nonprofit (EIN 93-4316358), providing recovery opportunities, sober activities, transportation, peer support and resources.</p></div>
-    <div class="info-card"><div class="k">Sponsors</div><div class="v">From $100</div><p>Five levels plus in-kind gifts of $100+. <a href="#sponsor">See levels →</a></p></div>
+    <div class="info-card"><div class="k">Sponsors</div><div class="v">From $100</div><p>Six levels, up to a $5,000 Presenting Sponsor, plus in-kind gifts of $100+. <a href="#sponsor">See levels →</a></p></div>
     <div class="info-card"><div class="k">Questions</div><div class="v">Ryan Anderson</div><p><a class="cname-mail2" href="mailto:ryan@nextrighthing.com">ryan@nextrighthing.com</a> · <a href="tel:8018164977">801-816-4977</a></p></div>
   </div>
 </div></section>
@@ -534,11 +598,28 @@ window.GALA = {
       </div>
     </div>
     <div class="card" id="wall-card">
-      <h3 style="color:var(--gold2)">Our sponsors</h3>
-      <p style="color:var(--muted);font-size:.9rem;margin-top:.3rem">The businesses and families making this night possible.</p>
-      <div id="wall"><p class="wall-empty">Be the first name on the board.</p></div>
+      <h3 style="color:var(--gold2)">Where your name goes</h3>
+      <p style="color:var(--muted);font-size:.95rem;margin-top:.4rem;line-height:1.6">Every sponsor joins our <a href="#sponsor-wall" style="color:var(--gold2)">sponsor wall</a>, right here on this page, with a link to your website. Higher levels add your logo on event signage, a social media spotlight and recognition from the stage. Our Presenting Sponsor&rsquo;s name goes on the night itself.</p>
+      <a class="btn ghost small" href="#sponsor-wall" style="margin-top:12px;display:inline-block">See the sponsor wall &darr;</a>
     </div>
   </div>
+</div></section>
+
+<div class="divider"></div>
+
+<!-- sponsor wall -->
+<section id="sponsor-wall"><div class="wrap">
+  <div style="text-align:center;max-width:760px;margin:0 auto 22px">
+    <span class="eyebrow">Sponsor wall</span>
+    <h2 class="fancy"><span class="brush">Thank You to Our Sponsors</span></h2>
+    <p class="lead" style="margin:10px auto 0">The businesses and families making this night possible.</p>
+  </div>
+  <div id="sw-presenting"></div>
+  <div id="sw-steward"></div>
+  <div id="wall"></div>
+  <div class="sw-label" id="sw-donors-h" hidden>Event partners &amp; donors</div>
+  <div class="sw-grid" id="sw-donors"></div>
+  <div class="cta" style="margin-top:22px"><a class="btn" href="#sponsor">Put your name on the wall</a><a class="btn ghost" href="#inkind">Donate an item</a></div>
 </div></section>
 
 <div class="divider"></div>
@@ -591,20 +672,26 @@ window.GALA = {
 
 <!-- starfish wall -->
 <section id="starfish"><div class="wrap">
-  <div class="grid g2" style="align-items:center">
-    <div>
-      <span class="eyebrow">The Starfish Wall</span>
-      <h2 class="fancy">Light a starfish</h2>
-      <p class="lead"><b>$5 lights one starfish. $20 lights five.</b> Each starfish carries your name or a few words of hope, and every one goes up on our wall the night of the event.</p>
-      <p class="sf-story">A child walked a beach covered in stranded starfish, throwing them back one at a time. Someone told her she could never make a difference. She threw one more and said, <i>&ldquo;It made a difference to that one.&rdquo;</i></p>
-      <p class="small" style="color:var(--muted)">This is a gift, not a ticket: there are no prizes and no drawing.</p>
-    </div>
-    <div class="card" style="text-align:center">
-      <div class="sf-stars" aria-hidden="true">✦ ✦ ✦ ✦ ✦</div>
-      <div id="sf-btns" class="sf-btns"></div>
-      <p id="sf-soon" class="small" style="color:var(--muted);margin:10px 0 0">The Starfish Wall opens soon. You can also light a starfish at the event.</p>
-    </div>
+  <div style="text-align:center;max-width:760px;margin:0 auto 18px">
+    <span class="eyebrow">The Starfish Wall</span>
+    <h2 class="fancy"><span class="brush">Light a Starfish</span></h2>
+    <p class="lead" style="margin:10px auto 0"><b>$5 lights one starfish. $20 lights five.</b> Pick your starfish on the wall, add your name or a few words of hope, and watch it light up. The whole wall goes up on the big screen the night of the event.</p>
   </div>
+  <div class="sf-panel">
+    <div class="sf-bar">
+      <div class="sf-count"><b id="sf-lit">0</b> starfish lit</div>
+      <div class="sf-modes" role="group" aria-label="How many starfish">
+        <button type="button" class="sf-mode on" data-n="1">Light 1 · $5</button>
+        <button type="button" class="sf-mode" data-n="5">Light 5 · $20</button>
+      </div>
+    </div>
+    <p class="sf-hint" id="sf-hint">Tap a dark starfish to pick it.</p>
+    <div class="sf-wall" id="sf-wall" aria-label="Starfish wall"></div>
+    <div class="sf-cap" id="sf-cap" aria-live="polite">&nbsp;</div>
+    <div class="sf-go"><button type="button" class="btn ghost small" id="sf-auto">Pick for me</button><button type="button" class="btn" id="sf-light" disabled>Pick 1 starfish</button></div>
+  </div>
+  <p class="sf-story">A man was walking his dog along the beach when he saw a boy throwing starfish into the ocean. &ldquo;What are you doing?&rdquo; he asked. &ldquo;The sun is coming up and the tide is going out. If I don&rsquo;t throw them back, they will die.&rdquo; The man scanned the beach and saw hundreds of starfish. &ldquo;There are so many. How can you possibly make a difference?&rdquo; The boy picked up another starfish, threw it back into the ocean and said, <i>&ldquo;I made a difference to that one.&rdquo;</i></p>
+  <p class="small" style="color:var(--muted);text-align:center">A gift to The Right Thing in Recovery, not a ticket: there are no prizes and no drawing.</p>
 </div></section>
 
 <div class="divider"></div>
@@ -699,7 +786,8 @@ const TIERS = [
   {id:'hope',      name:'Hope Sponsor',       amt:250,  tag:'Hope builds brighter futures.', perks:['All Recovery Supporter benefits','Business name/logo on event materials','2 event tickets']},
   {id:'changemaker',name:'Change Maker',      amt:500,  tag:'Be the change.', perks:['All Hope Sponsor benefits','Logo prominently displayed at event','4 event tickets','Social media spotlight']},
   {id:'champion',  name:'Community Champion', amt:1000, tag:'Stronger together.', perks:['All Change Maker benefits','Large logo on event signage','6 event tickets','Verbal recognition during event','Dedicated social media post']},
-  {id:'partner',   name:'Recovery Partner',   amt:2500, plus:true, tag:'Invest in lasting change.', perks:['All Community Champion benefits','Premier logo placement','8 event tickets','Special recognition during event','Opportunity to provide promotional materials/items for guests']}
+  {id:'partner',   name:'Recovery Partner',   amt:2500, plus:true, tag:'Invest in lasting change.', perks:['All Community Champion benefits','Premier logo placement','8 event tickets','Special recognition during event','Opportunity to provide promotional materials/items for guests']},
+  {id:'presenting', name:'Presenting Sponsor', amt:5000, feature:true, tag:'Your name on the night.', perks:['All Recovery Partner benefits','&ldquo;Presented by&rdquo; billing on the event page, signage and social posts','Cut the ribbon with Cate at 5 PM','A reserved table with 10 event tickets','Recognized first, from the stage']}
 ];
 
 /* contact links */
@@ -739,12 +827,13 @@ $$('[data-ics]').forEach(b=>b.onclick=()=>{
 
 /* tiers */
 const STAR='<svg class="star" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs><path d="M50 6 62 38 96 39 69 60 79 93 50 74 21 93 31 60 4 39 38 38Z" fill="url(#sg)" stroke="#4c1d95" stroke-width="2"/><g fill="#fff" opacity=".85"><circle cx="50" cy="22" r="2.4"/><circle cx="50" cy="34" r="2.4"/><circle cx="26" cy="43" r="2.2"/><circle cx="74" cy="43" r="2.2"/><circle cx="35" cy="74" r="2.2"/><circle cx="65" cy="74" r="2.2"/><circle cx="50" cy="52" r="3.2"/></g></svg>';
-$('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':''} ${t.id==='changemaker'?'cm':''}">${t.plus?'<span class="badge">Premier</span>':''}
+const TSHOW=[...TIERS.filter(t=>t.feature),...TIERS.filter(t=>!t.feature)];
+$('#tiers').innerHTML = TSHOW.map(t=>{const i=t.feature?4:TIERS.filter(x=>!x.feature).indexOf(t); return `<div class="card tier ${(t.plus||t.feature)?'top':''} ${t.feature?'feature':''} ${t.id==='changemaker'?'cm':''}">${t.feature?'<span class="badge">Only one available</span>':t.plus?'<span class="badge">Premier</span>':''}
   <div class="nm">${t.name}</div><div class="amt">$${t.amt.toLocaleString()}${t.plus?'+':''}</div>
   <div class="lvl" aria-label="Level ${i+1} of 5">${Array.from({length:5},(_,k)=>STAR.replace('class="star"',`class="star" style="opacity:${k<=i?1:.18}"`).replace(/id="sg"/,`id="sg${i}${k}"`).replace('url(#sg)',`url(#sg${i}${k})`)).join('')}</div>
   <div class="tag">${t.tag}</div><div class="rule"></div>
   <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<button class="btn small ${t.plus?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`).join('');
+  <div class="btns"><button class="btn small ${(t.plus||t.feature)?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<button class="btn small ${(t.plus||t.feature)?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`;}).join('');
 $('#buy-now').innerHTML=(C.square.individual?`<button class="btn small" type="button" data-buy="individual">Buy individual · $35</button>`:'')+(C.square.couple?`<button class="btn small" type="button" data-buy="couple">Buy couple · $60</button>`:'');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
 $('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
@@ -781,6 +870,38 @@ function renderBoard(d){
       return `<div class="wall-tier"><h4>${t.name}s</h4><div class="wall">${list.map(s=>{ const u=safeUrl(s.url), l=safeUrl(s.logo);
         const inner=(l?`<img src="${esc(l)}" alt="">`:'')+esc(s.name); return u?`<a href="${esc(u)}" target="_blank" rel="noopener">${inner}</a>`:`<span>${inner}</span>`; }).join('')}</div></div>`; }).join(''); }
   const ik=d.inkind||[]; if(ik.length) $('#wall-inkind').innerHTML = ik.map(n=>`<span>${esc(n)}</span>`).join('');
+  sponsorWall(d);
+}
+/* sponsor wall: names + links; logos come from the sponsor (or their site icon until then). Never shows what anyone gave. */
+const STEWARD="The Massimi Household";
+const PARTNERS=["Pat's BBQ","Kirk's Photography"];
+const SITES={"Pat's BBQ":'https://www.patsbbq.com',"Hale Centre Theatre":'https://www.hct.org',"Snowbird":'https://www.snowbird.com',"The Grand America Hotel":'https://www.grandamerica.com',"Minky Couture":'https://www.softminkyblankets.com',"Beans & Brews":'https://www.beansandbrews.com',"Let's Roam":'https://www.letsroam.com',"Cinemark Theatres":'https://www.cinemark.com',"Scheels":'https://www.scheels.com',"Shake Shack":'https://shakeshack.com'};
+let _auDonors=null;
+function swLogo(name,url,logo){
+  const ini=esc((name.replace(/^The /,'').match(/[A-Za-z0-9]/)||['★'])[0].toUpperCase());
+  let src=safeUrl(logo); if(!src&&url){ try{ src='https://www.google.com/s2/favicons?sz=128&domain='+new URL(url).hostname; }catch(e){} }
+  return `<span class="sw-logo">${src?`<img src="${esc(src)}" alt="" loading="lazy" onload="if(this.naturalWidth<48){this.parentNode.textContent='${ini}'}" onerror="this.parentNode.textContent='${ini}'">`:ini}</span>`;
+}
+function swTile(name,url,logo){
+  const u=safeUrl(url); const inner=swLogo(name,u,logo)+`<span class="n">${esc(name)}</span>`+(u?'<span class="go">Visit &rarr;</span>':'');
+  return u?`<a class="sw-t" href="${esc(u)}" target="_blank" rel="noopener">${inner}</a>`:`<div class="sw-t">${inner}</div>`;
+}
+async function sponsorWall(d){
+  const sp=d.sponsors||[];
+  const pres=sp.filter(s=>s.tier==='presenting');
+  $('#sw-presenting').innerHTML = pres.length
+    ? pres.map(s=>{ const u=safeUrl(s.url), l=safeUrl(s.logo); const body=`<div class="k">Presented by</div><div class="n">${esc(s.name)}</div>${l?`<img src="${esc(l)}" alt="">`:''}`; return u?`<a href="${esc(u)}" target="_blank" rel="noopener" style="text-decoration:none;display:block" class="sw-pres">${body}</a>`:`<div class="sw-pres">${body}</div>`; }).join('')
+    : `<div class="sw-pres open"><div class="k">Presenting Sponsor &middot; only one</div><div class="n">Your name here</div><p style="margin:6px 0 12px;color:var(--muted)">&ldquo;Flannel to Formal Masquerade, presented by you.&rdquo; On this page, on the signage, and on the night.</p><button class="btn small" type="button" data-buy="presenting">Become our Presenting Sponsor</button></div>`;
+  // cash sponsors (other tiers) already render into #wall by tier; hide presenting there
+  $$('#wall .wall-tier').forEach(el=>{ if(/^Presenting/.test(el.querySelector('h4').textContent)) el.remove(); });
+  const ik=(d.inkind||[]).slice();
+  if(_auDonors===null){ try{ const a=await api('rpc/gala_auction_public',{p_slug:C.slug}); _auDonors=[...new Set((a.items||[]).map(i=>i.donor).filter(Boolean))]; }catch(e){ _auDonors=[]; } }
+  const cash=new Set(sp.map(s=>s.name));
+  const all=[...new Set([...ik,..._auDonors])].filter(n=>n&&!cash.has(n));
+  $('#sw-steward').innerHTML = all.includes(STEWARD) ? `<div class="sw-stew"><div class="k">Our first Stewardship Sponsor</div><div class="n">${esc(STEWARD)}</div></div>` : '';
+  const rest=all.filter(n=>n!==STEWARD).sort((a,b)=>{ const pa=PARTNERS.indexOf(a), pb=PARTNERS.indexOf(b); if(pa>-1||pb>-1) return (pa<0?99:pa)-(pb<0?99:pb); return a.replace(/^The /,'').localeCompare(b.replace(/^The /,'')); });
+  $('#sw-donors').innerHTML = rest.map(n=>swTile(n,SITES[n])).join('');
+  $('#sw-donors-h').hidden = !rest.length;
 }
 async function loadBoard(){
   try{ const d = await api('rpc/gala_public',{p_slug:C.slug}); renderBoard(d); }
@@ -876,8 +997,9 @@ wire('#f-inkind','#ok-inkind', fd=>{
 /* quick buy: every Square link, with name + email + photo consent captured first */
 (function(){
   var G=window.GALA, d=document.getElementById('qb'), f=document.getElementById('qb-form'), err=document.getElementById('qb-err'), cur=null;
-  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000]};
-  function open(k){ if(!ITEMS[k]||!G.square[k]) return; cur=k; f.reset(); err.textContent='';
+  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000],presenting:['Presenting Sponsor','$5,000',500000]};
+  function open(k){ if(ITEMS[k]&&!G.square[k]){ var sel=document.getElementById('s-tier'); if(sel&&[].some.call(sel.options,function(o){return o.value===k;})){ sel.value=k; if(sel.onchange) sel.onchange(); var fs=document.getElementById('f-sponsor'); if(fs) fs.scrollIntoView({behavior:'smooth',block:'start'}); } return; }
+    if(!ITEMS[k]||!G.square[k]) return; cur=k; f.reset(); err.textContent='';
     document.getElementById('qb-title').textContent=ITEMS[k][0];
     document.getElementById('qb-amt').textContent=ITEMS[k][1]+(k==='partner'?' (you choose the amount at checkout)':'');
     var biz=document.getElementById('qb-biz-wrap'), isStar=(k==='star1'||k==='star5');
@@ -897,7 +1019,11 @@ wire('#f-inkind','#ok-inkind', fd=>{
     var pc=fd.pc==='yes', k=cur;
     try{
       if(k==='star1'||k==='star5'){
-        await fetch(G.supabaseUrl+'/rest/v1/gala_stars',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify({event_slug:G.slug,stars:k==='star1'?1:5,amount_cents:ITEMS[k][2],full_name:name,email:email,dedication:(fd.business||'').trim()||null,photo_consent:pc})});
+        var want=k==='star1'?1:5, picks=(window.__sfPicks||[]).slice(0,want);
+        if(picks.length!==want && window.__sfAuto) picks=window.__sfAuto(want);
+        var rr=await (await fetch(G.supabaseUrl+'/rest/v1/rpc/gala_light_stars',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json'},body:JSON.stringify({p_slots:picks,p_name:name,p_email:email,p_dedication:(fd.business||'').trim(),p_consent:pc})})).json();
+        if(!rr||!rr.ok){ err.textContent=(rr&&rr.error)||'Something went wrong. Please try again.'; go.disabled=false; go.textContent='Continue to payment'; if(window.__sfReload) window.__sfReload(); return; }
+        if(window.__sfLitNow) window.__sfLitNow(picks,(fd.business||'').trim()||name);
       } else if(k==='individual'||k==='couple'){
         await fetch('/masquerade/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event_slug:G.slug,full_name:name,email:email,individual_qty:k==='individual'?1:0,couple_qty:k==='couple'?1:0,attire:'surprise',photo_consent:pc,drawing:false})});
       } else {
@@ -906,8 +1032,6 @@ wire('#f-inkind','#ok-inkind', fd=>{
     }catch(_){ /* never block payment; staff can confirm details at the door */ }
     location.href=G.square[k];
   });
-  var sb=document.getElementById('sf-btns'), soon=document.getElementById('sf-soon');
-  if(sb && G.square.star1 && G.square.star5){ sb.innerHTML='<button class="btn" type="button" data-buy="star1">Light 1 starfish · $5</button><button class="btn ghost" type="button" data-buy="star5">Light 5 starfish · $20</button>'; soon.style.display='none'; }
   var q=new URLSearchParams(location.search).get('buy'); if(q) setTimeout(function(){ open(q); },400);
 })();
 /* silent auction */
@@ -955,6 +1079,35 @@ wire('#f-inkind','#ok-inkind', fd=>{
     }).catch(function(){ go.disabled=false; go.textContent='Place bid'; err.textContent='Something went wrong. Please try again, or call 801-816-4977.'; });
   });
   load(); setInterval(function(){ if(!d.open) load(); },30000);
+})();
+/* starfish wall */
+(function(){
+  var G=window.GALA, wall=document.getElementById('sf-wall'); if(!wall) return;
+  var cap=document.getElementById('sf-cap'), litEl=document.getElementById('sf-lit'), hint=document.getElementById('sf-hint'), btn=document.getElementById('sf-light');
+  var SV='<svg viewBox="0 0 100 100" aria-hidden="true"><path class="body" d="M50 4c4 0 6 9 9 21 2 8 4 11 12 12 13 2 25 4 26 9 1 4-8 9-19 16-7 4-8 8-6 16 3 13 6 22 2 25-4 2-12-4-21-12-5-5-9-5-14 0-9 8-17 14-21 12-4-3-1-12 2-25 2-8 1-12-6-16C3 55-6 50-5 46c1-5 13-7 26-9 8-1 10-4 12-12C36 13 38 4 42 4z" transform="translate(4 2) scale(.92)"/><g class="dots"><circle cx="50" cy="22" r="2.2"/><circle cx="50" cy="34" r="2.6"/><circle cx="72" cy="44" r="2.2"/><circle cx="28" cy="44" r="2.2"/><circle cx="62" cy="68" r="2.2"/><circle cx="38" cy="68" r="2.2"/><circle cx="50" cy="50" r="3.4"/></g></svg>';
+  var defs='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><radialGradient id="sfg" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#fff6dc"/><stop offset=".45" stop-color="#e6cf9b"/><stop offset="1" stop-color="#a77ee0"/></radialGradient></defs></svg>';
+  var lit={}, picks=[], mode=1, N=120;
+  function render(){
+    var max=0; for(var k in lit){ if(+k>max) max=+k; }
+    var base=window.innerWidth<600?80:120; N=Math.max(base, Math.ceil((Object.keys(lit).length+40)/20)*20, Math.ceil((max+10)/20)*20);
+    var h=defs; for(var i=1;i<=N;i++){ var L=lit[i]; h+='<button type="button" class="sf'+(L?' lit':'')+(picks.indexOf(i)>-1?' pick':'')+'" data-s="'+i+'" style="--d:'+((i*37)%32)/10+'s" aria-label="'+(L?('Starfish lit: '+String(L).replace(/"/g,'&quot;')):'Starfish '+i+', not lit yet')+'">'+SV+'</button>'; }
+    wall.innerHTML=h; litEl.textContent=Object.keys(lit).length; upd();
+  }
+  function upd(){ var need=mode-picks.length; btn.disabled=need!==0; btn.textContent=need>0?('Pick '+need+' more starfish'):(mode===1?'Light it · $5':'Light these 5 · $20'); hint.textContent=mode===1?'Tap a dark starfish to pick it.':'Tap 5 dark starfish to pick them.'; window.__sfPicks=picks.slice(); }
+  function load(){ return fetch(G.supabaseUrl+'/rest/v1/rpc/gala_stars_public',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json'},body:JSON.stringify({p_slug:G.slug})}).then(function(r){return r.json();}).then(function(a){ lit={}; (a||[]).forEach(function(x){ lit[x.slot]=x.label; }); picks=picks.filter(function(p){return !lit[p];}); render(); }).catch(function(){ render(); }); }
+  wall.addEventListener('click',function(e){ var b=e.target.closest('.sf'); if(!b) return; var s=+b.dataset.s;
+    if(lit[s]){ cap.textContent='✦ '+lit[s]; return; }
+    var at=picks.indexOf(s); if(at>-1) picks.splice(at,1); else { if(picks.length>=mode) picks.shift(); picks.push(s); }
+    render(); cap.innerHTML='&nbsp;'; });
+  wall.addEventListener('mouseover',function(e){ var b=e.target.closest('.sf.lit'); if(b) cap.textContent='✦ '+lit[+b.dataset.s]; });
+  document.querySelectorAll('.sf-mode').forEach(function(m){ m.onclick=function(){ document.querySelectorAll('.sf-mode').forEach(function(x){x.classList.toggle('on',x===m);}); mode=+m.dataset.n; picks=picks.slice(-mode); render(); }; });
+  function auto(n){ var free=[]; for(var i=1;i<=N;i++) if(!lit[i]) free.push(i); var out=[]; while(out.length<n && free.length){ out.push(free.splice(Math.floor(Math.random()*free.length),1)[0]); } return out; }
+  document.getElementById('sf-auto').onclick=function(){ picks=auto(mode); render(); };
+  btn.onclick=function(){ if(picks.length!==mode) return; var b=document.createElement('button'); b.type='button'; b.dataset.buy=mode===1?'star1':'star5'; b.style.display='none'; document.body.appendChild(b); b.click(); b.remove(); };
+  window.__sfAuto=function(n){ picks=auto(n); render(); return picks.slice(); };
+  window.__sfReload=load;
+  window.__sfLitNow=function(arr,label){ arr.forEach(function(s){ lit[s]=label; }); picks=[]; render(); arr.forEach(function(s){ var el=wall.querySelector('[data-s="'+s+'"]'); if(el) el.classList.add('new'); }); };
+  load(); setInterval(function(){ if(!document.querySelector('dialog[open]')) load(); },30000);
 })();
 </script>
 </body>
