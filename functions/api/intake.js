@@ -2,6 +2,19 @@
 // Uses the same env vars already configured for the car wash:
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 import { TENANT } from '../_lib/tenant-config.js';
+import { DIGESTS } from '../_lib/roster.js';
+
+// Crisis language check. Only flags the request - it never copies the words
+// anywhere. The staff alert below carries no client content at all, just a
+// link to the queue (same rule as Legends Unchained). The 988 line stays on
+// screen for the person; this is so staff call them first.
+const CRISIS_PHRASES = ['suicide','suicidal','kill myself','killing myself','end my life','ending my life',
+  'take my life','want to die','wanna die','better off dead','no reason to live','hurt myself',
+  'harm myself','self harm','self-harm','not want to be alive',"don't want to be alive",'dont want to be alive','overdose on purpose'];
+function hasCrisisLanguage(...texts) {
+  const t = texts.join(' ').toLowerCase().replace(/\s+/g, ' ');
+  return CRISIS_PHRASES.some(p => t.includes(p));
+}
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -39,6 +52,7 @@ export async function onRequestPost(context) {
     source:            clean(body.source, 160),
     status:            'new'
   };
+  record.crisis_flag = hasCrisisLanguage(record.message, record.motivation);
   if (!record.first_name && !record.email && !record.phone) return json({ ok: false, error: 'empty' }, 400);
 
   const res = await fetch(env.SUPABASE_URL + '/rest/v1/intake_requests', {
@@ -75,6 +89,28 @@ export async function onRequestPost(context) {
             + '<p style="background:#f4f0e8;padding:12px 16px;border-left:3px solid '+TENANT.colors.sand+'">If you are in crisis right now, call or text <strong>988</strong> — the Suicide &amp; Crisis Lifeline is available 24/7.</p>'
             + '<p>— '+TENANT.orgLegalName+'<br>'+TENANT.address+'</p>'
             + '</div>'
+        })
+      });
+    } catch (_) { /* never block the intake on email issues */ }
+  }
+
+  // Tell staff a request is waiting. Before this, nothing notified anyone - a
+  // request could sit in the queue for weeks. No client details in the email.
+  if (env.RESEND_API_KEY) {
+    try {
+      const queue = 'https://' + TENANT.website + '/intake-queue';
+      const urgent = record.crisis_flag;
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + env.RESEND_API_KEY },
+        body: JSON.stringify({
+          from: env.RESEND_FROM || TENANT.defaultFromName + ' <' + TENANT.defaultFromAddress + '>',
+          to: DIGESTS.intake,
+          subject: urgent ? 'URGENT: new intake request needs a call now' : 'New intake request waiting',
+          html: '<div style="font-family:Georgia,serif;color:' + TENANT.colors.navy + ';line-height:1.7">'
+            + (urgent ? '<p style="color:#8a1c1c"><strong>This request was flagged for crisis language. Call them first.</strong></p>' : '')
+            + '<p>A new request just came in. Our promise is a reply the same day, within one business day at most.</p>'
+            + '<p><a href="' + queue + '">Open the intake queue</a></p></div>'
         })
       });
     } catch (_) { /* never block the intake on email issues */ }
