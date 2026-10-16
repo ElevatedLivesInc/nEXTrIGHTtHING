@@ -120,9 +120,10 @@ const TIERS={
   hope:{name:'Hope Sponsor',amt:250,tickets:2,ben:[['materials_logo','Business name/logo on event materials']]},
   changemaker:{name:'Change Maker',amt:500,tickets:4,ben:[['logo_display','Logo prominently displayed at event'],['social_spotlight','Social media spotlight']]},
   champion:{name:'Community Champion',amt:1000,tickets:6,ben:[['signage_large','Large logo on event signage'],['verbal','Verbal recognition during event'],['dedicated_post','Dedicated social media post']]},
-  partner:{name:'Recovery Partner',amt:2500,tickets:8,ben:[['premier_logo','Premier logo placement'],['special_recognition','Special recognition during event'],['promo_items','Promotional materials/items for guests']]}
+  partner:{name:'Recovery Partner',amt:2500,tickets:8,ben:[['premier_logo','Premier logo placement'],['special_recognition','Special recognition during event'],['promo_items','Promotional materials/items for guests']]},
+  presenting:{name:'Presenting Sponsor',amt:5000,tickets:10,ben:[['presented_by','"Presented by" billing on event page, signage & social'],['ribbon','Cut the ribbon with Cate at 5 PM'],['reserved_table','Reserved table'],['recognized_first','Recognized first from the stage']]}
 };
-const ORDER=['supporter','hope','changemaker','champion','partner'];
+const ORDER=['supporter','hope','changemaker','champion','partner','presenting'];
 function benefitsFor(tier){ const out=[]; for(const t of ORDER){ out.push(...TIERS[t].ben); if(t===tier) break; }
   const n=TIERS[tier].tickets; if(n) out.push(['tickets',n+' event tickets issued']); out.push(['receipt','Receipt sent'],['thank_you','Personal thank-you after the event']); return out; }
 
@@ -349,9 +350,10 @@ function renderDrawing(){
 function renderScript(){
   const sp=D.sponsors.filter(s=>s.status!=='declined'), by=t=>sp.filter(s=>s.tier===t).map(s=>s.display_name||s.business_name);
   const join=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a.slice(-1);
-  const partners=by('partner'), champs=by('champion'), others=[...by('changemaker'),...by('hope'),...by('supporter')];
+  const presenting=by('presenting'), partners=by('partner'), champs=by('champion'), others=[...by('changemaker'),...by('hope'),...by('supporter')];
   const ik=D.inkind.filter(i=>i.status!=='declined'&&i.show_publicly).map(i=>i.business_name||i.donor_name);
   let s='RIBBON CUTTING (5:00 PM)\nWelcome to the new home of The Next Right Thing in Recovery at 7669 S Redwood Rd. [Ribbon cutting.]\n\nWELCOME (≈ 6:30 PM)\nThank you all for being here tonight. Every dollar raised this evening benefits The Right Thing in Recovery, helping provide recovery opportunities, sober activities, transportation, peer support and resources to individuals working to rebuild their lives.\n\n';
+  if(presenting.length) s+=`PRESENTING SPONSOR\nTonight's Flannel to Formal Masquerade is presented by ${join(presenting)}. [Invite them to stand / say a few words.]\n\n`;
   if(partners.length) s+=`SPECIAL RECOGNITION — RECOVERY PARTNERS\nTonight would not be possible without our Recovery Partner${partners.length>1?'s':''}, ${join(partners)}. [Invite them to stand / say a few words.]\n\n`;
   if(champs.length) s+=`COMMUNITY CHAMPIONS\nWe also want to thank our Community Champion${champs.length>1?'s':''}: ${join(champs)}.\n\n`;
   if(others.length) s+=`AND OUR SPONSORS\nA heartfelt thank-you to ${join(others)}.\n\n`;
@@ -387,7 +389,7 @@ function csv(key){
 async function add(kind){
   const ask=(m,d='')=>{const v=prompt(m,d); return v==null?null:v.trim();};
   let table,row,list;
-  if(kind==='sponsor'){ const n=ask('Business or family name'); if(!n) return; const t=ask('Tier: supporter, hope, changemaker, champion, partner','hope'); if(!TIERS[t]) return toast('Unknown tier');
+  if(kind==='sponsor'){ const n=ask('Business or family name'); if(!n) return; const t=ask('Tier: supporter, hope, changemaker, champion, partner, presenting','hope'); if(!TIERS[t]) return toast('Unknown tier');
     const c=ask('Email or phone'); if(!c) return; const amt=t==='partner'?parseInt(ask('Amount ($)','2500'),10)||2500:TIERS[t].amt;
     const w=(ask('Who brought them in? (first name, or leave blank)','')||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,30);
     table='gala_sponsors'; list='sponsors'; row={business_name:n,tier:t,amount_cents:amt*100,[c.includes('@')?'email':'phone']:c,status:'pledged'}; if(w) row.referred_by=w; }
