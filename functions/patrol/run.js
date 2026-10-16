@@ -54,6 +54,18 @@ export async function onRequest(context) {
   // Eight sat unsent for weeks before anyone noticed - this keeps that visible.
   const donUnsent = await get('donation_receipts?select=receipt_no,donor_name,donor_email,amount_cents,created_at&email_sent_at=is.null&order=created_at.desc&limit=100');
 
+  // ---------- MASQUERADE (Flannel to Formal, Nov 13) ----------
+  // Its own brief, sent only while the event is still ahead (and the day after).
+  const [gEvents, gRsvps, gSponsors, gInkind, gItems, gBids, gStars] = await Promise.all([
+    get('gala_event?select=*&order=starts_at.desc&limit=5'),
+    get('gala_rsvps?select=*&limit=2000'),
+    get('gala_sponsors?select=*&limit=500'),
+    get('gala_inkind?select=*&limit=500'),
+    get('gala_auction_items?select=*&limit=500'),
+    get('gala_bids?select=item_id,amount_cents,voided&limit=5000'),
+    get('gala_stars?select=stars,amount_cents,paid,hidden&limit=5000')
+  ]);
+
   const now=Date.now(), DAY=86400000;
   const age=d=>d? Math.floor((now-new Date(d).getTime())/DAY) : null;
   const until=d=>d? Math.ceil((new Date(d+'T00:00:00').getTime()-now)/DAY) : null;
@@ -151,6 +163,53 @@ export async function onRequest(context) {
     sec('Donations missing an email address', noEmail.slice(0,10).map(r=>li(r.donor_name+' &mdash; no email captured, no thank-you possible'))) +
     sec('Tax receipts never emailed (Square gifts)', donUnsent.map(r=>li('<b>'+(r.receipt_no||'receipt')+'</b> &mdash; '+(r.donor_name||'donor')+' &middot; $'+((Number(r.amount_cents)||0)/100).toFixed(2)+(r.donor_email?'':' &middot; Square sent no email - look the donor up in Square'))))
   );
+
+  let masqBody = null, masqSubject = '';
+  const gEv = (gEvents||[]).find(e=>e.starts_at && new Date(e.starts_at).getTime() > now - DAY) || null;
+  if (gEv) {
+    const slug = gEv.slug;
+    const mine = rows => (rows||[]).filter(r => !r.event_slug || r.event_slug === slug);
+    const usd = c => '$' + Math.round((Number(c)||0)/100).toLocaleString('en-US');
+    const daysOut = Math.max(0, Math.ceil((new Date(gEv.starts_at).getTime() - now) / DAY));
+    const rs = mine(gRsvps);
+    const heads = r => (Number(r.individual_qty)||0) + 2*(Number(r.couple_qty)||0);
+    const seats = rs.reduce((t,r)=>t+heads(r),0);
+    const unpaid = rs.filter(r => (r.pay_status||'') !== 'paid' && (r.pay_status||'') !== 'comp');
+    const newRs = rs.filter(r => age(r.created_at)!==null && age(r.created_at) <= 1);
+    const sp = mine(gSponsors).filter(s => (s.status||'') !== 'declined' && (s.status||'') !== 'cancelled');
+    const committed = sp.reduce((t,s)=>t+(Number(s.amount_cents)||0),0);
+    const collected = sp.reduce((t,s)=>t+(Number(s.paid_cents)||0),0);
+    const spPledged = sp.filter(s => (Number(s.paid_cents)||0) < (Number(s.amount_cents)||0));
+    const noLogo = sp.filter(s => !s.logo_received);
+    const ik = mine(gInkind);
+    const ikPending = ik.filter(i => ['pledged','',null,undefined].includes(i.status));
+    const ikNoReceipt = ik.filter(i => (i.status==='received') && !i.receipt_number);
+    const items = mine(gItems).filter(i => i.active !== false);
+    const live = (gBids||[]).filter(b => !b.voided);
+    const top = items.map(i => { const bs = live.filter(b => b.item_id === i.id); return { t:i.title, n:bs.length, hi:bs.reduce((m,b)=>Math.max(m,Number(b.amount_cents)||0),0) }; });
+    const noBids = top.filter(x => !x.n);
+    const auctionHigh = top.reduce((t,x)=>t+x.hi,0);
+    const st = mine(gStars).filter(s => s.paid && !s.hidden);
+    const starCount = st.reduce((t,s)=>t+(Number(s.stars)||1),0);
+    const starUsd = st.reduce((t,s)=>t+(Number(s.amount_cents)||0),0);
+    masqSubject = 'Masquerade Brief &mdash; ' + daysOut + ' day' + (daysOut===1?'':'s') + ' out, ' + seats + ' seats, ' + usd(collected) + ' sponsor money in';
+    masqBody = wrap('Masquerade Brief',
+      '<p style="margin:0 0 .8rem">' + (gEv.name||'Masquerade') + ' &middot; ' + daysOut + ' day' + (daysOut===1?'':'s') + ' out. Money benefits ' + (TENANT.secondEntityName||'the nonprofit') + '.</p>' +
+      sec('At a glance', [
+        li('<b>' + seats + '</b> seats reserved (' + rs.length + ' reservations)' + (unpaid.length ? ' &middot; <b>' + unpaid.length + ' not marked paid</b>' : '')),
+        li('<b>' + sp.length + '</b> sponsors &middot; ' + usd(committed) + ' committed &middot; ' + usd(collected) + ' collected'),
+        li('<b>' + ik.length + '</b> in-kind gifts' + (ikPending.length ? ' &middot; ' + ikPending.length + ' still to pick up' : '')),
+        li('Silent auction: <b>' + items.length + '</b> items, high bids total ' + usd(auctionHigh)),
+        li('Starfish Wall: <b>' + starCount + '</b> lit &middot; ' + usd(starUsd))
+      ]) +
+      sec('New in the last day', newRs.map(r => li((r.full_name||'Guest') + ' &mdash; ' + heads(r) + ' seat' + (heads(r)===1?'':'s')))) +
+      sec('Sponsors still owing', spPledged.slice(0,12).map(s => li('<b>' + (s.display_name||s.business_name||'Sponsor') + '</b> &mdash; ' + (s.tier||'') + ', ' + usd((Number(s.amount_cents)||0)-(Number(s.paid_cents)||0)) + ' to collect'))) +
+      sec('Logos still needed for signage', noLogo.slice(0,12).map(s => li(s.display_name||s.business_name||'Sponsor'))) +
+      sec('In-kind received but no receipt yet', ikNoReceipt.slice(0,12).map(i => li(i.business_name||i.donor_name||'Donor'))) +
+      sec('Auction items with no bids yet', noBids.slice(0,12).map(x => li(x.t))) +
+      '<p style="margin-top:1rem"><a href="https://' + TENANT.website + '/gala-tracker">Open the tracker</a></p>'
+    );
+  }
 
   const houseLines = Object.keys(byHouse).map(k=>li(k+': '+byHouse[k].open+' open of '+byHouse[k].beds+' beds'));
   const winBox = (items)=> items.length? '<div style="background:#f2f8f4;border-left:4px solid #78c896;padding:.9rem 1.1rem;margin:1rem 0;border-radius:4px">'
@@ -309,6 +368,7 @@ export async function onRequest(context) {
     { to:TEAM.leadership, subject:'Checks &amp; Balances &mdash; '+(compExpired.length+docExpired.length)+' expired, '+compSoon.length+' expiring within 60 days', html:complianceBody },
     { to:TEAM.leadership, subject:'Daily Command Brief &mdash; '+TENANT.orgName, html:leadershipBody }
   ];
+  if (masqBody) messages.push({ to:TEAM.leadership, subject:masqSubject, html:masqBody });
 
   // Preview renders resident names and balances, so it requires a signed-in human.
   // The cron key can trigger a send, but must never be able to display client data.
