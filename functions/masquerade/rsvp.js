@@ -25,7 +25,8 @@ export async function onRequestPost({ request, env }) {
     dietary: str(b.dietary, 300),
     attire: ['flannel', 'formal', 'masquerade', 'surprise'].includes(b.attire) ? b.attire : 'surprise',
     pay_status: 'reserved', source: 'web',
-    photo_consent: b.photo_consent === true ? true : b.photo_consent === false ? false : null
+    photo_consent: b.photo_consent === true ? true : b.photo_consent === false ? false : null,
+    referred_by: (String(b.referred_by || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 30)) || null
   };
   if (row.photo_consent === null) return json({ error: 'Please answer the photo consent question (yes or no).' }, 400);
   if (!row.full_name || row.full_name.length < 2) return json({ error: 'Please add your name.' }, 400);
