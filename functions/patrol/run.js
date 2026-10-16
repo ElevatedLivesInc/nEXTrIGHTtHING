@@ -50,6 +50,21 @@ export async function onRequest(context) {
     get('documents?select=resident_name,doc_type,title,expires_on&limit=2000'),
     get('work_signups?select=*&limit=500')
   ]);
+  // Square tax receipts that never went out (Square often passes no buyer email).
+  // Eight sat unsent for weeks before anyone noticed - this keeps that visible.
+  const donUnsent = await get('donation_receipts?select=receipt_no,donor_name,donor_email,amount_cents,created_at&email_sent_at=is.null&order=created_at.desc&limit=100');
+
+  // ---------- MASQUERADE (Flannel to Formal, Nov 13) ----------
+  // Its own brief, sent only while the event is still ahead (and the day after).
+  const [gEvents, gRsvps, gSponsors, gInkind, gItems, gBids, gStars] = await Promise.all([
+    get('gala_event?select=*&order=starts_at.desc&limit=5'),
+    get('gala_rsvps?select=*&limit=2000'),
+    get('gala_sponsors?select=*&limit=500'),
+    get('gala_inkind?select=*&limit=500'),
+    get('gala_auction_items?select=*&limit=500'),
+    get('gala_bids?select=item_id,amount_cents,voided&limit=5000'),
+    get('gala_stars?select=stars,amount_cents,paid,hidden&limit=5000')
+  ]);
 
   const now=Date.now(), DAY=86400000;
   const age=d=>d? Math.floor((now-new Date(d).getTime())/DAY) : null;
@@ -145,8 +160,56 @@ export async function onRequest(context) {
 
   const donationBody = wrap('Donations Brief',
     sec('Codes issued but never redeemed (7+ days)', unredeemed.map(r=>li('<b>'+r.donor_name+'</b> &mdash; '+r.code+' &middot; '+(r.description||'')))) +
-    sec('Donations missing an email address', noEmail.slice(0,10).map(r=>li(r.donor_name+' &mdash; no email captured, no thank-you possible')))
+    sec('Donations missing an email address', noEmail.slice(0,10).map(r=>li(r.donor_name+' &mdash; no email captured, no thank-you possible'))) +
+    sec('Tax receipts never emailed (Square gifts)', donUnsent.map(r=>li('<b>'+(r.receipt_no||'receipt')+'</b> &mdash; '+(r.donor_name||'donor')+' &middot; $'+((Number(r.amount_cents)||0)/100).toFixed(2)+(r.donor_email?'':' &middot; Square sent no email - look the donor up in Square'))))
   );
+
+  let masqBody = null, masqSubject = '';
+  const gEv = (gEvents||[]).find(e=>e.starts_at && new Date(e.starts_at).getTime() > now - DAY) || null;
+  if (gEv) {
+    const slug = gEv.slug;
+    const mine = rows => (rows||[]).filter(r => !r.event_slug || r.event_slug === slug);
+    const usd = c => '$' + Math.round((Number(c)||0)/100).toLocaleString('en-US');
+    const daysOut = Math.max(0, Math.ceil((new Date(gEv.starts_at).getTime() - now) / DAY));
+    const rs = mine(gRsvps);
+    const heads = r => (Number(r.individual_qty)||0) + 2*(Number(r.couple_qty)||0);
+    const seats = rs.reduce((t,r)=>t+heads(r),0);
+    const unpaid = rs.filter(r => (r.pay_status||'') !== 'paid' && (r.pay_status||'') !== 'comp');
+    const newRs = rs.filter(r => age(r.created_at)!==null && age(r.created_at) <= 1);
+    const sp = mine(gSponsors).filter(s => (s.status||'') !== 'declined' && (s.status||'') !== 'cancelled');
+    const committed = sp.reduce((t,s)=>t+(Number(s.amount_cents)||0),0);
+    const collected = sp.reduce((t,s)=>t+(Number(s.paid_cents)||0),0);
+    const spPledged = sp.filter(s => (Number(s.paid_cents)||0) < (Number(s.amount_cents)||0));
+    const noLogo = sp.filter(s => !s.logo_received);
+    const ik = mine(gInkind);
+    const ikPending = ik.filter(i => ['pledged','',null,undefined].includes(i.status));
+    const ikNoReceipt = ik.filter(i => (i.status==='received') && !i.receipt_number);
+    const items = mine(gItems).filter(i => i.active !== false);
+    const live = (gBids||[]).filter(b => !b.voided);
+    const top = items.map(i => { const bs = live.filter(b => b.item_id === i.id); return { t:i.title, n:bs.length, hi:bs.reduce((m,b)=>Math.max(m,Number(b.amount_cents)||0),0) }; });
+    const noBids = top.filter(x => !x.n);
+    const auctionHigh = top.reduce((t,x)=>t+x.hi,0);
+    const st = mine(gStars).filter(s => s.paid && !s.hidden);
+    const starCount = st.reduce((t,s)=>t+(Number(s.stars)||1),0);
+    const starUsd = st.reduce((t,s)=>t+(Number(s.amount_cents)||0),0);
+    masqSubject = 'Masquerade Brief &mdash; ' + daysOut + ' day' + (daysOut===1?'':'s') + ' out, ' + seats + ' seats, ' + usd(collected) + ' sponsor money in';
+    masqBody = wrap('Masquerade Brief',
+      '<p style="margin:0 0 .8rem">' + (gEv.name||'Masquerade') + ' &middot; ' + daysOut + ' day' + (daysOut===1?'':'s') + ' out. Money benefits ' + (TENANT.secondEntityName||'the nonprofit') + '.</p>' +
+      sec('At a glance', [
+        li('<b>' + seats + '</b> seats reserved (' + rs.length + ' reservations)' + (unpaid.length ? ' &middot; <b>' + unpaid.length + ' not marked paid</b>' : '')),
+        li('<b>' + sp.length + '</b> sponsors &middot; ' + usd(committed) + ' committed &middot; ' + usd(collected) + ' collected'),
+        li('<b>' + ik.length + '</b> in-kind gifts' + (ikPending.length ? ' &middot; ' + ikPending.length + ' still to pick up' : '')),
+        li('Silent auction: <b>' + items.length + '</b> items, high bids total ' + usd(auctionHigh)),
+        li('Starfish Wall: <b>' + starCount + '</b> lit &middot; ' + usd(starUsd))
+      ]) +
+      sec('New in the last day', newRs.map(r => li((r.full_name||'Guest') + ' &mdash; ' + heads(r) + ' seat' + (heads(r)===1?'':'s')))) +
+      sec('Sponsors still owing', spPledged.slice(0,12).map(s => li('<b>' + (s.display_name||s.business_name||'Sponsor') + '</b> &mdash; ' + (s.tier||'') + ', ' + usd((Number(s.amount_cents)||0)-(Number(s.paid_cents)||0)) + ' to collect'))) +
+      sec('Logos still needed for signage', noLogo.slice(0,12).map(s => li(s.display_name||s.business_name||'Sponsor'))) +
+      sec('In-kind received but no receipt yet', ikNoReceipt.slice(0,12).map(i => li(i.business_name||i.donor_name||'Donor'))) +
+      sec('Auction items with no bids yet', noBids.slice(0,12).map(x => li(x.t))) +
+      '<p style="margin-top:1rem"><a href="https://' + TENANT.website + '/gala-tracker">Open the tracker</a></p>'
+    );
+  }
 
   const houseLines = Object.keys(byHouse).map(k=>li(k+': '+byHouse[k].open+' open of '+byHouse[k].beds+' beds'));
   const winBox = (items)=> items.length? '<div style="background:#f2f8f4;border-left:4px solid #78c896;padding:.9rem 1.1rem;margin:1rem 0;border-radius:4px">'
@@ -213,12 +276,16 @@ export async function onRequest(context) {
   const noMeetings= active.filter(r=>((Number(r.house_meetings)||0)+(Number(r.peer_meetings)||0))===0);
   const houseWins = active.filter(r=>((Number(r.house_meetings)||0)+(Number(r.peer_meetings)||0))>=4);
   const nm = r => (r.name||'Resident') + (r.house_name?' &middot; '+r.house_name:'');
+  const evicting = active.filter(r=>r.eviction_pending);
+  const insSoon  = active.filter(r=>r.insurance_renewal_date && until(r.insurance_renewal_date)!==null && until(r.insurance_renewal_date)<=30);
 
   const houseBody = wrap('House Brief',
     (houseWins.length? '<div style="background:#eef7f1;border-left:3px solid #78c896;padding:.8rem 1rem;border-radius:0 6px 6px 0;margin-bottom:1rem">'
       +'<div style="font-family:Georgia,serif;color:#2f6b4a;font-size:1.02rem;margin-bottom:.3rem">Doing the work</div>'
       +'<div style="font-size:.88rem;color:#3b5c4a">'+houseWins.slice(0,6).map(r=>r.name).join(', ')
       +' &mdash; four or more meetings this month. Worth saying out loud to them.</div></div>' : '') +
+    sec('Eviction pending', evicting.map(r=>li('<b>'+nm(r)+'</b>'+(r.eviction_link?' &middot; paperwork linked on Housing':' &middot; no paperwork linked yet')))) +
+    sec('Health insurance renewing within 30 days', insSoon.map(r=>li(nm(r)+' &mdash; '+(r.insurance_carrier||'carrier not recorded')+(until(r.insurance_renewal_date)<0?' &middot; <b>renewal date has passed</b>':' renews '+r.insurance_renewal_date)))) +
     sec('On notice &mdash; decide today', onNotice.map(r=>li('<b>'+nm(r)+'</b>'+(r.warning_reason?' &mdash; '+r.warning_reason:'')+' &middot; '+(r.warnings||0)+' warnings'))) +
     sec('Two or more warnings', warned.map(r=>li(nm(r)+' &mdash; '+(r.warnings||0)+' warnings'+(r.last_warning?', last on '+r.last_warning:'')))) +
     sec('Nobody has talked to them in 2 weeks', quietRes.slice(0,12).map(r=>li(nm(r)+' &mdash; last contact '+(r.last_talked||'never recorded')))) +
@@ -294,13 +361,14 @@ export async function onRequest(context) {
 
   const messages = [
     { to:TEAM.intake, subject:'Intake Brief &mdash; '+urgentStale.length+' urgent, '+newOvernight.length+' new', html:intakeBody },
-    { to:TEAM.donations, subject:'Donations Brief &mdash; '+unredeemed.length+' codes awaiting receipts', html:donationBody },
+    { to:TEAM.donations, subject:'Donations Brief &mdash; '+donUnsent.length+' tax receipts unsent, '+unredeemed.length+' codes awaiting receipts', html:donationBody },
     { to:TEAM.housing, subject:'House Brief &mdash; '+onNotice.length+' on notice, '+openBeds.length+' open beds', html:houseBody },
     { to:TEAM.funding, subject:'Funding Brief &mdash; '+expiring.length+' coverage'+(expiring.length===1?'':'s')+' ending within 30 days', html:fundingBody },
     { to:TEAM.leadership, subject:'Incident & Compliance Brief &mdash; '+incCritOpen.length+' critical unreported, '+voiceNew.length+' Speak Up', html:incidentBody },
     { to:TEAM.leadership, subject:'Checks &amp; Balances &mdash; '+(compExpired.length+docExpired.length)+' expired, '+compSoon.length+' expiring within 60 days', html:complianceBody },
     { to:TEAM.leadership, subject:'Daily Command Brief &mdash; '+TENANT.orgName, html:leadershipBody }
   ];
+  if (masqBody) messages.push({ to:TEAM.leadership, subject:masqSubject, html:masqBody });
 
   // Preview renders resident names and balances, so it requires a signed-in human.
   // The cron key can trigger a send, but must never be able to display client data.

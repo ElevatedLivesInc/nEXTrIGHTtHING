@@ -237,7 +237,9 @@
     </div>
     <div class="checks" style="margin-top:.3rem">
       <label><input type="checkbox" id="r_notice"> <b style="color:#f0b6b6">On notice</b> &mdash; final warning, at risk of discharge</label>
+      <label><input type="checkbox" id="r_evict"> <b style="color:#f0b6b6">Eviction pending</b></label>
     </div>
+    <div class="fld" style="margin-top:.5rem"><label>Eviction paperwork link (notice, filing, or Drive folder)</label><input id="r_evictlink" placeholder="Paste a link"></div>
   </div>
 
   <div class="grp"><h4>Case Manager &mdash; not your job, here for context</h4>
@@ -268,8 +270,18 @@
     <div id="needsList"></div>
   </div>
 
+  <div class="grp"><h4>Health insurance &mdash; renewal tracking</h4>
+    <div class="three">
+      <div class="fld"><label>Carrier</label><input id="r_inscarrier"></div>
+      <div class="fld"><label>Renewal date</label><input id="r_insrenew" type="date"></div>
+      <div class="fld"><label>Receipt / confirmation #</label><input id="r_insreceipt"></div>
+    </div>
+    <div id="insWarn" style="font-size:.8rem;color:#e8d5b0"></div>
+  </div>
+
   <div class="grp"><h4>Notes</h4>
     <div class="fld"><textarea id="r_notes"></textarea></div>
+    <div id="noteDraft" style="font-size:.75rem;color:#e8d5b0;margin-top:.3rem"></div>
   </div>
 
   <div class="grp"><h4>Log a payment or event</h4>
@@ -415,7 +427,27 @@ function ledgerHtml(r){
     +'<div style="display:flex;justify-content:space-between;padding-top:.5rem;font-weight:700"><span>Recorded total</span><span>'+money(total)+'</span></div></div>';
 }
 function docsDone(r){return r.has_id&&r.has_ss_card&&r.has_birth_cert;}
-function closeM(){g('mRes').classList.remove('open');}
+/* Unsaved-typing guard. The one-tap buttons and "Log it" reload the resident
+   from the server; before this, that reload refilled every box and erased
+   whatever had been typed but not yet saved (the "rental note disappears" bug).
+   Now anything typed is remembered, put back after a reload, and Close asks
+   before throwing it away. The Notes box is also kept on this device as a
+   draft, so a dropped connection or a closed tab does not lose it either. */
+var DIRTY=new Set();
+var STAMP_IDS=['r_lasttalked','r_hmeet','r_pmeet','r_lastua','r_uares','r_warnings','r_lastwarn','r_warnreason','r_notice'];
+function markDirty(e){ var t=e.target; if(!t||!t.id) return; DIRTY.add(t.id);
+  if(t.id==='r_notes'){ try{ localStorage.setItem('nrt-res-note-'+g('r_id').value,t.value); }catch(_){} } }
+function clearDraft(id){ try{ localStorage.removeItem('nrt-res-note-'+id); }catch(_){} }
+function snapDirty(dropEvent){ var s={}; DIRTY.forEach(function(id){ if(STAMP_IDS.indexOf(id)>-1) return; if(dropEvent&&id.indexOf('e_')===0) return;
+  var el=g(id); if(!el) return; s[id]=(el.type==='checkbox')?{c:el.checked}:{v:el.value}; }); return s; }
+function restoreDirty(s){ Object.keys(s).forEach(function(id){ var el=g(id); if(!el) return; if('c' in s[id]) el.checked=s[id].c; else el.value=s[id].v; DIRTY.add(id); }); }
+async function refreshKeeping(id,dropEvent){ var s=snapDirty(dropEvent); await load(); openRes(id); restoreDirty(s); }
+g('mRes').addEventListener('input',markDirty);
+g('mRes').addEventListener('change',markDirty);
+function closeM(force){
+  if(!force && DIRTY.size && !confirm('You have typing that is not saved yet. Close anyway and lose it?')) return;
+  DIRTY.clear(); g('mRes').classList.remove('open');
+}
 function isCurrent(r){return !isOpen(r)&&!r.move_out_date;}
 
 /* The full wrap-around needs list. Anything not tracked here is a need that
@@ -503,8 +535,9 @@ function ago(d){
   return n+' days ago';
 }
 
-function openRes(id){
+function openRes(id,keep){
   const r=RES.find(x=>x.id===id); if(!r)return;
+  if(!keep) DIRTY.clear();
   g('rTitle').textContent=r.name||'Resident';
   g('rSub').textContent=(r.house_name||'')+(r.room?(' · Room '+r.room):'');
   g('r_id').value=r.id;
@@ -535,6 +568,13 @@ function openRes(id){
   g('qaNotice').textContent=r.on_notice?'Take off notice':'Put on notice';
   g('rStamp').innerHTML=stampLine(r);
   set('r_notes',r.notes);
+  g('r_evict').checked=!!r.eviction_pending; set('r_evictlink',r.eviction_link);
+  set('r_inscarrier',r.insurance_carrier); set('r_insrenew',r.insurance_renewal_date); set('r_insreceipt',r.insurance_receipt);
+  { const n=r.insurance_renewal_date?Math.ceil((new Date(r.insurance_renewal_date+'T00:00:00').getTime()-Date.now())/86400000):null;
+    g('insWarn').textContent=(n!==null&&n<=30)?(n<0?'Renewal date has passed. Confirm coverage is still active.':'Renews in '+n+' day'+(n===1?'':'s')+'. Start the renewal now.'):''; }
+  g('noteDraft').textContent='';
+  try{ const d=localStorage.getItem('nrt-res-note-'+r.id);
+    if(d!==null&&d!==(r.notes||'')){ g('r_notes').value=d; DIRTY.add('r_notes'); g('noteDraft').textContent='Unsaved note brought back from this device. Tap Save resident to keep it.'; } }catch(_){}
   g('e_amount').value=''; g('e_detail').value='';
   g('e_paidon').value=new Date().toISOString().slice(0,10); g('e_method').value=''; g('e_takenby').value='';
   { const el=g('ledger'); if(el) el.innerHTML=ledgerHtml(r); }
@@ -571,9 +611,11 @@ async function quick(kind,btn){
   if(d && d.resident){
     const i=RES.findIndex(x=>x.id===id);
     if(i>-1) RES[i]=d.resident;
+    const snap=snapDirty(false);
     openRes(id);
+    restoreDirty(snap);
     render();
-  }else{ load(); }
+  }else{ await refreshKeeping(id,false); }
 }
 async function saveRes(btn){
   const b={id:g('r_id').value,name:g('r_name').value,house_name:g('r_house').value,room:g('r_room').value,
@@ -591,11 +633,13 @@ async function saveRes(btn){
     warnings:g('r_warnings').value,last_warning:g('r_lastwarn').value,warning_reason:g('r_warnreason').value,
     last_talked:g('r_lasttalked').value,house_meetings:g('r_hmeet').value,peer_meetings:g('r_pmeet').value,
     last_ua:g('r_lastua').value,ua_result:g('r_uares').value,
-    curfew_ok:g('r_curfew').checked,chores_ok:g('r_chores').checked,on_notice:g('r_notice').checked};
+    curfew_ok:g('r_curfew').checked,chores_ok:g('r_chores').checked,on_notice:g('r_notice').checked,
+    eviction_pending:g('r_evict').checked,eviction_link:g('r_evictlink').value,
+    insurance_carrier:g('r_inscarrier').value,insurance_renewal_date:g('r_insrenew').value,insurance_receipt:g('r_insreceipt').value};
   btn.textContent='Saving…';
   const r=await fetch('/housing/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
   btn.textContent='Save resident';
-  if(r.ok){closeM();load();}else{alert('Save failed');}
+  if(r.ok){clearDraft(b.id);closeM(true);load();}else{alert('Save failed. Your typing is still here. Try again.');}
 }
 async function logEvent(btn){
   const id=g('r_id').value; const res=RES.find(x=>x.id===id)||{};
@@ -606,12 +650,12 @@ async function logEvent(btn){
   btn.textContent='…';
   const r=await fetch('/housing/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
   btn.textContent='Log it';
-  if(r.ok){closeM();load();}else{alert('Log failed');}
+  if(r.ok){await refreshKeeping(id,true);}else{alert('Log failed');}
 }
 async function delRes(){
   if(!confirm('Delete this record permanently?'))return;
   const r=await fetch('/housing/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:g('r_id').value,action:'delete'})});
-  if(r.ok){closeM();load();}
+  if(r.ok){clearDraft(g('r_id').value);closeM(true);load();}
 }
 
 function match(r){
@@ -770,7 +814,7 @@ function render(){
       +'<div class="rmeta">'+esc(r.house_name||'')+(r.room?' · '+esc(r.room):'')
       +(r.payer_type&&r.payer_type!=='self'?' <span class="chip hrss">'+esc(r.payer_type)+'</span>':'')
       +(cliff!==null&&cliff<=30&&cliff>=0?' <span class="chip cliff">funding ends '+cliff+'d</span>':'')
-      +(r.on_notice?' <span class="chip notice">on notice</span>':'')
+      +(r.on_notice?' <span class="chip notice">on notice</span>':'')+(r.eviction_pending?' <span class="chip notice">eviction pending</span>':'')
       +((r.warnings||0)>0?' <span class="chip warn2">'+r.warnings+' warning'+(r.warnings===1?'':'s')+'</span>':'')
       +((daysAgo(r.last_talked)===null||daysAgo(r.last_talked)>14)?' <span class="chip quiet">talked '+ago(r.last_talked)+'</span>':'')
       +(r.notes?'<br><span style="opacity:.65;font-style:italic">'+esc(String(r.notes).slice(0,90))+'</span>':'')
