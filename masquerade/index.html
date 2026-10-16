@@ -310,6 +310,21 @@ footer a,.info-card a{overflow-wrap:anywhere}
 .ros span{display:block;font-size:.8rem;color:var(--muted);margin-top:4px}
 @media(max-width:759px){.ros{grid-template-columns:1fr;gap:6px}.ros li{display:flex;align-items:center;gap:12px;text-align:left;padding:8px 12px}.ros b{min-width:56px}.ros span{margin:0}}
 </style>
+<script>
+/* referral credit: ?ref=name on any link is remembered for 60 days and added to every sign-up */
+(function(){
+  var K='nrt_ref', ref=null;
+  try{ var q=new URLSearchParams(location.search).get('ref'); if(q){ q=q.toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,30); if(q) localStorage.setItem(K,JSON.stringify({r:q,t:Date.now()})); }
+    var s=JSON.parse(localStorage.getItem(K)||'null'); if(s&&s.r&&Date.now()-s.t<60*864e5) ref=s.r; }catch(e){}
+  window.NRT_REF=ref; if(!ref||!window.fetch) return;
+  var of=window.fetch;
+  window.fetch=function(u,o){ try{ var url=typeof u==='string'?u:((u&&u.url)||'');
+    if(o&&o.method==='POST'&&typeof o.body==='string'){
+      var k=(/\/rest\/v1\/gala_(sponsors|inkind)(\?|$)/.test(url)||/\/masquerade\/rsvp$/.test(url))?'referred_by':(/\/rpc\/gala_light_stars/.test(url)?'p_ref':null);
+      if(k){ var b=JSON.parse(o.body); (Array.isArray(b)?b:[b]).forEach(function(x){ if(x&&typeof x==='object'&&!x[k]) x[k]=ref; }); o=Object.assign({},o,{body:JSON.stringify(b)}); } } }catch(e){}
+    return of.call(this,u,o); };
+})();
+</script>
 </head>
 <body>
 
@@ -637,7 +652,7 @@ window.GALA = {
     <div class="sf-cap" id="sf-cap" aria-live="polite">&nbsp;</div>
     <div class="sf-go"><button type="button" class="btn ghost small" id="sf-auto">Pick for me</button><button type="button" class="btn" id="sf-light" disabled>Pick 1 starfish</button></div>
   </div>
-  <p class="sf-story">A child walked a beach covered in stranded starfish, throwing them back one at a time. Someone told her she could never make a difference. She threw one more and said, <i>&ldquo;It made a difference to that one.&rdquo;</i></p>
+  <p class="sf-story">A man was walking his dog along the beach when he saw a boy throwing starfish into the ocean. &ldquo;What are you doing?&rdquo; he asked. &ldquo;The sun is coming up and the tide is going out. If I don&rsquo;t throw them back, they will die.&rdquo; The man scanned the beach and saw hundreds of starfish. &ldquo;There are so many. How can you possibly make a difference?&rdquo; The boy picked up another starfish, threw it back into the ocean and said, <i>&ldquo;I made a difference to that one.&rdquo;</i></p>
   <p class="small" style="color:var(--muted);text-align:center">A gift to The Right Thing in Recovery, not a ticket: there are no prizes and no drawing.</p>
 </div></section>
 
