@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flannel to Formal Masquerade · Nov 13, 2026</title>
-<meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, 6–10 PM, West Jordan, UT. Dinner, a silent auction and an open house benefiting The Right Thing in Recovery, a 501(c)(3) nonprofit.">
+<meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, West Jordan, UT. Ribbon cutting at 5 PM, then dinner by Pat’s BBQ, a silent auction, the Starfish Wall and an open house, 6–10 PM. Benefits The Right Thing in Recovery, a nonprofit (EIN 93-4316358).">
 <meta property="og:title" content="Flannel to Formal Masquerade Fundraiser">
-<meta property="og:description" content="Fri Nov 13 · 6–10 PM · 7669 S Redwood Rd, West Jordan. Dinner included. Reserve your seat or become a sponsor.">
+<meta property="og:description" content="Fri Nov 13 · Ribbon cutting 5 PM · Doors 6 PM · 7669 S Redwood Rd, West Jordan. Dinner by Pat’s BBQ, silent auction and open house. $35 a seat.">
 <meta property="og:image" content="https://nextrighthing.com/masquerade/share.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="https://nextrighthing.com/masquerade/"><meta property="og:type" content="website">
@@ -276,6 +276,11 @@ footer a,.info-card a{overflow-wrap:anywhere}
 .sf-story{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.5;color:var(--text);border-left:2px solid var(--gold);padding-left:14px;margin:14px 0}
 .sf-stars{font-size:1.8rem;letter-spacing:.3em;color:var(--gold2);margin-bottom:12px}
 .sf-btns{display:grid;gap:10px}
+.ros{list-style:none;padding:0;margin:0 auto 22px;max-width:900px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;counter-reset:none}
+.ros li{border:1px solid rgba(201,169,110,.4);border-radius:14px;padding:10px 8px;text-align:center;background:rgba(20,10,43,.5)}
+.ros b{display:block;font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold2);line-height:1}
+.ros span{display:block;font-size:.8rem;color:var(--muted);margin-top:4px}
+@media(max-width:759px){.ros{grid-template-columns:1fr;gap:6px}.ros li{display:flex;align-items:center;gap:12px;text-align:left;padding:8px 12px}.ros b{min-width:56px}.ros span{margin:0}}
 </style>
 </head>
 <body>
@@ -296,13 +301,13 @@ window.GALA = {
     changemaker: 'https://square.link/u/q4TJOo8u',  // Change Maker Sponsorship ($500)
     champion: 'https://square.link/u/YbHo3FMy',     // Community Champion Sponsorship ($1,000)
     partner: 'https://square.link/u/YW3KrESO',      // Recovery Partner Sponsorship ($2,500+, buyer enters amount)
-    star1: '',   // Starfish Wall: 1 starfish ($5). Paste the Square link here.
-    star5: ''    // Starfish Wall: 5 starfish ($20). Paste the Square link here.
+    star1: 'https://square.link/u/MTPdsF4V',   // Starfish Wall: Light 1 Starfish ($5)
+    star5: 'https://square.link/u/mzHxX1Be'    // Starfish Wall: Light 5 Starfish ($20)
   },
   contactName: 'Ryan Anderson',
   contactEmail: 'ryan@nextrighthing.com',
   phone: '801-816-4977',
-  startISO: '2026-11-13T18:00:00-07:00',
+  startISO: '2026-11-13T17:00:00-07:00',   // ribbon cutting
   endISO:   '2026-11-13T22:00:00-07:00',
   address: '7669 S Redwood Rd, West Jordan, UT 84084'
 };
@@ -331,7 +336,7 @@ window.GALA = {
     <h1 class="sr">Flannel to Formal Masquerade Fundraiser</h1>
     <img class="banner" src="banner.jpg" alt="The Next Right Thing in Recovery presents the Flannel to Formal Masquerade Fundraiser" width="1380" height="403">
     <div class="chips"><span>Dinner</span><span>•</span><span>Silent Auction</span><span>•</span><span>Starfish Wall</span><span>•</span><span>Open House</span></div>
-    <div class="when">Friday, November 13, 2026<br>6:00 – 10:00 PM</div>
+    <div class="when">Friday, November 13, 2026<br>Ribbon cutting 5:00 PM · Doors 6:00 PM</div>
     <div class="where"><a href="https://maps.google.com/?q=7669+S+Redwood+Rd+West+Jordan+UT+84084" target="_blank" rel="noopener">7669 S Redwood Rd, West Jordan, UT 84084</a></div>
     <div class="count" id="count" aria-live="off">
       <div><b id="cd-d">–</b><span>Days</span></div><div><b id="cd-h">–</b><span>Hours</span></div><div><b id="cd-m">–</b><span>Min</span></div>
@@ -363,7 +368,7 @@ window.GALA = {
 <section id="info" style="padding-top:40px"><div class="wrap">
   <div style="text-align:center;margin-bottom:22px"><span class="eyebrow">Event info</span><h2 class="fancy"><span class="brush">Everything you need</span></h2></div>
   <div class="info-grid">
-    <div class="info-card"><div class="k">When</div><div class="v">Friday, Nov 13, 2026</div><p>Doors 6:00 PM · Wraps 10:00 PM</p></div>
+    <div class="info-card"><div class="k">When</div><div class="v">Friday, Nov 13, 2026</div><p>Ribbon cutting 5:00 PM · Doors &amp; dinner 6:00 PM · Wraps 10:00 PM</p></div>
     <div class="info-card"><div class="k">Where</div><div class="v">7669 S Redwood Rd</div><p>West Jordan, UT 84084 · <a href="https://maps.google.com/?q=7669+S+Redwood+Rd+West+Jordan+UT+84084" target="_blank" rel="noopener">Directions</a></p></div>
     <div class="info-card"><div class="k">Tickets</div><div class="v">$35 · $60 couples</div><p>Dinner included. Reserve online, pay online or at the door. <a href="#tickets">Reserve →</a></p></div>
     <div class="info-card info-wide">
@@ -371,7 +376,7 @@ window.GALA = {
         <div class="pills"><span>🍽 Dinner</span><span>🔨 Silent auction</span><span>⭐ Starfish Wall</span><span>📷 Photo booth</span><span>🏠 Open house</span></div></div>
       <img src="flannel-to-formal.jpg" alt="A red flannel shirt next to a black tuxedo" loading="lazy" width="539" height="173">
     </div>
-    <div class="info-card"><div class="k">Benefits</div><div class="v">The Right Thing in Recovery</div><p>A 501(c)(3) nonprofit providing recovery opportunities, sober activities, transportation, peer support and resources.</p></div>
+    <div class="info-card"><div class="k">Benefits</div><div class="v">The Right Thing in Recovery</div><p>Our nonprofit (EIN 93-4316358), providing recovery opportunities, sober activities, transportation, peer support and resources.</p></div>
     <div class="info-card"><div class="k">Sponsors</div><div class="v">From $100</div><p>Five levels plus in-kind gifts of $100+. <a href="#sponsor">See levels →</a></p></div>
     <div class="info-card"><div class="k">Questions</div><div class="v">Ryan Anderson</div><p><a class="cname-mail2" href="mailto:ryan@nextrighthing.com">ryan@nextrighthing.com</a> · <a href="tel:8018164977">801-816-4977</a></p></div>
   </div>
@@ -387,6 +392,7 @@ window.GALA = {
     <p>We're opening our doors for a special open house where you can meet our team, learn more about our mission, and help support the work we do to make a difference in the lives of individuals and families impacted by addiction.</p>
     <p>Whether you come dressed in flannel, formal attire, or your favorite masquerade style, we would love to have you there!</p>
     <p>Your presence and support help us continue our mission of providing hope, recovery, and the opportunity for a better future. This is a wonderful chance to connect with our community, celebrate second chances, and support a cause that truly matters.</p>
+    <p>Join us at 5:00 PM as we cut the ribbon on our new home at 7669 S Redwood Rd, then stay for dinner, the silent auction and a tour of the building.</p>
     <p>Come for the fun, stay for the mission, and help us make a difference!</p>
     <button type="button" class="btn small ghost more-inv" onclick="this.parentNode.classList.add('open')">Read the full invitation</button>
     <p class="sig">With gratitude,<br>The Next Right Thing in Recovery Team</p>
@@ -398,6 +404,13 @@ window.GALA = {
 <!-- the evening -->
 <section><div class="wrap">
   <div style="text-align:center;margin-bottom:26px"><span class="eyebrow">The evening</span><h2>Good food. Great company.<br>A brighter tomorrow.</h2></div>
+  <ol class="ros" aria-label="Run of show">
+    <li><b>5:00</b><span>Ribbon cutting at our new home</span></li>
+    <li><b>6:00</b><span>Doors open · dinner by Pat&rsquo;s BBQ</span></li>
+    <li><b>6:30</b><span>Welcome &amp; sponsor thank-yous</span></li>
+    <li><b>8:30</b><span>Silent auction closes</span></li>
+    <li><b>10:00</b><span>Evening wraps</span></li>
+  </ol>
   <div class="grid g5 feats">
     <div class="card feat"><div class="ic">🍽</div><h3>Dinner</h3><p>By Pat&rsquo;s BBQ, included with every ticket.</p></div>
     <div class="card feat"><div class="ic">🔨</div><h3>Silent auction</h3><p>Snowbird, Grand America and more. <a href="#auction">Bid now</a>.</p></div>
@@ -614,18 +627,15 @@ window.GALA = {
 <!-- FAQ -->
 <section id="faq"><div class="wrap" style="max-width:780px">
   <div style="text-align:center;margin-bottom:18px"><span class="eyebrow">Good to know</span><h2>Questions</h2></div>
-  <details><summary>Can I pay at the door?</summary><p>Yes. Reserving online just lets the kitchen plan dinner. You can pay online (when available) or at the door.</p></details>
+  <details><summary>Can I pay at the door?</summary><p>Yes. Reserving online lets the kitchen plan dinner, and you can pay online now or at the door.</p></details>
   <details><summary>Is my sponsorship or ticket tax-deductible?</summary><p>Contributions benefit The Right Thing in Recovery. Every gift gets a receipt, and if you receive tickets, dinner, or other benefits in return, your receipt will show their value. For questions about deductibility, please consult your tax advisor.</p></details>
+  <details><summary>What time should I arrive?</summary><p>The ribbon cutting for our new home is at 5:00 PM, and we'd love to have you there for it. Doors open and dinner starts at 6:00 PM.</p></details>
+  <details><summary>How does the silent auction work?</summary><p>Every item was donated by a local business. Bid from your phone on this page before or during the event. Bidding closes at 8:30 PM on November 13, and we'll contact winners that night to arrange payment and pickup.</p></details>
+  <details><summary>What is the Starfish Wall?</summary><p>For $5 you light one starfish, or five for $20, each carrying your name or a few words of hope on our wall the night of the event. It's a gift, not a ticket: there are no prizes and no drawing.</p></details>
   <details><summary>What should I wear?</summary><p>Flannel, formal, masquerade — or all three. Masks encouraged, never required.</p></details>
   <details><summary>Photos &amp; privacy</summary><p>We love a good photo booth, and we protect the people we serve. Please don't photograph, post, or tag anyone without asking first. Our staff will never share images of people in our care without their written consent. Every ticket, sponsorship and entry form asks for your photo choice, and you can tell us or change it at check-in.</p></details>
   <details><summary>I want to help but can't attend</summary><p>Become a sponsor, donate an item, bid in the silent auction, or light a starfish — all from this page. Questions? Contact <a class="cname-mail"></a> or call <a href="tel:8018164977">801-816-4977</a>.</p></details>
-  <div style="margin-top:28px"><div class="eyebrow" style="margin-bottom:10px">Share the flyers</div>
-    <div class="flyers">
-      <a href="flyer-event.jpg" download><img src="flyer-event.jpg" alt="Event flyer: Flannel to Formal Masquerade Fundraiser open house, Friday November 13 2026, 6 to 10 PM, 7669 S Redwood Rd, tickets $35 individual, $60 couples, dinner included" loading="lazy"></a>
-      <a href="flyer-sponsors.jpg" download><img src="flyer-sponsors.jpg" alt="Sponsor opportunities flyer with five sponsorship levels from $100 to $2,500 and up, plus in-kind sponsorship" loading="lazy"></a>
-    </div>
-    <p style="margin-top:12px"><a class="btn small ghost" href="#share">Share this page</a></p>
-  </div>
+  <p style="margin-top:22px;text-align:center"><a class="btn small ghost" href="#share">Share this page</a></p>
 </div></section>
 
 <dialog id="qb" aria-labelledby="qb-title">
@@ -670,8 +680,8 @@ window.GALA = {
 
 <footer><div class="wrap">
   <img src="nrt-logo-light.png" alt="The Next Right Thing in Recovery" width="120" height="112" style="width:110px;height:auto;display:block;margin:0 0 14px" loading="lazy">
-  <p><strong>Flannel to Formal Masquerade Fundraiser</strong> · Friday, November 13, 2026 · 6:00–10:00 PM · 7669 S Redwood Rd, West Jordan, UT 84084</p>
-  <p>Funds raised benefit <strong>The Right Thing in Recovery</strong>, a 501(c)(3) nonprofit organization, EIN 93-4316358. The evening is hosted at, and includes an open house of, The Next Right Thing in Recovery.</p>
+  <p><strong>Flannel to Formal Masquerade Fundraiser</strong> · Friday, November 13, 2026 · Ribbon cutting 5:00 PM · 6:00–10:00 PM · 7669 S Redwood Rd, West Jordan, UT 84084</p>
+  <p>Funds raised benefit <strong>The Right Thing in Recovery</strong>, a nonprofit organization, EIN 93-4316358. Event proceeds go to the nonprofit, which is separate from the licensed treatment program. The evening is hosted at, and includes an open house of, The Next Right Thing in Recovery&rsquo;s new home.</p>
   <p>Sponsorship questions: <a class="cname-mail"></a> · <a href="tel:8018164977">801-816-4977</a> · <a href="/">nextrighthing.com</a></p>
 </div></footer>
 
