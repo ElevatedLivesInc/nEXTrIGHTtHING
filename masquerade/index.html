@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flannel to Formal Masquerade · Nov 13, 2026</title>
-<meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, 6–10 PM, West Jordan, UT. Dinner, live auction, music and a free opportunity drawing benefiting The Right Thing in Recovery, a 501(c)(3) nonprofit.">
+<meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, 6–10 PM, West Jordan, UT. Dinner, silent auction, music and a free opportunity drawing benefiting The Right Thing in Recovery, a 501(c)(3) nonprofit.">
 <meta property="og:title" content="Flannel to Formal Masquerade Fundraiser">
 <meta property="og:description" content="Fri Nov 13 · 6–10 PM · 7669 S Redwood Rd, West Jordan. Dinner included. Reserve your seat or become a sponsor.">
 <meta property="og:image" content="https://nextrighthing.com/masquerade/share.jpg">
@@ -246,7 +246,33 @@ footer a,.info-card a{overflow-wrap:anywhere}
 #qb .qb-amt{color:var(--gold2);font-weight:700}
 #qb .x{position:absolute;right:10px;top:8px;background:none;border:0;color:var(--muted);font-size:1.6rem;cursor:pointer;line-height:1;padding:6px}
 #qb .consent{margin:0}
-#qb .small{font-size:.8rem;color:var(--muted);margin:0}
+#qb .small,#bd .small{font-size:.8rem;color:var(--muted);margin:0}
+#bd{border:1px solid var(--gold);border-radius:20px;padding:0;background:#140a2b;color:var(--text);width:min(460px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+#bd::backdrop{background:rgba(5,2,15,.72);backdrop-filter:blur(3px)}
+#bd form{padding:22px 20px 18px;display:grid;gap:12px}
+#bd h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:#fff;padding-right:28px}
+#bd .x{position:absolute;right:10px;top:8px;background:none;border:0;color:var(--muted);font-size:1.6rem;cursor:pointer;line-height:1;padding:6px}
+#bd .qb-amt{color:var(--gold2);font-weight:700}
+#bd .consent{margin:0}
+.au-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.au{position:relative;border-radius:18px;padding:18px 16px 16px;background:linear-gradient(180deg,rgba(59,26,107,.55),rgba(20,10,43,.85));border:1px solid rgba(201,169,110,.45);display:flex;flex-direction:column;gap:6px}
+.au .ic{font-size:2rem;line-height:1}
+.au h3{margin:2px 0 0;font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:#fff;line-height:1.15}
+.au .by{font-size:.8rem;color:var(--gold2);letter-spacing:.04em}
+.au p{margin:0;font-size:.88rem;color:var(--muted)}
+.au .val{position:absolute;top:14px;right:14px;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:#1a1404;background:var(--gold2);border-radius:999px;padding:3px 9px}
+.au .bidrow{margin-top:auto;padding-top:10px;display:flex;align-items:end;justify-content:space-between;gap:10px;border-top:1px solid rgba(201,169,110,.25)}
+.au .cur small{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.au .cur b{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold2);line-height:1}
+.au .cur i{display:block;font-style:normal;font-size:.75rem;color:var(--muted)}
+.au.closed .btn{opacity:.5;pointer-events:none}
+.au-note{text-align:center;margin:18px auto 0;font-size:.9rem;color:var(--muted)}
+.caterer{display:flex;gap:16px;align-items:center;max-width:640px;margin:22px auto 0;padding:14px 18px;border-radius:18px;border:1px solid rgba(201,169,110,.5);background:rgba(20,10,43,.6);text-decoration:none;color:var(--text)}
+.caterer img{width:84px;height:84px;border-radius:50%;flex:none;object-fit:cover;background:#fff}
+.caterer strong{display:block;font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:#fff;line-height:1.1}
+.caterer em{display:block;font-style:normal;font-size:.85rem;color:var(--muted)}
+.caterer small{display:block;margin-top:4px;font-size:.8rem;color:var(--gold2)}
+@media(max-width:520px){.caterer{flex-direction:column;text-align:center}}
 </style>
 </head>
 <body>
@@ -284,6 +310,7 @@ window.GALA = {
   </a>
   <nav aria-label="Sections">
     <a href="#info">Info</a>
+    <a href="#auction">Auction</a>
     <a href="#tickets">Tickets</a>
     <a href="#sponsor">Sponsor</a>
     <a href="#inkind">Donate</a>
@@ -336,7 +363,7 @@ window.GALA = {
     <div class="info-card"><div class="k">Tickets</div><div class="v">$35 · $60 couples</div><p>Dinner included. Reserve online, pay online or at the door. <a href="#tickets">Reserve →</a></p></div>
     <div class="info-card info-wide">
       <div><div class="k">Dress code</div><div class="v">Flannel to Formal</div><p>Come in flannel, a tux, your best masquerade look — or all three. Masks encouraged, never required.</p>
-        <div class="pills"><span>🍽 Dinner</span><span>🔨 Live auction</span><span>⭐ Free drawing</span><span>♫ Music</span><span>📷 Photo booth</span><span>🏠 Open house</span></div></div>
+        <div class="pills"><span>🍽 Dinner</span><span>🔨 Silent auction</span><span>⭐ Free drawing</span><span>♫ Music</span><span>📷 Photo booth</span><span>🏠 Open house</span></div></div>
       <img src="flannel-to-formal.jpg" alt="A red flannel shirt next to a black tuxedo" loading="lazy" width="539" height="173">
     </div>
     <div class="info-card"><div class="k">Benefits</div><div class="v">The Right Thing in Recovery</div><p>A 501(c)(3) nonprofit providing recovery opportunities, sober activities, transportation, peer support and resources.</p></div>
@@ -367,12 +394,17 @@ window.GALA = {
 <section><div class="wrap">
   <div style="text-align:center;margin-bottom:26px"><span class="eyebrow">The evening</span><h2>Good food. Great company.<br>A brighter tomorrow.</h2></div>
   <div class="grid g5 feats">
-    <div class="card feat"><div class="ic">🍽</div><h3>Dinner</h3><p>Included with every ticket.</p></div>
-    <div class="card feat"><div class="ic">🔨</div><h3>Live auction</h3><p>Bid on items from local businesses.</p></div>
+    <div class="card feat"><div class="ic">🍽</div><h3>Dinner</h3><p>By Pat&rsquo;s BBQ, included with every ticket.</p></div>
+    <div class="card feat"><div class="ic">🔨</div><h3>Silent auction</h3><p>Snowbird, Grand America and more. <a href="#auction">Bid now</a>.</p></div>
     <div class="card feat"><div class="ic">⭐</div><h3>Free drawing</h3><p>No purchase necessary. <a href="#drawing">Enter here</a>.</p></div>
     <div class="card feat"><div class="ic">♫</div><h3>Music</h3><p>All evening long.</p></div>
     <div class="card feat"><div class="ic">📷</div><h3>Photo booth</h3><p>Masks encouraged. <a href="#faq">Photo policy</a>.</p></div>
   </div>
+  <a class="caterer" href="https://www.patsbbq.com" target="_blank" rel="noopener">
+    <img src="https://images.squarespace-cdn.com/content/v1/69d546c29c34c372a77c091a/9e80fc0a-fc71-4695-a630-aa8a0ba0481d/Pat%27s+Circle+Logo+Exported.jpg?format=300w" alt="Pat's BBQ logo" loading="lazy" onerror="this.style.display='none'" width="96" height="96">
+    <span><span class="eyebrow">Dinner catered by</span><strong>Pat&rsquo;s BBQ</strong><em>Utah&rsquo;s award-winning BBQ since 2004 · featured on Diners, Drive-Ins and Dives</em>
+    <small>patsbbq.com · <span>catering@patsbbq.com</span> · (801) 484-5963</small></span>
+  </a>
   <div style="text-align:center;margin-top:26px">
     <div class="eyebrow">Dress code: your call</div>
     <div class="dress"><span>Flannel</span><span>Formal</span><span>Masquerade</span><span>All three</span></div>
@@ -426,6 +458,19 @@ window.GALA = {
       </div>
     </div>
   </div>
+</div></section>
+
+<div class="divider"></div>
+
+<!-- auction -->
+<section id="auction"><div class="wrap">
+  <div style="text-align:center;margin-bottom:18px">
+    <span class="eyebrow">Silent auction · bid from your phone</span>
+    <h2 class="fancy"><span class="brush">Silent Auction</span></h2>
+    <p class="lead" style="margin:10px auto 0">Every item was donated by a local business. Bid now from anywhere, and keep bidding at the event. <b id="au-close">Bidding closes Friday, Nov 13 at 8:30 PM.</b> Winners are contacted that night.</p>
+  </div>
+  <div class="au-grid" id="au-grid"><p class="lead" style="text-align:center;grid-column:1/-1">Loading auction items…</p></div>
+  <p class="au-note">No purchase needed for our <a href="#drawing">free opportunity drawing</a>. It's separate from the auction, and everyone can enter.</p>
 </div></section>
 
 <div class="divider"></div>
@@ -619,6 +664,25 @@ window.GALA = {
   </form>
 </dialog>
 
+<dialog id="bd" aria-labelledby="bd-title">
+  <form id="bd-form" novalidate>
+    <button type="button" class="x" aria-label="Close" onclick="document.getElementById('bd').close()">&times;</button>
+    <div><span class="eyebrow">Place a bid</span><h3 id="bd-title">Item</h3><div class="qb-amt" id="bd-now"></div></div>
+    <label>Your bid <span class="small" id="bd-min"></span><input name="amount" type="number" inputmode="numeric" min="1" step="1" required></label>
+    <label>Your name <input name="name" autocomplete="name" required maxlength="120"></label>
+    <div class="row2"><label>Phone <input name="phone" type="tel" autocomplete="tel" maxlength="40"></label><label>Email <input name="email" type="email" autocomplete="email" maxlength="200"></label></div>
+    <p class="small">A phone or email is required so we can reach you if you win. Only your first name and last initial are shown.</p>
+    <fieldset class="consent"><legend>Photo consent <span class="reqstar">*</span></legend>
+      <p>Photos and video will be taken at this event and may be shared on our website and social media.</p>
+      <label class="check"><input type="radio" name="pc" value="yes"> Yes, you may include me in event photos and video.</label>
+      <label class="check"><input type="radio" name="pc" value="no"> No, please don't photograph me.</label>
+    </fieldset>
+    <div class="ferr" role="alert" id="bd-err"></div>
+    <button class="btn" type="submit" id="bd-go">Place bid</button>
+    <p class="small">Bids are commitments to buy if you win. Winners pay after the auction closes.</p>
+  </form>
+</dialog>
+
 <button type="button" id="totop" aria-label="Back to top">&uarr;</button>
 <nav id="mbar" aria-label="Quick actions"><a class="btn" href="#tickets">🎟 Tickets · $35</a><a class="btn ghost" href="#sponsor">Sponsor</a></nav>
 
@@ -662,15 +726,15 @@ tick(); setInterval(tick, 30000);
 
 /* calendar */
 const z = d => new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
-$('#gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Flannel to Formal Masquerade Fundraiser')+'&dates='+z(C.startISO)+'/'+z(C.endISO)+'&location='+encodeURIComponent(C.address)+'&details='+encodeURIComponent('Dinner, live auction, music and a free drawing. '+location.href);
+$('#gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Flannel to Formal Masquerade Fundraiser')+'&dates='+z(C.startISO)+'/'+z(C.endISO)+'&location='+encodeURIComponent(C.address)+'&details='+encodeURIComponent('Dinner, silent auction, music and a free drawing. '+location.href);
 $$('[data-ics]').forEach(b=>b.onclick=()=>{
-  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NRT//Masquerade//EN','BEGIN:VEVENT','UID:masquerade-2026@nextrighthing.com','DTSTAMP:'+z(new Date()),'DTSTART:'+z(C.startISO),'DTEND:'+z(C.endISO),'SUMMARY:Flannel to Formal Masquerade Fundraiser','LOCATION:'+C.address.replace(/,/g,'\\,'),'DESCRIPTION:Dinner\\, live auction\\, music and a free drawing.','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Masquerade tomorrow','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NRT//Masquerade//EN','BEGIN:VEVENT','UID:masquerade-2026@nextrighthing.com','DTSTAMP:'+z(new Date()),'DTSTART:'+z(C.startISO),'DTEND:'+z(C.endISO),'SUMMARY:Flannel to Formal Masquerade Fundraiser','LOCATION:'+C.address.replace(/,/g,'\\,'),'DESCRIPTION:Dinner\\, silent auction\\, music and a free drawing.','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Masquerade tomorrow','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download='masquerade-2026.ics'; a.click();
 });
 
 /* share */
 (function(){const url='https://nextrighthing.com/masquerade/';
-  const msg='You should come to this with me: the Flannel to Formal Masquerade, Fri Nov 13 in West Jordan. Dinner, live auction, music and a free drawing, all for recovery. $35 a seat: ';
+  const msg='You should come to this with me: the Flannel to Formal Masquerade, Fri Nov 13 in West Jordan. Dinner, silent auction, music and a free drawing, all for recovery. $35 a seat: ';
   $('#sh-fb').href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url);
   $('#sh-sms').href='sms:?&body='+encodeURIComponent(msg+url);
   $('#sh-mail').href='mailto:?subject='+encodeURIComponent('Come to the Flannel to Formal Masquerade with me')+'&body='+encodeURIComponent(msg+url);
@@ -851,6 +915,52 @@ wire('#f-drawing','#ok-drawing', fd=>{
     location.href=G.square[k];
   });
   var q=new URLSearchParams(location.search).get('buy'); if(q) setTimeout(function(){ open(q); },400);
+})();
+/* silent auction */
+(function(){
+  var G=window.GALA, grid=document.getElementById('au-grid'), d=document.getElementById('bd'), f=document.getElementById('bd-form'), err=document.getElementById('bd-err'), items=[], cur=null, closes=null;
+  var $d=function(c){ return '$'+Math.round(c/100).toLocaleString(); };
+  var esc=function(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];}); };
+  function rpc(fn,body){ return fetch(G.supabaseUrl+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){ return r.json(); }); }
+  function isClosed(){ return closes && Date.now()>=closes.getTime(); }
+  function draw(){
+    if(!items.length){ grid.innerHTML='<p class="lead" style="text-align:center;grid-column:1/-1">Auction items are coming soon.</p>'; return; }
+    var shut=isClosed();
+    grid.innerHTML=items.map(function(it){
+      var has=it.high_cents!=null;
+      return '<article class="au'+(shut?' closed':'')+'" id="au-'+it.id+'">'+(it.value_label?'<span class="val">'+esc(it.value_label)+'</span>':'')+
+        '<div class="ic">'+esc(it.icon||'✦')+'</div><h3>'+esc(it.title)+'</h3>'+(it.donor?'<div class="by">Donated by '+esc(it.donor)+'</div>':'')+
+        (it.description?'<p>'+esc(it.description)+'</p>':'')+
+        '<div class="bidrow"><div class="cur"><small>'+(has?'Current bid':'Opening bid')+'</small><b>'+$d(has?it.high_cents:it.start_bid_cents)+'</b><i>'+(has?it.bids+' bid'+(it.bids==1?'':'s')+' · '+esc(it.leader||''):'No bids yet')+'</i></div>'+
+        '<button class="btn small" type="button" data-bid="'+it.id+'">'+(shut?'Closed':'Bid '+$d(it.next_min_cents))+'</button></div></article>';
+    }).join('');
+  }
+  function load(){ return rpc('gala_auction_public',{p_slug:G.slug}).then(function(r){ items=(r&&r.items)||[]; closes=r&&r.closes_at?new Date(r.closes_at):null; draw(); }).catch(function(){ grid.innerHTML='<p class="lead" style="text-align:center;grid-column:1/-1">Couldn\'t load the auction. Please refresh.</p>'; }); }
+  function openBid(id){
+    cur=items.find(function(x){return x.id===id;}); if(!cur||isClosed()) return;
+    f.reset(); err.textContent='';
+    document.getElementById('bd-title').textContent=cur.title;
+    document.getElementById('bd-now').textContent=cur.high_cents!=null?('Current bid '+$d(cur.high_cents)):('Opening bid '+$d(cur.start_bid_cents));
+    document.getElementById('bd-min').textContent='(minimum '+$d(cur.next_min_cents)+')';
+    f.amount.value=Math.round(cur.next_min_cents/100); f.amount.min=Math.round(cur.next_min_cents/100);
+    try{ var saved=JSON.parse(localStorage.getItem('mq-bidder')||'null'); if(saved){ f.name.value=saved.n||''; f.phone.value=saved.p||''; f.email.value=saved.e||''; } }catch(_){}
+    d.showModal();
+  }
+  document.addEventListener('click',function(e){ var b=e.target.closest('[data-bid]'); if(b){ e.preventDefault(); openBid(b.dataset.bid); } });
+  f.addEventListener('submit',function(e){
+    e.preventDefault(); err.textContent='';
+    var fd=Object.fromEntries(new FormData(f).entries()), amt=Math.round(parseFloat(fd.amount||'0')*100);
+    if(!fd.pc){ err.textContent='Please answer the photo consent question (yes or no).'; return; }
+    if(fd.email && !/^\S+@\S+\.\S+$/.test(fd.email.trim())){ err.textContent='That email doesn\'t look quite right.'; return; }
+    var go=document.getElementById('bd-go'); go.disabled=true; go.textContent='Placing bid…';
+    rpc('gala_place_bid',{p_item:cur.id,p_name:fd.name||'',p_email:fd.email||'',p_phone:fd.phone||'',p_amount_cents:amt,p_consent:fd.pc==='yes'}).then(function(r){
+      go.disabled=false; go.textContent='Place bid';
+      if(!r||!r.ok){ err.textContent=(r&&r.error)||'Something went wrong. Please try again.'; if(r&&r.next_min_cents){ f.amount.value=Math.round(r.next_min_cents/100); } load(); return; }
+      try{ localStorage.setItem('mq-bidder',JSON.stringify({n:fd.name,p:fd.phone,e:fd.email})); }catch(_){}
+      d.close(); load().then(function(){ var el=document.getElementById('au-'+cur.id); if(el){ el.scrollIntoView({block:'center'}); el.insertAdjacentHTML('afterbegin','<p style="margin:0 0 6px;color:var(--gold2);font-weight:700">You\'re the high bidder ✦</p>'); } });
+    }).catch(function(){ go.disabled=false; go.textContent='Place bid'; err.textContent='Something went wrong. Please try again, or call 801-816-4977.'; });
+  });
+  load(); setInterval(function(){ if(!d.open) load(); },30000);
 })();
 </script>
 </body>
