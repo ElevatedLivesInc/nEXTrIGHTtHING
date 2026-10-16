@@ -305,13 +305,14 @@ function renderStars(){
   const st=D.stars, lit=st.reduce((a,x)=>a+x.stars,0), pledged=st.reduce((a,x)=>a+x.amount_cents,0), paid=st.filter(x=>x.paid).reduce((a,x)=>a+x.amount_cents,0);
   $('#tab-stars').innerHTML=`<h2 style="color:var(--gold2)">Starfish Wall</h2>
    <p class="meta">${st.length} purchases · <b>${lit}</b> starfish · ${$$$(pledged)} started at checkout · ${$$$(paid)} confirmed paid</p>
-   <p class="meta">Each row was entered before Square checkout. Tick "Paid" once you see the matching payment in Square. Print the names for the wall from the CSV.</p>
+   <p class="meta">Each row was entered before Square checkout. Tick "Paid" once you see the matching payment in Square. Print the names from the CSV. Big-screen wall for the event TV: <a href="/masquerade/wall" target="_blank" style="color:var(--gold2)">nextrighthing.com/masquerade/wall</a></p>
    <div class="bar" style="margin-top:10px"><button class="btn g" id="stars-csv">CSV for the wall</button></div>
    <div class="list">${st.map(x=>`<div class="item" data-id="${x.id}"><div class="hd"><div><h3>${'⭐'.repeat(x.stars===5?5:1)} ${esc(x.dedication||x.full_name)}</h3>
      <div class="meta">${esc(x.full_name)} ${x.email?`· <a href="mailto:${esc(x.email)}">${esc(x.email)}</a>`:''} · ${$$$(x.amount_cents)} · ${new Date(x.created_at).toLocaleString()} ${PC(x.photo_consent)}</div></div>
      <span class="pill ${x.paid?'p-paid':'p-reserved'}">${x.paid?'Paid':'Check Square'}</span></div>
      <div class="fields"><label>Shown on wall as<input data-f="dedication" value="${esc(x.dedication||'')}" placeholder="${esc(x.full_name)}"></label></div>
-     <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="paid" ${x.paid?'checked':''}> Paid in Square</label></div>`).join('')||'<p class="meta">No starfish lit yet.</p>'}</div>`;
+     <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="paid" ${x.paid?'checked':''}> Paid in Square</label>
+     <label class="chk"><input type="checkbox" data-f="hidden" ${x.hidden?'checked':''}> Turn off on the wall (unpaid or inappropriate)</label>${(x.slots||[]).length?`<div class="meta">Wall spots: ${(x.slots||[]).join(', ')}</div>`:''}</div>`).join('')||'<p class="meta">No starfish lit yet.</p>'}</div>`;
   wireItems('#tab-stars','gala_stars',D.stars);
   $('#stars-csv').onclick=()=>{ const rows=[['Shown as','Name','Email','Starfish','Amount','Paid']].concat(D.stars.map(x=>[x.dedication||x.full_name,x.full_name,x.email||'',x.stars,(x.amount_cents/100).toFixed(2),x.paid?'yes':'no']));
     const blob=new Blob([rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n')],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='starfish-wall.csv'; a.click(); };
