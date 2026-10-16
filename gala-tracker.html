@@ -317,12 +317,12 @@ function renderScript(){
   const join=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a.slice(-1);
   const partners=by('partner'), champs=by('champion'), others=[...by('changemaker'),...by('hope'),...by('supporter')];
   const ik=D.inkind.filter(i=>i.status!=='declined'&&i.show_publicly).map(i=>i.business_name||i.donor_name);
-  let s='WELCOME (≈ 6:30 PM)\nThank you all for being here tonight. Every dollar raised this evening benefits The Right Thing in Recovery, helping provide recovery opportunities, sober activities, transportation, peer support and resources to individuals working to rebuild their lives.\n\n';
+  let s='RIBBON CUTTING (5:00 PM)\nWelcome to the new home of The Next Right Thing in Recovery at 7669 S Redwood Rd. [Ribbon cutting.]\n\nWELCOME (≈ 6:30 PM)\nThank you all for being here tonight. Every dollar raised this evening benefits The Right Thing in Recovery, helping provide recovery opportunities, sober activities, transportation, peer support and resources to individuals working to rebuild their lives.\n\n';
   if(partners.length) s+=`SPECIAL RECOGNITION — RECOVERY PARTNERS\nTonight would not be possible without our Recovery Partner${partners.length>1?'s':''}, ${join(partners)}. [Invite them to stand / say a few words.]\n\n`;
   if(champs.length) s+=`COMMUNITY CHAMPIONS\nWe also want to thank our Community Champion${champs.length>1?'s':''}: ${join(champs)}.\n\n`;
   if(others.length) s+=`AND OUR SPONSORS\nA heartfelt thank-you to ${join(others)}.\n\n`;
-  if(ik.length) s+=`IN-KIND GIFTS\nThe dinner, auction and drawing prizes were made possible by ${join(ik)}.\n\n`;
-  s+='OPPORTUNITY DRAWING\nReminder: the drawing is free — no purchase necessary. [Draw from the Drawing tab.]\n\nCLOSING\nCome for the fun, stay for the mission. Thank you for being part of the next right thing.';
+  if(ik.length) s+=`IN-KIND GIFTS\nDinner by Pat\u2019s BBQ and our silent auction were made possible by ${join(ik)}.\n\n`;
+  s+='SILENT AUCTION\nThe silent auction closes at 8:30 PM. Last chance to bid from your phone!\n\nSTARFISH WALL\nLight a starfish for $5, or five for $20, and add your name to our wall tonight.\n\nCLOSING\nCome for the fun, stay for the mission. Thank you for being part of the next right thing.';
   $('#tab-script').innerHTML=`<h2 style="color:var(--gold2)">Night-of recognition script</h2><p class="meta">Builds itself from the sponsor list, so Champions and Partners always get the verbal recognition their level promised. No dollar amounts are read aloud.</p>
     <div class="script" id="scr">${esc(s)}</div><p><button class="btn g" id="cp">Copy script</button></p>`;
   $('#cp').onclick=()=>navigator.clipboard.writeText(s).then(()=>toast('Script copied'));
