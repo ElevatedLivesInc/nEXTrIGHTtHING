@@ -14,7 +14,7 @@ export const TENANT = {
 
   phoneDisplay: '(801) 816-4977',
   phoneTel: '8018164977',
-  address: '8901 South 1300 West, West Jordan, UT 84088',
+  address: '7669 South Redwood Road, West Jordan, UT 84084',
   website: 'nextrighthing.com',
 
   colors: { navy: '#1a2744', navyDeep: '#121c33', sand: '#c9a96e', sandLight: '#e8d5b0' },
