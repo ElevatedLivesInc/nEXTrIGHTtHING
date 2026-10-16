@@ -273,7 +273,35 @@ footer a,.info-card a{overflow-wrap:anywhere}
 .caterer em{display:block;font-style:normal;font-size:.85rem;color:var(--muted)}
 .caterer small{display:block;margin-top:4px;font-size:.8rem;color:var(--gold2)}
 @media(max-width:520px){.caterer{flex-direction:column;text-align:center}}
-.sf-story{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.5;color:var(--text);border-left:2px solid var(--gold);padding-left:14px;margin:14px 0}
+.sf-story{font-family:'Cormorant Garamond',serif;font-size:1.2rem;line-height:1.5;color:var(--text);border-left:2px solid var(--gold);padding-left:14px;margin:22px auto 10px;max-width:760px}
+.sf-panel{border:1px solid rgba(201,169,110,.45);border-radius:22px;padding:16px;background:radial-gradient(120% 90% at 50% 0%,rgba(91,33,182,.35),rgba(10,6,24,.9) 70%)}
+.sf-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.sf-count{font-size:.95rem;color:var(--muted)}.sf-count b{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold2);margin-right:4px}
+.sf-modes{display:flex;gap:6px}
+.sf-mode{border:1px solid var(--gold);background:transparent;color:var(--gold2);border-radius:999px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer;min-height:40px}
+.sf-mode.on{background:linear-gradient(135deg,#d8bb80,#b08d4f);color:#1a1404}
+.sf-hint{margin:8px 0 6px;font-size:.85rem;color:var(--muted);text-align:center}
+.sf-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:4px;padding:6px 0}
+.sf{position:relative;aspect-ratio:1;border:0;background:none;padding:2px;cursor:pointer;border-radius:12px;-webkit-tap-highlight-color:transparent}
+.sf svg{width:100%;height:100%;display:block;transition:transform .2s ease,filter .3s ease}
+.sf .body{fill:rgba(185,167,232,.13);stroke:rgba(185,167,232,.35);stroke-width:1.2}
+.sf .dots{fill:rgba(255,255,255,.12)}
+.sf:hover svg{transform:scale(1.12)}
+.sf.lit{cursor:default}
+.sf.lit .body{fill:url(#sfg);stroke:#f5e3b3;stroke-width:1}
+.sf.lit .dots{fill:rgba(255,255,255,.85)}
+.sf.lit svg{filter:drop-shadow(0 0 6px rgba(230,207,155,.85)) drop-shadow(0 0 14px rgba(185,140,255,.55));animation:sfTw 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+.sf.pick .body{fill:rgba(230,207,155,.35);stroke:#e6cf9b;stroke-width:2}
+.sf.pick svg{animation:sfPulse 1s ease-in-out infinite}
+.sf.new svg{animation:sfPop .9s ease-out 1,sfTw 3.2s ease-in-out .9s infinite}
+@keyframes sfTw{0%,100%{filter:drop-shadow(0 0 5px rgba(230,207,155,.7)) drop-shadow(0 0 12px rgba(185,140,255,.45))}50%{filter:drop-shadow(0 0 9px rgba(255,236,190,1)) drop-shadow(0 0 20px rgba(185,140,255,.8))}}
+@keyframes sfPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+@keyframes sfPop{0%{transform:scale(.4) rotate(-40deg);opacity:.3}70%{transform:scale(1.25) rotate(8deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.sf-cap{min-height:1.6em;text-align:center;font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--gold2);margin:4px 0 8px}
+.sf-go{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sf-go .btn[disabled]{opacity:.5;cursor:not-allowed}
+@media(max-width:520px){.sf-wall{grid-template-columns:repeat(10,1fr);gap:1px}}
+@media(prefers-reduced-motion:reduce){.sf svg{animation:none!important}}
 .sf-stars{font-size:1.8rem;letter-spacing:.3em;color:var(--gold2);margin-bottom:12px}
 .sf-btns{display:grid;gap:10px}
 .ros{list-style:none;padding:0;margin:0 auto 22px;max-width:900px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;counter-reset:none}
@@ -591,20 +619,26 @@ window.GALA = {
 
 <!-- starfish wall -->
 <section id="starfish"><div class="wrap">
-  <div class="grid g2" style="align-items:center">
-    <div>
-      <span class="eyebrow">The Starfish Wall</span>
-      <h2 class="fancy">Light a starfish</h2>
-      <p class="lead"><b>$5 lights one starfish. $20 lights five.</b> Each starfish carries your name or a few words of hope, and every one goes up on our wall the night of the event.</p>
-      <p class="sf-story">A child walked a beach covered in stranded starfish, throwing them back one at a time. Someone told her she could never make a difference. She threw one more and said, <i>&ldquo;It made a difference to that one.&rdquo;</i></p>
-      <p class="small" style="color:var(--muted)">This is a gift, not a ticket: there are no prizes and no drawing.</p>
-    </div>
-    <div class="card" style="text-align:center">
-      <div class="sf-stars" aria-hidden="true">✦ ✦ ✦ ✦ ✦</div>
-      <div id="sf-btns" class="sf-btns"></div>
-      <p id="sf-soon" class="small" style="color:var(--muted);margin:10px 0 0">The Starfish Wall opens soon. You can also light a starfish at the event.</p>
-    </div>
+  <div style="text-align:center;max-width:760px;margin:0 auto 18px">
+    <span class="eyebrow">The Starfish Wall</span>
+    <h2 class="fancy"><span class="brush">Light a Starfish</span></h2>
+    <p class="lead" style="margin:10px auto 0"><b>$5 lights one starfish. $20 lights five.</b> Pick your starfish on the wall, add your name or a few words of hope, and watch it light up. The whole wall goes up on the big screen the night of the event.</p>
   </div>
+  <div class="sf-panel">
+    <div class="sf-bar">
+      <div class="sf-count"><b id="sf-lit">0</b> starfish lit</div>
+      <div class="sf-modes" role="group" aria-label="How many starfish">
+        <button type="button" class="sf-mode on" data-n="1">Light 1 · $5</button>
+        <button type="button" class="sf-mode" data-n="5">Light 5 · $20</button>
+      </div>
+    </div>
+    <p class="sf-hint" id="sf-hint">Tap a dark starfish to pick it.</p>
+    <div class="sf-wall" id="sf-wall" aria-label="Starfish wall"></div>
+    <div class="sf-cap" id="sf-cap" aria-live="polite">&nbsp;</div>
+    <div class="sf-go"><button type="button" class="btn ghost small" id="sf-auto">Pick for me</button><button type="button" class="btn" id="sf-light" disabled>Pick 1 starfish</button></div>
+  </div>
+  <p class="sf-story">A child walked a beach covered in stranded starfish, throwing them back one at a time. Someone told her she could never make a difference. She threw one more and said, <i>&ldquo;It made a difference to that one.&rdquo;</i></p>
+  <p class="small" style="color:var(--muted);text-align:center">A gift to The Right Thing in Recovery, not a ticket: there are no prizes and no drawing.</p>
 </div></section>
 
 <div class="divider"></div>
@@ -897,7 +931,11 @@ wire('#f-inkind','#ok-inkind', fd=>{
     var pc=fd.pc==='yes', k=cur;
     try{
       if(k==='star1'||k==='star5'){
-        await fetch(G.supabaseUrl+'/rest/v1/gala_stars',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify({event_slug:G.slug,stars:k==='star1'?1:5,amount_cents:ITEMS[k][2],full_name:name,email:email,dedication:(fd.business||'').trim()||null,photo_consent:pc})});
+        var want=k==='star1'?1:5, picks=(window.__sfPicks||[]).slice(0,want);
+        if(picks.length!==want && window.__sfAuto) picks=window.__sfAuto(want);
+        var rr=await (await fetch(G.supabaseUrl+'/rest/v1/rpc/gala_light_stars',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json'},body:JSON.stringify({p_slots:picks,p_name:name,p_email:email,p_dedication:(fd.business||'').trim(),p_consent:pc})})).json();
+        if(!rr||!rr.ok){ err.textContent=(rr&&rr.error)||'Something went wrong. Please try again.'; go.disabled=false; go.textContent='Continue to payment'; if(window.__sfReload) window.__sfReload(); return; }
+        if(window.__sfLitNow) window.__sfLitNow(picks,(fd.business||'').trim()||name);
       } else if(k==='individual'||k==='couple'){
         await fetch('/masquerade/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event_slug:G.slug,full_name:name,email:email,individual_qty:k==='individual'?1:0,couple_qty:k==='couple'?1:0,attire:'surprise',photo_consent:pc,drawing:false})});
       } else {
@@ -906,8 +944,6 @@ wire('#f-inkind','#ok-inkind', fd=>{
     }catch(_){ /* never block payment; staff can confirm details at the door */ }
     location.href=G.square[k];
   });
-  var sb=document.getElementById('sf-btns'), soon=document.getElementById('sf-soon');
-  if(sb && G.square.star1 && G.square.star5){ sb.innerHTML='<button class="btn" type="button" data-buy="star1">Light 1 starfish · $5</button><button class="btn ghost" type="button" data-buy="star5">Light 5 starfish · $20</button>'; soon.style.display='none'; }
   var q=new URLSearchParams(location.search).get('buy'); if(q) setTimeout(function(){ open(q); },400);
 })();
 /* silent auction */
@@ -955,6 +991,35 @@ wire('#f-inkind','#ok-inkind', fd=>{
     }).catch(function(){ go.disabled=false; go.textContent='Place bid'; err.textContent='Something went wrong. Please try again, or call 801-816-4977.'; });
   });
   load(); setInterval(function(){ if(!d.open) load(); },30000);
+})();
+/* starfish wall */
+(function(){
+  var G=window.GALA, wall=document.getElementById('sf-wall'); if(!wall) return;
+  var cap=document.getElementById('sf-cap'), litEl=document.getElementById('sf-lit'), hint=document.getElementById('sf-hint'), btn=document.getElementById('sf-light');
+  var SV='<svg viewBox="0 0 100 100" aria-hidden="true"><path class="body" d="M50 4c4 0 6 9 9 21 2 8 4 11 12 12 13 2 25 4 26 9 1 4-8 9-19 16-7 4-8 8-6 16 3 13 6 22 2 25-4 2-12-4-21-12-5-5-9-5-14 0-9 8-17 14-21 12-4-3-1-12 2-25 2-8 1-12-6-16C3 55-6 50-5 46c1-5 13-7 26-9 8-1 10-4 12-12C36 13 38 4 42 4z" transform="translate(4 2) scale(.92)"/><g class="dots"><circle cx="50" cy="22" r="2.2"/><circle cx="50" cy="34" r="2.6"/><circle cx="72" cy="44" r="2.2"/><circle cx="28" cy="44" r="2.2"/><circle cx="62" cy="68" r="2.2"/><circle cx="38" cy="68" r="2.2"/><circle cx="50" cy="50" r="3.4"/></g></svg>';
+  var defs='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><radialGradient id="sfg" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#fff6dc"/><stop offset=".45" stop-color="#e6cf9b"/><stop offset="1" stop-color="#a77ee0"/></radialGradient></defs></svg>';
+  var lit={}, picks=[], mode=1, N=120;
+  function render(){
+    var max=0; for(var k in lit){ if(+k>max) max=+k; }
+    var base=window.innerWidth<600?80:120; N=Math.max(base, Math.ceil((Object.keys(lit).length+40)/20)*20, Math.ceil((max+10)/20)*20);
+    var h=defs; for(var i=1;i<=N;i++){ var L=lit[i]; h+='<button type="button" class="sf'+(L?' lit':'')+(picks.indexOf(i)>-1?' pick':'')+'" data-s="'+i+'" style="--d:'+((i*37)%32)/10+'s" aria-label="'+(L?('Starfish lit: '+String(L).replace(/"/g,'&quot;')):'Starfish '+i+', not lit yet')+'">'+SV+'</button>'; }
+    wall.innerHTML=h; litEl.textContent=Object.keys(lit).length; upd();
+  }
+  function upd(){ var need=mode-picks.length; btn.disabled=need!==0; btn.textContent=need>0?('Pick '+need+' more starfish'):(mode===1?'Light it · $5':'Light these 5 · $20'); hint.textContent=mode===1?'Tap a dark starfish to pick it.':'Tap 5 dark starfish to pick them.'; window.__sfPicks=picks.slice(); }
+  function load(){ return fetch(G.supabaseUrl+'/rest/v1/rpc/gala_stars_public',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json'},body:JSON.stringify({p_slug:G.slug})}).then(function(r){return r.json();}).then(function(a){ lit={}; (a||[]).forEach(function(x){ lit[x.slot]=x.label; }); picks=picks.filter(function(p){return !lit[p];}); render(); }).catch(function(){ render(); }); }
+  wall.addEventListener('click',function(e){ var b=e.target.closest('.sf'); if(!b) return; var s=+b.dataset.s;
+    if(lit[s]){ cap.textContent='✦ '+lit[s]; return; }
+    var at=picks.indexOf(s); if(at>-1) picks.splice(at,1); else { if(picks.length>=mode) picks.shift(); picks.push(s); }
+    render(); cap.innerHTML='&nbsp;'; });
+  wall.addEventListener('mouseover',function(e){ var b=e.target.closest('.sf.lit'); if(b) cap.textContent='✦ '+lit[+b.dataset.s]; });
+  document.querySelectorAll('.sf-mode').forEach(function(m){ m.onclick=function(){ document.querySelectorAll('.sf-mode').forEach(function(x){x.classList.toggle('on',x===m);}); mode=+m.dataset.n; picks=picks.slice(-mode); render(); }; });
+  function auto(n){ var free=[]; for(var i=1;i<=N;i++) if(!lit[i]) free.push(i); var out=[]; while(out.length<n && free.length){ out.push(free.splice(Math.floor(Math.random()*free.length),1)[0]); } return out; }
+  document.getElementById('sf-auto').onclick=function(){ picks=auto(mode); render(); };
+  btn.onclick=function(){ if(picks.length!==mode) return; var b=document.createElement('button'); b.type='button'; b.dataset.buy=mode===1?'star1':'star5'; b.style.display='none'; document.body.appendChild(b); b.click(); b.remove(); };
+  window.__sfAuto=function(n){ picks=auto(n); render(); return picks.slice(); };
+  window.__sfReload=load;
+  window.__sfLitNow=function(arr,label){ arr.forEach(function(s){ lit[s]=label; }); picks=[]; render(); arr.forEach(function(s){ var el=wall.querySelector('[data-s="'+s+'"]'); if(el) el.classList.add('new'); }); };
+  load(); setInterval(function(){ if(!document.querySelector('dialog[open]')) load(); },30000);
 })();
 </script>
 </body>
