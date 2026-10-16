@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flannel to Formal Masquerade · Nov 13, 2026</title>
-<meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, 6–10 PM, West Jordan, UT. Dinner, silent auction, music and a free opportunity drawing benefiting The Right Thing in Recovery, a 501(c)(3) nonprofit.">
+<meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, 6–10 PM, West Jordan, UT. Dinner, a silent auction and an open house benefiting The Right Thing in Recovery, a 501(c)(3) nonprofit.">
 <meta property="og:title" content="Flannel to Formal Masquerade Fundraiser">
 <meta property="og:description" content="Fri Nov 13 · 6–10 PM · 7669 S Redwood Rd, West Jordan. Dinner included. Reserve your seat or become a sponsor.">
 <meta property="og:image" content="https://nextrighthing.com/masquerade/share.jpg">
@@ -273,6 +273,9 @@ footer a,.info-card a{overflow-wrap:anywhere}
 .caterer em{display:block;font-style:normal;font-size:.85rem;color:var(--muted)}
 .caterer small{display:block;margin-top:4px;font-size:.8rem;color:var(--gold2)}
 @media(max-width:520px){.caterer{flex-direction:column;text-align:center}}
+.sf-story{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.5;color:var(--text);border-left:2px solid var(--gold);padding-left:14px;margin:14px 0}
+.sf-stars{font-size:1.8rem;letter-spacing:.3em;color:var(--gold2);margin-bottom:12px}
+.sf-btns{display:grid;gap:10px}
 </style>
 </head>
 <body>
@@ -292,7 +295,9 @@ window.GALA = {
     hope: 'https://square.link/u/3Ii8HU3Q',         // Hope Sponsor Sponsorship ($250)
     changemaker: 'https://square.link/u/q4TJOo8u',  // Change Maker Sponsorship ($500)
     champion: 'https://square.link/u/YbHo3FMy',     // Community Champion Sponsorship ($1,000)
-    partner: 'https://square.link/u/YW3KrESO'       // Recovery Partner Sponsorship ($2,500+, buyer enters amount)
+    partner: 'https://square.link/u/YW3KrESO',      // Recovery Partner Sponsorship ($2,500+, buyer enters amount)
+    star1: '',   // Starfish Wall: 1 starfish ($5). Paste the Square link here.
+    star5: ''    // Starfish Wall: 5 starfish ($20). Paste the Square link here.
   },
   contactName: 'Ryan Anderson',
   contactEmail: 'ryan@nextrighthing.com',
@@ -314,7 +319,7 @@ window.GALA = {
     <a href="#tickets">Tickets</a>
     <a href="#sponsor">Sponsor</a>
     <a href="#inkind">Donate</a>
-    <a href="#drawing">Drawing</a>
+    <a href="#starfish">Starfish Wall</a>
     <a href="#share">Share</a>
   </nav>
 </div></div>
@@ -325,7 +330,7 @@ window.GALA = {
   <div class="wrap">
     <h1 class="sr">Flannel to Formal Masquerade Fundraiser</h1>
     <img class="banner" src="banner.jpg" alt="The Next Right Thing in Recovery presents the Flannel to Formal Masquerade Fundraiser" width="1380" height="403">
-    <div class="chips"><span>Dinner</span><span>•</span><span>Live Auction</span><span>•</span><span>Free Drawing</span><span>•</span><span>Music</span><span>•</span><span>Open House</span></div>
+    <div class="chips"><span>Dinner</span><span>•</span><span>Silent Auction</span><span>•</span><span>Starfish Wall</span><span>•</span><span>Open House</span></div>
     <div class="when">Friday, November 13, 2026<br>6:00 – 10:00 PM</div>
     <div class="where"><a href="https://maps.google.com/?q=7669+S+Redwood+Rd+West+Jordan+UT+84084" target="_blank" rel="noopener">7669 S Redwood Rd, West Jordan, UT 84084</a></div>
     <div class="count" id="count" aria-live="off">
@@ -363,7 +368,7 @@ window.GALA = {
     <div class="info-card"><div class="k">Tickets</div><div class="v">$35 · $60 couples</div><p>Dinner included. Reserve online, pay online or at the door. <a href="#tickets">Reserve →</a></p></div>
     <div class="info-card info-wide">
       <div><div class="k">Dress code</div><div class="v">Flannel to Formal</div><p>Come in flannel, a tux, your best masquerade look — or all three. Masks encouraged, never required.</p>
-        <div class="pills"><span>🍽 Dinner</span><span>🔨 Silent auction</span><span>⭐ Free drawing</span><span>♫ Music</span><span>📷 Photo booth</span><span>🏠 Open house</span></div></div>
+        <div class="pills"><span>🍽 Dinner</span><span>🔨 Silent auction</span><span>⭐ Starfish Wall</span><span>📷 Photo booth</span><span>🏠 Open house</span></div></div>
       <img src="flannel-to-formal.jpg" alt="A red flannel shirt next to a black tuxedo" loading="lazy" width="539" height="173">
     </div>
     <div class="info-card"><div class="k">Benefits</div><div class="v">The Right Thing in Recovery</div><p>A 501(c)(3) nonprofit providing recovery opportunities, sober activities, transportation, peer support and resources.</p></div>
@@ -396,8 +401,8 @@ window.GALA = {
   <div class="grid g5 feats">
     <div class="card feat"><div class="ic">🍽</div><h3>Dinner</h3><p>By Pat&rsquo;s BBQ, included with every ticket.</p></div>
     <div class="card feat"><div class="ic">🔨</div><h3>Silent auction</h3><p>Snowbird, Grand America and more. <a href="#auction">Bid now</a>.</p></div>
-    <div class="card feat"><div class="ic">⭐</div><h3>Free drawing</h3><p>No purchase necessary. <a href="#drawing">Enter here</a>.</p></div>
-    <div class="card feat"><div class="ic">♫</div><h3>Music</h3><p>All evening long.</p></div>
+    <div class="card feat"><div class="ic">⭐</div><h3>Starfish Wall</h3><p>Light a starfish for $5. <a href="#starfish">How it works</a>.</p></div>
+    <div class="card feat"><div class="ic">🏠</div><h3>Open house</h3><p>Tour our new home on Redwood Road.</p></div>
     <div class="card feat"><div class="ic">📷</div><h3>Photo booth</h3><p>Masks encouraged. <a href="#faq">Photo policy</a>.</p></div>
   </div>
   <a class="caterer" href="https://www.patsbbq.com" target="_blank" rel="noopener">
@@ -470,7 +475,6 @@ window.GALA = {
     <p class="lead" style="margin:10px auto 0">Every item was donated by a local business. Bid now from anywhere, and keep bidding at the event. <b id="au-close">Bidding closes Friday, Nov 13 at 8:30 PM.</b> Winners are contacted that night.</p>
   </div>
   <div class="au-grid" id="au-grid"><p class="lead" style="text-align:center;grid-column:1/-1">Loading auction items…</p></div>
-  <p class="au-note">No purchase needed for our <a href="#drawing">free opportunity drawing</a>. It's separate from the auction, and everyone can enter.</p>
 </div></section>
 
 <div class="divider"></div>
@@ -533,7 +537,7 @@ window.GALA = {
       <span class="eyebrow">In-kind sponsor</span>
       <h2 class="fancy"><span class="brush">In-Kind Sponsor</span></h2><div class="v" style="font-family:Cormorant Garamond,serif;font-size:1.5rem;font-weight:700;margin-top:6px">Donate goods or services</div>
       <p class="lead">Gifts valued at $100 or more receive sponsor recognition based on the value of your donation. Every donated item receives a receipt.</p>
-      <ul class="ideas"><li>Food &amp; beverages</li><li>Gift baskets</li><li>Auction items</li><li>Drawing prizes</li><li>Gift cards</li><li>Decorations</li><li>Photography</li><li>DJ / music</li><li>Event supplies</li><li>Services</li><li>And more!</li></ul>
+      <ul class="ideas"><li>Food &amp; beverages</li><li>Gift baskets</li><li>Auction items</li><li>Silent auction prizes</li><li>Gift cards</li><li>Decorations</li><li>Photography</li><li>Event supplies</li><li>Services</li><li>And more!</li></ul>
       <div class="card" style="margin-top:18px">
         <strong>Recognized for in-kind support</strong>
         <div id="wall-inkind" class="wall" style="margin-top:10px"><span class="wall-empty" style="border:0;background:none;padding:0">Your business could be first.</span></div>
@@ -550,7 +554,7 @@ window.GALA = {
         <div class="req">One of these is required so we can reach you.</div>
         <label>What would you like to donate? <textarea name="description" rows="3" required maxlength="1000" placeholder="e.g. Gift basket with two spa passes"></textarea></label>
         <div class="row2">
-          <label>Type <select name="category"><option value="auction">Auction item</option><option value="drawing">Drawing prize</option><option value="gift_basket">Gift basket</option><option value="gift_card">Gift card</option><option value="food">Food &amp; beverage</option><option value="service">Service</option><option value="decor">Decorations</option><option value="music">DJ / music</option><option value="photo">Photography</option><option value="supplies">Event supplies</option><option value="other">Other</option></select></label>
+          <label>Type <select name="category"><option value="auction">Auction item</option><option value="gift_basket">Gift basket</option><option value="gift_card">Gift card</option><option value="food">Food &amp; beverage</option><option value="service">Service</option><option value="decor">Decorations</option><option value="photo">Photography</option><option value="supplies">Event supplies</option><option value="other">Other</option></select></label>
           <label>Estimated value <small>($, optional)</small><input name="est_value" type="number" min="0" step="1" inputmode="numeric"></label>
         </div>
         <label>Getting it to us <select name="delivery"><option value="dropoff">I'll drop it off</option><option value="pickup">Please pick it up</option><option value="day_of">I'll bring it the day of</option></select></label>
@@ -572,42 +576,20 @@ window.GALA = {
 
 <div class="divider"></div>
 
-<!-- drawing -->
-<section id="drawing"><div class="wrap">
-  <div class="grid g2" style="align-items:start">
+<!-- starfish wall -->
+<section id="starfish"><div class="wrap">
+  <div class="grid g2" style="align-items:center">
     <div>
-      <span class="eyebrow">Opportunity drawing</span>
-      <h2 class="fancy">Free to enter</h2>
-      <p class="lead">No purchase, ticket, or donation is necessary to enter or win. Every entry has the same chance.</p>
-      <details><summary>Official rules (summary)</summary>
-        <ul>
-          <li>No purchase, ticket or donation necessary. A purchase or donation does not increase your chances.</li>
-          <li>One entry per person, by this form or by asking any staff member at the event.</li>
-          <li>Open to adults 18 and older.</li>
-          <li>Entries close at the start of the drawing during the event on November 13, 2026.</li>
-          <li>Winners are chosen at random and contacted by phone or email.</li>
-          <li>Prizes are donated by community sponsors and have no cash alternative.</li>
-        </ul>
-      </details>
+      <span class="eyebrow">The Starfish Wall</span>
+      <h2 class="fancy">Light a starfish</h2>
+      <p class="lead"><b>$5 lights one starfish. $20 lights five.</b> Each starfish carries your name or a few words of hope, and every one goes up on our wall the night of the event.</p>
+      <p class="sf-story">A child walked a beach covered in stranded starfish, throwing them back one at a time. Someone told her she could never make a difference. She threw one more and said, <i>&ldquo;It made a difference to that one.&rdquo;</i></p>
+      <p class="small" style="color:var(--muted)">This is a gift, not a ticket: there are no prizes and no drawing.</p>
     </div>
-    <div class="card">
-      <form id="f-drawing" novalidate>
-        <label>Your name <input name="full_name" required maxlength="120" autocomplete="name"></label>
-        <div class="row2">
-          <label>Email <input name="email" type="email" maxlength="200" autocomplete="email"></label>
-          <label>Phone <input name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
-        </div>
-        <div class="req">One of these is required so we can reach a winner.</div>
-        <label class="check"><input type="checkbox" name="adult" required> I'm 18 or older</label>
-        <fieldset class="consent"><legend>Photo consent <span class="reqstar">*</span></legend>
-          <p>Photos and video will be taken at this event and may be shared on our website and social media.</p>
-          <label class="check"><input type="radio" name="photo_consent" value="yes" required> Yes, you may include me in event photos and video.</label>
-          <label class="check"><input type="radio" name="photo_consent" value="no" required> No, please don't photograph me.</label>
-        </fieldset>
-        <div class="ferr" role="alert"></div>
-        <button class="btn" type="submit">Enter free</button>
-      </form>
-      <div class="ok-box" id="ok-drawing" tabindex="-1"><h3>You're entered ✦</h3><p>Good luck! Winners are drawn during the event.</p></div>
+    <div class="card" style="text-align:center">
+      <div class="sf-stars" aria-hidden="true">✦ ✦ ✦ ✦ ✦</div>
+      <div id="sf-btns" class="sf-btns"></div>
+      <p id="sf-soon" class="small" style="color:var(--muted);margin:10px 0 0">The Starfish Wall opens soon. You can also light a starfish at the event.</p>
     </div>
   </div>
 </div></section>
@@ -636,7 +618,7 @@ window.GALA = {
   <details><summary>Is my sponsorship or ticket tax-deductible?</summary><p>Contributions benefit The Right Thing in Recovery. Every gift gets a receipt, and if you receive tickets, dinner, or other benefits in return, your receipt will show their value. For questions about deductibility, please consult your tax advisor.</p></details>
   <details><summary>What should I wear?</summary><p>Flannel, formal, masquerade — or all three. Masks encouraged, never required.</p></details>
   <details><summary>Photos &amp; privacy</summary><p>We love a good photo booth, and we protect the people we serve. Please don't photograph, post, or tag anyone without asking first. Our staff will never share images of people in our care without their written consent. Every ticket, sponsorship and entry form asks for your photo choice, and you can tell us or change it at check-in.</p></details>
-  <details><summary>I want to help but can't attend</summary><p>Become a sponsor, donate an item, or enter the free drawing — all from this page. Questions? Contact <a class="cname-mail"></a> or call <a href="tel:8018164977">801-816-4977</a>.</p></details>
+  <details><summary>I want to help but can't attend</summary><p>Become a sponsor, donate an item, bid in the silent auction, or light a starfish — all from this page. Questions? Contact <a class="cname-mail"></a> or call <a href="tel:8018164977">801-816-4977</a>.</p></details>
   <div style="margin-top:28px"><div class="eyebrow" style="margin-bottom:10px">Share the flyers</div>
     <div class="flyers">
       <a href="flyer-event.jpg" download><img src="flyer-event.jpg" alt="Event flyer: Flannel to Formal Masquerade Fundraiser open house, Friday November 13 2026, 6 to 10 PM, 7669 S Redwood Rd, tickets $35 individual, $60 couples, dinner included" loading="lazy"></a>
@@ -726,15 +708,15 @@ tick(); setInterval(tick, 30000);
 
 /* calendar */
 const z = d => new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
-$('#gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Flannel to Formal Masquerade Fundraiser')+'&dates='+z(C.startISO)+'/'+z(C.endISO)+'&location='+encodeURIComponent(C.address)+'&details='+encodeURIComponent('Dinner, silent auction, music and a free drawing. '+location.href);
+$('#gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Flannel to Formal Masquerade Fundraiser')+'&dates='+z(C.startISO)+'/'+z(C.endISO)+'&location='+encodeURIComponent(C.address)+'&details='+encodeURIComponent('Dinner, a silent auction and an open house. '+location.href);
 $$('[data-ics]').forEach(b=>b.onclick=()=>{
-  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NRT//Masquerade//EN','BEGIN:VEVENT','UID:masquerade-2026@nextrighthing.com','DTSTAMP:'+z(new Date()),'DTSTART:'+z(C.startISO),'DTEND:'+z(C.endISO),'SUMMARY:Flannel to Formal Masquerade Fundraiser','LOCATION:'+C.address.replace(/,/g,'\\,'),'DESCRIPTION:Dinner\\, silent auction\\, music and a free drawing.','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Masquerade tomorrow','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NRT//Masquerade//EN','BEGIN:VEVENT','UID:masquerade-2026@nextrighthing.com','DTSTAMP:'+z(new Date()),'DTSTART:'+z(C.startISO),'DTEND:'+z(C.endISO),'SUMMARY:Flannel to Formal Masquerade Fundraiser','LOCATION:'+C.address.replace(/,/g,'\\,'),'DESCRIPTION:Dinner\\, a silent auction and an open house.','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Masquerade tomorrow','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download='masquerade-2026.ics'; a.click();
 });
 
 /* share */
 (function(){const url='https://nextrighthing.com/masquerade/';
-  const msg='You should come to this with me: the Flannel to Formal Masquerade, Fri Nov 13 in West Jordan. Dinner, silent auction, music and a free drawing, all for recovery. $35 a seat: ';
+  const msg='You should come to this with me: the Flannel to Formal Masquerade, Fri Nov 13 in West Jordan. Dinner, a silent auction and an open house, all for recovery. $35 a seat: ';
   $('#sh-fb').href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url);
   $('#sh-sms').href='sms:?&body='+encodeURIComponent(msg+url);
   $('#sh-mail').href='mailto:?subject='+encodeURIComponent('Come to the Flannel to Formal Masquerade with me')+'&body='+encodeURIComponent(msg+url);
@@ -870,12 +852,6 @@ wire('#f-inkind','#ok-inkind', fd=>{
   return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, donor_name:clean(fd.donor_name), business_name:clean(fd.business_name), email:clean(fd.email), phone:clean(fd.phone), description:clean(fd.description), category:fd.category, est_value_cents:isNaN(v)?null:v*100, delivery:fd.delivery};
 }, 'gala_inkind');
 
-wire('#f-drawing','#ok-drawing', fd=>{
-  if(!clean(fd.full_name)) return 'Please add your name.';
-  if(!fd.adult) return 'Entrants must be 18 or older.';
-  if(!fd.photo_consent) return PC_MSG;
-  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone)};
-}, 'gala_drawing');
 })();
 </script>
 <script>
@@ -890,11 +866,15 @@ wire('#f-drawing','#ok-drawing', fd=>{
 /* quick buy: every Square link, with name + email + photo consent captured first */
 (function(){
   var G=window.GALA, d=document.getElementById('qb'), f=document.getElementById('qb-form'), err=document.getElementById('qb-err'), cur=null;
-  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000]};
+  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000]};
   function open(k){ if(!ITEMS[k]||!G.square[k]) return; cur=k; f.reset(); err.textContent='';
     document.getElementById('qb-title').textContent=ITEMS[k][0];
     document.getElementById('qb-amt').textContent=ITEMS[k][1]+(k==='partner'?' (you choose the amount at checkout)':'');
-    document.getElementById('qb-biz-wrap').style.display=(k==='individual'||k==='couple')?'none':'';
+    var biz=document.getElementById('qb-biz-wrap'), isStar=(k==='star1'||k==='star5');
+    biz.style.display=(k==='individual'||k==='couple')?'none':'';
+    biz.firstChild.textContent=isStar?'Name or message for your starfish ':'Business or family name ';
+    biz.querySelector('small').textContent=isStar?'(up to 80 characters, shown on the wall)':"(as you'd like it listed)";
+    biz.querySelector('input').maxLength=isStar?80:160;
     if(d.showModal) d.showModal(); else location.href=G.square[k]; }
   document.addEventListener('click', function(e){ var b=e.target.closest('[data-buy]'); if(b){ e.preventDefault(); open(b.dataset.buy); } });
   f.addEventListener('submit', async function(e){
@@ -906,7 +886,9 @@ wire('#f-drawing','#ok-drawing', fd=>{
     var go=document.getElementById('qb-go'); go.disabled=true; go.textContent='One moment…';
     var pc=fd.pc==='yes', k=cur;
     try{
-      if(k==='individual'||k==='couple'){
+      if(k==='star1'||k==='star5'){
+        await fetch(G.supabaseUrl+'/rest/v1/gala_stars',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify({event_slug:G.slug,stars:k==='star1'?1:5,amount_cents:ITEMS[k][2],full_name:name,email:email,dedication:(fd.business||'').trim()||null,photo_consent:pc})});
+      } else if(k==='individual'||k==='couple'){
         await fetch('/masquerade/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event_slug:G.slug,full_name:name,email:email,individual_qty:k==='individual'?1:0,couple_qty:k==='couple'?1:0,attire:'surprise',photo_consent:pc,drawing:false})});
       } else {
         await fetch(G.supabaseUrl+'/rest/v1/gala_sponsors',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify({event_slug:G.slug,tier:k,amount_cents:ITEMS[k][2],business_name:(fd.business||'').trim()||name,contact_name:name,email:email,photo_consent:pc,message:'Quick checkout via Square'})});
@@ -914,6 +896,8 @@ wire('#f-drawing','#ok-drawing', fd=>{
     }catch(_){ /* never block payment; staff can confirm details at the door */ }
     location.href=G.square[k];
   });
+  var sb=document.getElementById('sf-btns'), soon=document.getElementById('sf-soon');
+  if(sb && G.square.star1 && G.square.star5){ sb.innerHTML='<button class="btn" type="button" data-buy="star1">Light 1 starfish · $5</button><button class="btn ghost" type="button" data-buy="star5">Light 5 starfish · $20</button>'; soon.style.display='none'; }
   var q=new URLSearchParams(location.search).get('buy'); if(q) setTimeout(function(){ open(q); },400);
 })();
 /* silent auction */
