@@ -153,6 +153,11 @@ export async function onRequestPost(context) {
   put('employer',S(b.employer,160)); put('job_start_date',S(b.job_start_date,20));
   put('certifications',S(b.certifications,400)); put('notes',S(b.notes,4000));
   put('case_followup_date',S(b.case_followup_date,20));
+  // Notebook asks (Oct 2026): eviction tracking and the 30-day insurance renewal.
+  put('eviction_link',S(b.eviction_link,500));
+  put('insurance_carrier',S(b.insurance_carrier,120));
+  put('insurance_renewal_date',S(b.insurance_renewal_date,20));
+  put('insurance_receipt',S(b.insurance_receipt,160));
   if(b.case_needs!==undefined) put('case_needs',sanitizeNeeds(b.case_needs));
   // House Record
   if(b.warnings!==undefined)       put('warnings',N(b.warnings));
@@ -160,7 +165,7 @@ export async function onRequestPost(context) {
   if(b.peer_meetings!==undefined)  put('peer_meetings',N(b.peer_meetings));
   put('last_warning',S(b.last_warning,20)); put('warning_reason',S(b.warning_reason,600));
   put('last_talked',S(b.last_talked,20)); put('last_ua',S(b.last_ua,20)); put('ua_result',S(b.ua_result,20));
-  ['has_id','has_ss_card','has_birth_cert','bank_account','employed','curfew_ok','chores_ok','on_notice'].forEach(k=>{ if(b[k]!==undefined) p[k]=B(b[k]); });
+  ['has_id','has_ss_card','has_birth_cert','bank_account','employed','curfew_ok','chores_ok','on_notice','eviction_pending'].forEach(k=>{ if(b[k]!==undefined) p[k]=B(b[k]); });
   p.updated_by=who;
   if(Object.keys(p).length<=1) return json({ok:false,error:'nothing to update'},400);
   const r=await fetch(base,{method:'PATCH',headers:H,body:JSON.stringify(p)});
