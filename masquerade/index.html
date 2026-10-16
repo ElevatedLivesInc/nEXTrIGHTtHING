@@ -205,6 +205,8 @@ h2.fancy{font-family:"Great Vibes",cursive;font-weight:400;font-size:clamp(2.6re
 .tier.top{background:radial-gradient(120% 80% at 50% 0%,#3b1a6b 0%,#1a0b33 55%,#0e0620 100%);color:#efe7ff;transform:translateY(-8px);box-shadow:0 0 0 2px var(--gold),0 24px 60px rgba(201,169,110,.3)}
 .tier.top:hover{transform:translateY(-14px)}
 .tier.top:before{border-color:rgba(230,207,155,.55)}
+.tier.feature{grid-column:1/-1;margin-bottom:10px}
+@media(min-width:760px){.tier.feature ul{columns:2;column-gap:28px;max-width:760px;margin-left:auto;margin-right:auto}}
 .tier.top .nm{background:linear-gradient(95deg,#b08d4f,#e6cf9b);color:#1a0b33}
 .tier.top .amt{background:linear-gradient(180deg,#f5e3b3,#c9a96e);-webkit-background-clip:text;background-clip:text}
 .tier.top .tag{color:var(--gold2)}
@@ -344,6 +346,7 @@ window.GALA = {
     changemaker: 'https://square.link/u/q4TJOo8u',  // Change Maker Sponsorship ($500)
     champion: 'https://square.link/u/YbHo3FMy',     // Community Champion Sponsorship ($1,000)
     partner: 'https://square.link/u/YW3KrESO',      // Recovery Partner Sponsorship ($2,500+, buyer enters amount)
+    presenting: '',                                  // Presenting Sponsor ($5,000) - paste the Square link here; until then the button opens the sign-up form
     star1: 'https://square.link/u/MTPdsF4V',   // Starfish Wall: Light 1 Starfish ($5)
     star5: 'https://square.link/u/mzHxX1Be'    // Starfish Wall: Light 5 Starfish ($20)
   },
@@ -420,7 +423,7 @@ window.GALA = {
       <img src="flannel-to-formal.jpg" alt="A red flannel shirt next to a black tuxedo" loading="lazy" width="539" height="173">
     </div>
     <div class="info-card"><div class="k">Benefits</div><div class="v">The Right Thing in Recovery</div><p>Our nonprofit (EIN 93-4316358), providing recovery opportunities, sober activities, transportation, peer support and resources.</p></div>
-    <div class="info-card"><div class="k">Sponsors</div><div class="v">From $100</div><p>Five levels plus in-kind gifts of $100+. <a href="#sponsor">See levels →</a></p></div>
+    <div class="info-card"><div class="k">Sponsors</div><div class="v">From $100</div><p>Six levels, up to a $5,000 Presenting Sponsor, plus in-kind gifts of $100+. <a href="#sponsor">See levels →</a></p></div>
     <div class="info-card"><div class="k">Questions</div><div class="v">Ryan Anderson</div><p><a class="cname-mail2" href="mailto:ryan@nextrighthing.com">ryan@nextrighthing.com</a> · <a href="tel:8018164977">801-816-4977</a></p></div>
   </div>
 </div></section>
@@ -748,7 +751,8 @@ const TIERS = [
   {id:'hope',      name:'Hope Sponsor',       amt:250,  tag:'Hope builds brighter futures.', perks:['All Recovery Supporter benefits','Business name/logo on event materials','2 event tickets']},
   {id:'changemaker',name:'Change Maker',      amt:500,  tag:'Be the change.', perks:['All Hope Sponsor benefits','Logo prominently displayed at event','4 event tickets','Social media spotlight']},
   {id:'champion',  name:'Community Champion', amt:1000, tag:'Stronger together.', perks:['All Change Maker benefits','Large logo on event signage','6 event tickets','Verbal recognition during event','Dedicated social media post']},
-  {id:'partner',   name:'Recovery Partner',   amt:2500, plus:true, tag:'Invest in lasting change.', perks:['All Community Champion benefits','Premier logo placement','8 event tickets','Special recognition during event','Opportunity to provide promotional materials/items for guests']}
+  {id:'partner',   name:'Recovery Partner',   amt:2500, plus:true, tag:'Invest in lasting change.', perks:['All Community Champion benefits','Premier logo placement','8 event tickets','Special recognition during event','Opportunity to provide promotional materials/items for guests']},
+  {id:'presenting', name:'Presenting Sponsor', amt:5000, feature:true, tag:'Your name on the night.', perks:['All Recovery Partner benefits','&ldquo;Presented by&rdquo; billing on the event page, signage and social posts','Cut the ribbon with Cate at 5 PM','A reserved table with 10 event tickets','Recognized first, from the stage']}
 ];
 
 /* contact links */
@@ -788,12 +792,13 @@ $$('[data-ics]').forEach(b=>b.onclick=()=>{
 
 /* tiers */
 const STAR='<svg class="star" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs><path d="M50 6 62 38 96 39 69 60 79 93 50 74 21 93 31 60 4 39 38 38Z" fill="url(#sg)" stroke="#4c1d95" stroke-width="2"/><g fill="#fff" opacity=".85"><circle cx="50" cy="22" r="2.4"/><circle cx="50" cy="34" r="2.4"/><circle cx="26" cy="43" r="2.2"/><circle cx="74" cy="43" r="2.2"/><circle cx="35" cy="74" r="2.2"/><circle cx="65" cy="74" r="2.2"/><circle cx="50" cy="52" r="3.2"/></g></svg>';
-$('#tiers').innerHTML = TIERS.map((t,i)=>`<div class="card tier ${t.plus?'top':''} ${t.id==='changemaker'?'cm':''}">${t.plus?'<span class="badge">Premier</span>':''}
+const TSHOW=[...TIERS.filter(t=>t.feature),...TIERS.filter(t=>!t.feature)];
+$('#tiers').innerHTML = TSHOW.map(t=>{const i=t.feature?4:TIERS.filter(x=>!x.feature).indexOf(t); return `<div class="card tier ${(t.plus||t.feature)?'top':''} ${t.feature?'feature':''} ${t.id==='changemaker'?'cm':''}">${t.feature?'<span class="badge">Only one available</span>':t.plus?'<span class="badge">Premier</span>':''}
   <div class="nm">${t.name}</div><div class="amt">$${t.amt.toLocaleString()}${t.plus?'+':''}</div>
   <div class="lvl" aria-label="Level ${i+1} of 5">${Array.from({length:5},(_,k)=>STAR.replace('class="star"',`class="star" style="opacity:${k<=i?1:.18}"`).replace(/id="sg"/,`id="sg${i}${k}"`).replace('url(#sg)',`url(#sg${i}${k})`)).join('')}</div>
   <div class="tag">${t.tag}</div><div class="rule"></div>
   <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<button class="btn small ${t.plus?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`).join('');
+  <div class="btns"><button class="btn small ${(t.plus||t.feature)?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<button class="btn small ${(t.plus||t.feature)?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`;}).join('');
 $('#buy-now').innerHTML=(C.square.individual?`<button class="btn small" type="button" data-buy="individual">Buy individual · $35</button>`:'')+(C.square.couple?`<button class="btn small" type="button" data-buy="couple">Buy couple · $60</button>`:'');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
 $('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
@@ -925,8 +930,9 @@ wire('#f-inkind','#ok-inkind', fd=>{
 /* quick buy: every Square link, with name + email + photo consent captured first */
 (function(){
   var G=window.GALA, d=document.getElementById('qb'), f=document.getElementById('qb-form'), err=document.getElementById('qb-err'), cur=null;
-  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000]};
-  function open(k){ if(!ITEMS[k]||!G.square[k]) return; cur=k; f.reset(); err.textContent='';
+  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000],presenting:['Presenting Sponsor','$5,000',500000]};
+  function open(k){ if(ITEMS[k]&&!G.square[k]){ var sel=document.getElementById('s-tier'); if(sel&&[].some.call(sel.options,function(o){return o.value===k;})){ sel.value=k; if(sel.onchange) sel.onchange(); var fs=document.getElementById('f-sponsor'); if(fs) fs.scrollIntoView({behavior:'smooth',block:'start'}); } return; }
+    if(!ITEMS[k]||!G.square[k]) return; cur=k; f.reset(); err.textContent='';
     document.getElementById('qb-title').textContent=ITEMS[k][0];
     document.getElementById('qb-amt').textContent=ITEMS[k][1]+(k==='partner'?' (you choose the amount at checkout)':'');
     var biz=document.getElementById('qb-biz-wrap'), isStar=(k==='star1'||k==='star5');
