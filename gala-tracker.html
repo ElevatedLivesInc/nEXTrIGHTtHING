@@ -89,6 +89,7 @@ th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut
     <button data-tab="sponsors">Sponsors</button>
     <button data-tab="guests">Guests</button>
     <button data-tab="inkind">In-kind</button>
+    <button data-tab="auction">Auction</button>
     <button data-tab="drawing">Drawing</button>
     <button data-tab="script">Night-of script</button>
   </div>
@@ -97,6 +98,7 @@ th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut
   <section id="tab-sponsors" class="panel hidden"></section>
   <section id="tab-guests" class="panel hidden"></section>
   <section id="tab-inkind" class="panel hidden"></section>
+  <section id="tab-auction" class="panel hidden"></section>
   <section id="tab-drawing" class="panel hidden"></section>
   <section id="tab-script" class="panel hidden"></section>
 </div>
@@ -129,7 +131,7 @@ async function call(method,body){
   const j=await r.json().catch(()=>({error:'Bad response'})); if(!r.ok){ const e=new Error(j.error||r.status); e.status=r.status; throw e; } return j;
 }
 async function save(table,id,patch){
-  const list={gala_rsvps:'rsvps',gala_sponsors:'sponsors',gala_inkind:'inkind',gala_drawing:'drawing'}[table];
+  const list={gala_rsvps:'rsvps',gala_sponsors:'sponsors',gala_inkind:'inkind',gala_drawing:'drawing',gala_auction_items:'auction',gala_bids:'bids'}[table];
   const row=D[list].find(x=>x.id===id); Object.assign(row,patch);
   try{ await call('POST',{action:'update',table,id,patch}); toast(DEMO?'Saved (preview only)':'Saved ✓'); }catch(e){ toast('Not saved: '+e.message); }
   render();
@@ -173,7 +175,8 @@ function render(){
   const ik=D.inkind.filter(i=>i.status!=='declined'); $('#k-ik').textContent=$$$(ik.reduce((a,i)=>a+(i.est_value_cents||0),0)); $('#k-ikn').textContent=ik.length+' items · '+ik.filter(i=>i.status!=='pledged').length+' in hand';
   const total=tix+spAmt+ik.filter(i=>['received','receipted','used'].includes(i.status)).reduce((a,i)=>a+(i.est_value_cents||0),0);
   const g=D.event&&D.event.goal_cents; $('#k-goal').textContent=g?Math.round(total/g*100)+'%':$$$(total); $('#k-bar').style.width=g?Math.min(100,total/g*100)+'%':'0';
-  renderTodo(); renderSponsors(); renderGuests(); renderInkind(); renderDrawing(); renderScript();
+  D.auction=D.auction||[]; D.bids=D.bids||[];
+  renderTodo(); renderSponsors(); renderGuests(); renderInkind(); renderAuction(); renderDrawing(); renderScript();
 }
 
 const PAYLINKS=[['Ticket $35','https://square.link/u/MhuK13bT'],['Couple $60','https://square.link/u/d1jsdFyc'],['Supporter $100','https://square.link/u/3wj1onye'],['Hope $250','https://square.link/u/3Ii8HU3Q'],['Change Maker $500','https://square.link/u/q4TJOo8u'],['Champion $1,000','https://square.link/u/YbHo3FMy'],['Partner $2,500','https://square.link/u/YW3KrESO'],['Event page','https://nextrighthing.com/masquerade/']];
@@ -274,6 +277,29 @@ function renderInkind(){
   wireItems('#tab-inkind','gala_inkind',D.inkind);
 }
 
+function renderAuction(){
+  const live=D.bids.filter(b=>!b.voided), top=id=>live.filter(b=>b.item_id===id).sort((a,b)=>b.amount_cents-a.amount_cents||a.created_at.localeCompare(b.created_at))[0];
+  const total=D.auction.reduce((a,i)=>{const t=top(i.id);return a+(t?t.amount_cents:0);},0), collected=D.auction.reduce((a,i)=>{const t=top(i.id);return a+(t&&i.winner_paid?t.amount_cents:0);},0);
+  const closes=D.event&&D.event.auction_closes_at?new Date(D.event.auction_closes_at):null;
+  $('#tab-auction').innerHTML=`<h2 style="color:var(--gold2)">Silent auction</h2>
+   <p class="meta">${D.auction.length} items · ${live.length} bids · high bids total <b>${$$$(total)}</b> · ${$$$(collected)} collected${closes?` · bidding closes ${closes.toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}`:''}</p>
+   <p class="meta">Guests bid on the public page. Void a bid only if it's a mistake or a prank; the next highest bid becomes the leader. After close, contact each winner, collect payment, and tick "Paid".</p>
+   <div class="bar" style="margin-top:10px"><button class="btn g" data-add="auction">+ Add item</button></div>
+   <div class="list">${D.auction.map(i=>{const t=top(i.id), bs=D.bids.filter(b=>b.item_id===i.id);
+     return `<div class="item" data-id="${i.id}"><div class="hd"><div><h3>${esc(i.icon||'')} ${esc(i.title)}</h3><div class="meta">${esc(i.donor||'')}${i.value_label?' · '+esc(i.value_label):''} · opens at ${$$$(i.start_bid_cents)}, +${$$$(i.increment_cents)}</div></div>
+       <span class="pill ${t?(i.winner_paid?'p-paid':'p-reserved'):'p-declined'}">${t?(i.winner_paid?'Paid':$$$(t.amount_cents)):'No bids'}</span></div>
+       ${t?`<div class="meta" style="margin-top:6px"><b>Leader:</b> ${esc(t.bidder_name)} ${PC(t.photo_consent)} ${t.phone?`· <a href="tel:${esc(t.phone)}">${esc(t.phone)}</a>`:''} ${t.email?`· <a href="mailto:${esc(t.email)}?subject=${encodeURIComponent('Your Masquerade auction win: '+i.title)}">${esc(t.email)}</a>`:''}</div>`:''}
+       <div class="fields"><label>Opening bid ($)<input type="number" inputmode="numeric" data-f="start_bid_cents" data-money value="${Math.round(i.start_bid_cents/100)}"></label>
+        <label>Bid step ($)<input type="number" inputmode="numeric" data-f="increment_cents" data-money value="${Math.round(i.increment_cents/100)}"></label>
+        <label>Value label<input data-f="value_label" value="${esc(i.value_label||'')}" placeholder="e.g. $300 value"></label></div>
+       <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="active" ${i.active?'checked':''}> Show on the auction page</label>
+       <label class="chk"><input type="checkbox" data-f="winner_paid" ${i.winner_paid?'checked':''}> Winner has paid</label>
+       ${bs.length?`<details style="margin-top:8px"><summary class="meta">All bids (${bs.length})</summary><ul>${bs.map(b=>`<li ${b.voided?'style="opacity:.5;text-decoration:line-through"':''}>${$$$(b.amount_cents)} — ${esc(b.bidder_name)} · ${esc(b.phone||b.email||'')} · ${new Date(b.created_at).toLocaleString()} <button class="btn g" style="padding:2px 8px;font-size:.75rem" data-void="${b.id}" data-v="${b.voided?'0':'1'}">${b.voided?'Restore':'Void'}</button></li>`).join('')}</ul></details>`:''}
+     </div>`;}).join('')||'<p class="meta">No auction items yet.</p>'}</div>`;
+  wireItems('#tab-auction','gala_auction_items',D.auction);
+  $$('[data-void]',$('#tab-auction')).forEach(b=>b.onclick=()=>{ if(b.dataset.v==='1'&&!confirm('Void this bid?')) return; save('gala_bids',b.dataset.void,{voided:b.dataset.v==='1'}); });
+}
+
 function renderDrawing(){
   const w=D.drawing.filter(d=>d.is_winner);
   $('#tab-drawing').innerHTML=`<h2 style="color:var(--gold2)">Opportunity drawing</h2><p class="meta">${D.drawing.length} free entries. Picks are random and logged on the server with who drew and when.</p>
@@ -335,6 +361,8 @@ async function add(kind){
     row={full_name:n,[c.includes('@')?'email':'phone']:c,individual_qty:ty==='2'?0:1,couple_qty:ty==='2'?1:0,pay_status:['paid','at_door','comp'].includes(st)?st:'at_door',source:'staff'}; }
   else if(kind==='inkind'){ const n=ask('Donor / business name'); if(!n) return; const d=ask('What is it?'); if(!d) return; const c=ask('Email or phone'); if(!c) return;
     table='gala_inkind'; list='inkind'; row={donor_name:n,description:d,[c.includes('@')?'email':'phone']:c,status:'pledged'}; }
+  else if(kind==='auction'){ const n=ask('Item title'); if(!n) return; const dn=ask('Donated by'); const sb=parseInt(ask('Opening bid ($)','25'),10)||25; const st=parseInt(ask('Bid step ($)','5'),10)||5;
+    table='gala_auction_items'; list='auction'; row={title:n,donor:dn||null,start_bid_cents:sb*100,increment_cents:st*100,active:true}; }
   else if(kind==='entry'){ const n=ask('Entrant name'); if(!n) return; const c=ask('Email or phone'); if(!c) return; table='gala_drawing'; list='drawing'; row={full_name:n,[c.includes('@')?'email':'phone']:c}; }
   try{ const r=DEMO?{...row,id:'x'+Date.now(),created_at:new Date().toISOString(),benefits_done:{},tickets_issued:0,paid_cents:0,checked_in:false,is_winner:false,individual_qty:row.individual_qty||0,couple_qty:row.couple_qty||0}:await call('POST',{action:'insert',table,row});
     D[list].unshift(r); render(); toast('Added ✓'); }catch(e){ toast('Not added: '+e.message); }
