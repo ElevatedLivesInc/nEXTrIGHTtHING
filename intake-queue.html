@@ -360,6 +360,7 @@ function render(){
       +(r.queue_no?(' <span style="font-size:.62rem;font-family:\'Raleway\',sans-serif;color:rgba(255,255,255,.35);letter-spacing:.04em">#'+esc(r.queue_no)+'</span>'):'')+'</div>'
       +'<div class="cwhen">'+fmtWhen(r.created_at)+'</div></div>'
       +'<div class="pbar" title="'+done+' of '+CHECKS.length+' steps done"><i style="width:'+pct+'%"></i></div>'
+      +(r.crisis_flag?'<div class="flags"><span class="flag" style="background:#7a1f1f;color:#fff;border-color:#b84a4a">Crisis language &mdash; call now. If danger is immediate: 911. 988 for support.</span></div>':'')
       +((ready&&(r.status||'new')!=='intaked')?'<div class="flags"><span class="flag ready">&#10003; Ready for intake</span></div>':'')
       +(flags.length?'<div class="flags">'+flags.map(x=>'<span class="flag '+x.c+'">'+esc(x.t)+'</span>').join('')+'</div>':'')
       +(function(){const fp=fundingPath(r);return '<div class="flags"><span class="flag '+fp.c+'">$ '+fp.t+'</span>'
