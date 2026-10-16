@@ -45,4 +45,13 @@ export const TENANT = {
   defaultFromName: 'NRT Patrol',
   defaultFromAddress: 'patrol@nextrighthing.com',
 
+  // Quick links shown at the top of Case Management - the tools case managers
+  // already use, so the page is their launch pad instead of somewhere they leave.
+  // Add or remove links here; nothing else needs to change.
+  caseLinks: [
+    { label: 'Utah Medicaid eligibility lookup', url: 'https://medicaid.utah.gov/eligibility/' },
+    { label: 'Utah Medicaid Online (providers)', url: 'https://medicaid.utah.gov/medicaid-online' },
+    { label: '211 Utah - community resources', url: 'https://211utah.org' },
+    { label: '988 Suicide & Crisis Lifeline', url: 'https://988lifeline.org' }
+  ]
 };
