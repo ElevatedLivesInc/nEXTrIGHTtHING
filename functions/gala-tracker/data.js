@@ -13,6 +13,7 @@ const TABLES = {
   gala_drawing: ['full_name','email','phone','is_winner','photo_consent'],
   gala_auction_items: ['sort','title','donor','description','value_label','icon','start_bid_cents','increment_cents','active','winner_paid','staff_notes'],
   gala_bids: ['voided'],
+  gala_stars: ['paid','dedication'],
 };
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const pick = (obj, allowed) => { const out = {}; for (const k of allowed) if (obj && Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k]; return out; };
@@ -39,11 +40,11 @@ export async function onRequestGet({ request, env }) {
   const g = await gate(request, env); if (g.res) return g.res;
   try {
     const q = 'event_slug=eq.' + SLUG + '&order=created_at.desc';
-    const [event, rsvps, sponsors, inkind, drawing, auction, bids] = await Promise.all([
+    const [event, rsvps, sponsors, inkind, drawing, auction, bids, stars] = await Promise.all([
       sb(env, 'gala_event?slug=eq.' + SLUG), sb(env, 'gala_rsvps?' + q), sb(env, 'gala_sponsors?' + q), sb(env, 'gala_inkind?' + q), sb(env, 'gala_drawing?' + q),
-      sb(env, 'gala_auction_items?event_slug=eq.' + SLUG + '&order=sort.asc,title.asc'), sb(env, 'gala_bids?event_slug=eq.' + SLUG + '&order=amount_cents.desc,created_at.asc'),
+      sb(env, 'gala_auction_items?event_slug=eq.' + SLUG + '&order=sort.asc,title.asc'), sb(env, 'gala_bids?event_slug=eq.' + SLUG + '&order=amount_cents.desc,created_at.asc'), sb(env, 'gala_stars?' + q),
     ]);
-    return json({ who: g.who, event: event[0] || null, rsvps, sponsors, inkind, drawing, auction, bids });
+    return json({ who: g.who, event: event[0] || null, rsvps, sponsors, inkind, drawing, auction, bids, stars });
   } catch (e) { return json({ error: 'load failed', detail: String(e.message || e) }, 500); }
 }
 
