@@ -522,7 +522,6 @@ window.GALA = {
         </div>
         <div class="req">One of these is required so we can reach you.</div>
         <label>Names of your other guests <small>(optional)</small><input name="guest_names" maxlength="600"></label>
-        <label>Dietary needs <small>(optional — helps the kitchen)</small><input name="dietary" maxlength="300"></label>
         <label>Coming as… <select name="attire"><option value="surprise">It's a surprise</option><option value="flannel">Flannel</option><option value="formal">Formal</option><option value="masquerade">Full masquerade</option></select></label>
         <fieldset class="consent"><legend>Photo consent <span class="reqstar">*</span></legend>
           <p>Photos and video will be taken at this event and may be shared on our website and social media. This answer is for you. Your guests can tell us their choice at check-in.</p>
@@ -873,7 +872,7 @@ function renderBoard(d){
   sponsorWall(d);
 }
 /* sponsor wall: names + links; logos come from the sponsor (or their site icon until then). Never shows what anyone gave. */
-const STEWARD="Massimo's";
+const STEWARD="The Massimi Household";
 const PARTNERS=["Pat's BBQ","Kirk's Photography"];
 const SITES={"Pat's BBQ":'https://www.patsbbq.com',"Hale Centre Theatre":'https://www.hct.org',"Snowbird":'https://www.snowbird.com',"The Grand America Hotel":'https://www.grandamerica.com',"Minky Couture":'https://www.softminkyblankets.com',"Beans & Brews":'https://www.beansandbrews.com',"Let's Roam":'https://www.letsroam.com',"Cinemark Theatres":'https://www.cinemark.com',"Scheels":'https://www.scheels.com',"Shake Shack":'https://shakeshack.com'};
 let _auDonors=null;
@@ -947,7 +946,7 @@ wire('#f-rsvp','#ok-rsvp', fd=>{
   if(!clean(fd.full_name)) return 'Please add your name.';
   if(qty.individual_qty+qty.couple_qty===0) return 'Choose at least one ticket.';
   if(!fd.photo_consent) return PC_MSG;
-  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), dietary:clean(fd.dietary), attire:fd.attire||'surprise'};
+  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), attire:fd.attire||'surprise'};
 }, '@rsvp', async (fd,row,res)=>{
   const total=row.individual_qty*35+row.couple_qty*60;
   $('#ok-rsvp-msg').textContent = `Seat${row.individual_qty+row.couple_qty*2>1?'s':''} reserved for ${row.full_name}. Your total is $${total} — pay online now or at the door.`;
