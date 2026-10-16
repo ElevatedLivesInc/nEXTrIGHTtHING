@@ -392,7 +392,7 @@ export async function onRequest(context) {
     try{
       const r=await fetch('https://api.resend.com/emails',{method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.RESEND_API_KEY},
-        body:JSON.stringify({ from: env.RESEND_FROM || TENANT.defaultFromName+' <'+TENANT.defaultFromAddress+'>', to:m.to, subject:m.subject, html:m.html })});
+        body:JSON.stringify({ from: (env.PATROL_FROM || TENANT.defaultFromName+' <'+TENANT.defaultFromAddress+'>'), to:m.to, subject:m.subject, html:m.html })});
       sent.push({ to:m.to, ok:r.ok, status:r.status });
     }catch(e){ sent.push({ to:m.to, ok:false, error:String(e) }); }
   }
