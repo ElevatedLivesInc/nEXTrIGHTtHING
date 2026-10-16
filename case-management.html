@@ -84,6 +84,7 @@
     <button class="tab" data-t="docs">Documents</button>
     <input id="q" placeholder="Search client, house…" style="max-width:280px">
   </div>
+  <div id="launch" style="display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin:0 0 1rem"></div>
   <div id="view"></div>
   <div class="note" id="note">Loading…</div>
 </div>
@@ -776,6 +777,8 @@ async function load(quiet){
     const d=await res.json();
     if(d.error){g('note').textContent='Error: '+d.error;return;}
     CLIENTS=d.clients||[];NOTES=d.notes||[];GOALS=d.goals||[];MEET=d.meetings||[];
+  // Launch pad: the outside tools case managers already use, one tap away.
+  try{ const L=d.links||[]; document.getElementById('launch').innerHTML=L.length?('<span style="font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45)">Quick links</span>'+L.map(x=>'<a href="'+esc(x.url)+'" target="_blank" rel="noopener" style="font-size:.78rem;color:#e8d5b0;border:1px solid rgba(201,169,110,.35);border-radius:999px;padding:.3rem .75rem;text-decoration:none">'+esc(x.label)+' &#8599;</a>').join('')):''; }catch(_){}
     DOCS=d.documents||[];APPS=d.applications||[];FUNDERS=d.funders||[];WORK=d.work||[];COMP=d.compliance||[];
     g('viewer').textContent='Signed in as '+(d.viewer||'');
     g('funderlist').innerHTML=FUNDERS.filter(f=>f.active!==false).map(f=>'<option value="'+esc(f.name)+'">').join('');
