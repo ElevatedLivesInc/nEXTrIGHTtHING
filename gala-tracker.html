@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Masquerade Tracker · Staff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0a0f26;--panel:#11183a;--panel2:#18214a;--line:rgba(201,169,110,.25);--gold:#c9a96e;--gold2:#e6cf9b;--lav:#b9a7e8;--text:#ece8f4;--muted:#9d97b5;--ok:#7fd1a8;--warn:#f2c46d;--err:#ff9a9a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--text);font:15px/1.5 Raleway,system-ui,sans-serif}
+h1,h2,h3{font-family:"Cormorant Garamond",serif;margin:0;line-height:1.15}
+.wrap{max-width:1200px;margin:0 auto;padding:0 14px}
+header{position:sticky;top:0;z-index:10;background:rgba(10,15,38,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:58px;flex-wrap:wrap}
+header h1{font-size:1.5rem;color:var(--gold2)}
+header small{color:var(--muted)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 0}
+.tabs button{flex:none;padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-weight:600;cursor:pointer}
+.tabs button.on{background:var(--gold);color:#1a1404;border-color:var(--gold)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+@media(min-width:800px){.kpis{grid-template-columns:repeat(5,1fr)}}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font-family:"Cormorant Garamond",serif;font-size:1.9rem;color:var(--gold2);line-height:1.1}
+.kpi span{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.kpi em{display:block;font-style:normal;font-size:.8rem;color:var(--muted)}
+.meter{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,#6b3fa0,var(--lav),var(--gold))}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+input,select,textarea{padding:9px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:var(--ink);color:var(--text);font:inherit;font-size:16px}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--gold)}
+.btn{padding:9px 14px;border-radius:999px;border:1px solid var(--gold);background:var(--gold);color:#1a1404;font:inherit;font-weight:700;cursor:pointer;min-height:40px}
+.btn.g{background:transparent;color:var(--gold2)}
+.list{display:grid;gap:10px}
+.item{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px}
+.item .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.item h3{font-size:1.25rem}
+.meta{color:var(--muted);font-size:.85rem}
+.meta a{color:var(--lav)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.fields label{display:grid;gap:3px;font-size:.75rem;color:var(--muted);font-weight:600}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line)}
+.p-pledged,.p-reserved{color:var(--warn);border-color:var(--warn)}
+.p-paid,.p-received,.p-receipted{color:var(--ok);border-color:var(--ok)}
+.p-invoiced,.p-at_door{color:var(--lav);border-color:var(--lav)}
+.p-declined,.p-cancelled{color:var(--err);border-color:var(--err)}
+.ben{display:grid;gap:6px;margin-top:10px;padding:10px;border-radius:10px;background:rgba(0,0,0,.2)}
+.ben label{display:flex;gap:8px;align-items:center;font-size:.88rem}
+.ben .done{color:var(--muted);text-decoration:line-through}
+.prog{font-size:.78rem;color:var(--gold2);font-weight:700}
+.rcpt{margin-top:10px;font-size:.85rem;padding:10px;border-radius:10px;border:1px dashed var(--line);color:var(--muted)}
+.rcpt b{color:var(--text)}
+.chk{display:flex;align-items:center;gap:8px;font-size:.85rem}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:top}
+th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.todo li{margin:.35em 0}
+.todo b{color:var(--gold2)}
+.script{white-space:pre-wrap;background:rgba(0,0,0,.25);padding:12px;border-radius:10px;font-size:.92rem}
+.demo{background:#2a1f4a;border:1px solid var(--lav);border-radius:12px;padding:10px 14px;margin-top:12px;font-size:.88rem;display:none}
+.toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#1d2a1f;border:1px solid var(--ok);padding:10px 16px;border-radius:999px;font-size:.88rem;display:none;z-index:50}
+.hidden{display:none!important}
+.winner{font-family:"Cormorant Garamond",serif;font-size:2rem;color:var(--gold2)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div><h1>Masquerade Tracker</h1><small id="who">Staff only · Fri Nov 13, 2026</small></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn g" href="/mission-control" style="text-decoration:none">← Mission Control</a><button class="btn g" id="refresh">↻ Refresh</button><a class="btn g" href="/masquerade/" target="_blank" style="text-decoration:none">Public page ↗</a></div>
+</div></header>
+
+<div class="wrap">
+  <div class="demo" id="demo"><b>Preview mode.</b> The staff server isn't connected yet, so you're seeing sample data. Changes here aren't saved.</div>
+
+  <div class="kpis">
+    <div class="kpi"><span>Dinner headcount</span><b id="k-guests">0</b><em id="k-checked"></em></div>
+    <div class="kpi"><span>Tickets</span><b id="k-tix">$0</b><em id="k-tixpaid"></em></div>
+    <div class="kpi"><span>Sponsors</span><b id="k-sp">$0</b><em id="k-sppaid"></em></div>
+    <div class="kpi"><span>In-kind value</span><b id="k-ik">$0</b><em id="k-ikn"></em></div>
+    <div class="kpi"><span>Goal</span><b id="k-goal">—</b><div class="meter"><i id="k-bar" style="width:0"></i></div><em><a href="#" id="setgoal" style="color:var(--lav)">Set goal</a></em></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="on" data-tab="todo">To-do</button>
+    <button data-tab="sponsors">Sponsors</button>
+    <button data-tab="guests">Guests</button>
+    <button data-tab="inkind">In-kind</button>
+    <button data-tab="auction">Auction</button>
+    <button data-tab="stars">Starfish Wall</button>
+    <button data-tab="script">Night-of script</button>
+  </div>
+
+  <section id="tab-todo" class="panel"></section>
+  <section id="tab-sponsors" class="panel hidden"></section>
+  <section id="tab-guests" class="panel hidden"></section>
+  <section id="tab-inkind" class="panel hidden"></section>
+  <section id="tab-auction" class="panel hidden"></section>
+  <section id="tab-stars" class="panel hidden"></section>
+  <section id="tab-drawing" class="panel hidden"></section>
+  <section id="tab-script" class="panel hidden"></section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+const API='/gala-tracker/data';
+const $=(s,el=document)=>el.querySelector(s), $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $$$=c=>'$'+Math.round((c||0)/100).toLocaleString();
+const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2200)};
+let DEMO=false, D=null, tab='todo';
+
+/* What each tier was promised — straight from the sponsor flyer. Cumulative. */
+const TIERS={
+  supporter:{name:'Recovery Supporter',amt:100,tickets:0,ben:[['board','Name listed on sponsor board'],['social_thanks','Social media thank-you']]},
+  hope:{name:'Hope Sponsor',amt:250,tickets:2,ben:[['materials_logo','Business name/logo on event materials']]},
+  changemaker:{name:'Change Maker',amt:500,tickets:4,ben:[['logo_display','Logo prominently displayed at event'],['social_spotlight','Social media spotlight']]},
+  champion:{name:'Community Champion',amt:1000,tickets:6,ben:[['signage_large','Large logo on event signage'],['verbal','Verbal recognition during event'],['dedicated_post','Dedicated social media post']]},
+  partner:{name:'Recovery Partner',amt:2500,tickets:8,ben:[['premier_logo','Premier logo placement'],['special_recognition','Special recognition during event'],['promo_items','Promotional materials/items for guests']]},
+  presenting:{name:'Presenting Sponsor',amt:5000,tickets:10,ben:[['presented_by','"Presented by" billing on event page, signage & social'],['ribbon','Cut the ribbon with Cate at 5 PM'],['reserved_table','Reserved table'],['recognized_first','Recognized first from the stage']]}
+};
+const ORDER=['supporter','hope','changemaker','champion','partner','presenting'];
+function benefitsFor(tier){ const out=[]; for(const t of ORDER){ out.push(...TIERS[t].ben); if(t===tier) break; }
+  const n=TIERS[tier].tickets; if(n) out.push(['tickets',n+' event tickets issued']); out.push(['receipt','Receipt sent'],['thank_you','Personal thank-you after the event']); return out; }
+
+async function call(method,body){
+  if(DEMO){ return null; }
+  const r=await fetch(API,{method,headers:{'content-type':'application/json'},body:body?JSON.stringify(body):undefined,credentials:'same-origin'});
+  const j=await r.json().catch(()=>({error:'Bad response'})); if(!r.ok){ const e=new Error(j.error||r.status); e.status=r.status; throw e; } return j;
+}
+async function save(table,id,patch){
+  const list={gala_rsvps:'rsvps',gala_sponsors:'sponsors',gala_inkind:'inkind',gala_drawing:'drawing',gala_auction_items:'auction',gala_bids:'bids',gala_stars:'stars'}[table];
+  const row=D[list].find(x=>x.id===id); Object.assign(row,patch);
+  try{ await call('POST',{action:'update',table,id,patch}); toast(DEMO?'Saved (preview only)':'Saved ✓'); }catch(e){ toast('Not saved: '+e.message); }
+  render();
+}
+
+function sample(){
+  const now=new Date().toISOString();
+  return {who:'preview@example.com',event:{goal_cents:1500000,ticket_value_cents:3000},
+   sponsors:[
+    {id:'s1',business_name:'Sample Sponsor Co.',contact_name:'Pat Example',email:'pat@example.com',phone:null,tier:'partner',amount_cents:250000,paid_cents:250000,status:'paid',display_name:'Sample Sponsor Co.',logo_url:null,logo_received:true,show_publicly:true,benefits_done:{board:1,social_thanks:1,materials_logo:1},tickets_issued:8,receipt_number:null,website:'https://example.com',created_at:now},
+    {id:'s2',business_name:'Example Family',contact_name:'Jo Example',email:null,phone:'801-555-0100',tier:'champion',amount_cents:100000,paid_cents:0,status:'pledged',display_name:'The Example Family',logo_url:null,logo_received:false,show_publicly:false,benefits_done:{},tickets_issued:0,receipt_number:null,created_at:now},
+    {id:'s3',business_name:'Demo Coffee',contact_name:'Sam Demo',email:'sam@example.com',phone:null,tier:'hope',amount_cents:25000,paid_cents:25000,status:'paid',display_name:'Demo Coffee',logo_url:null,logo_received:false,show_publicly:true,benefits_done:{board:1},tickets_issued:2,receipt_number:'RTIR-2026-2001',created_at:now}],
+   rsvps:[
+    {id:'r1',full_name:'Alex Sample',email:'alex@example.com',phone:null,individual_qty:1,couple_qty:0,guest_names:null,dietary:'Vegetarian',attire:'flannel',pay_status:'reserved',source:'web',checked_in:false,created_at:now},
+    {id:'r2',full_name:'Riley Example',email:null,phone:'801-555-0111',individual_qty:0,couple_qty:1,guest_names:'Casey Example',dietary:null,attire:'masquerade',pay_status:'paid',source:'web',checked_in:false,created_at:now}],
+   inkind:[{id:'i1',donor_name:'Morgan Demo',business_name:'Demo Spa',email:'m@example.com',phone:null,category:'auction',description:'Spa day for two',est_value_cents:30000,delivery:'dropoff',status:'pledged',show_publicly:false,receipt_number:null,created_at:now}],
+   drawing:[{id:'d1',full_name:'Alex Sample',email:'alex@example.com',phone:null,is_winner:false,created_at:now},{id:'d2',full_name:'Jamie Test',email:null,phone:'801-555-0122',is_winner:false,created_at:now}]};
+}
+
+async function load(){
+  try{ D=await call('GET'); if(!D) throw 0; $('#who').textContent='Signed in as '+D.who; }
+  catch(e){
+    if(e.status===401||e.status===403||e.status===500){ $('#demo').style.display='block'; $('#demo').innerHTML='<b>'+(e.status===500?'Not connected yet.':'Sign-in needed.')+'</b> '+esc(e.message)+' <a href="/mission-control" style="color:var(--gold2)">Back to Mission Control</a>'; D={event:{},rsvps:[],sponsors:[],inkind:[],drawing:[]}; render(); return; }
+    DEMO=true; D=sample(); $('#demo').style.display='block'; }
+  render();
+}
+
+const guestsOf=r=>r.individual_qty+r.couple_qty*2;
+const WHO=r=>r?r.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '):'';
+const VIA=x=>x&&x.referred_by?` <span class="pill" style="background:rgba(201,169,110,.18);color:var(--gold2)" title="Came in through this person's link">via ${esc(WHO(x.referred_by))}</span>`:'';
+const PC=v=>v===true?'<span class="pill p-paid" title="Photo consent: yes">📷 Photos OK</span>':v===false?'<span class="pill p-declined" title="Photo consent: no" style="background:#5a1620;color:#ffd5d5">🚫 No photos</span>':'<span class="pill p-reserved" title="Not answered">📷 Ask</span>';
+const ticketCents=r=>(r.individual_qty*35+r.couple_qty*60)*100;
+
+function render(){
+  const live=D.rsvps.filter(r=>r.pay_status!=='cancelled');
+  const sponsorGuests=D.sponsors.filter(s=>s.status!=='declined').reduce((a,s)=>a+(s.tickets_issued||0),0);
+  const heads=live.reduce((a,r)=>a+guestsOf(r),0);
+  $('#k-guests').textContent=heads; $('#k-checked').textContent=live.filter(r=>r.checked_in).reduce((a,r)=>a+guestsOf(r),0)+' checked in · '+sponsorGuests+' sponsor seats issued';
+  const tix=live.filter(r=>r.source==='web').reduce((a,r)=>a+ticketCents(r),0), tixPaid=live.filter(r=>r.pay_status==='paid').reduce((a,r)=>a+ticketCents(r),0);
+  $('#k-tix').textContent=$$$(tix); $('#k-tixpaid').textContent=$$$(tixPaid)+' paid';
+  const sp=D.sponsors.filter(s=>s.status!=='declined'), spAmt=sp.reduce((a,s)=>a+s.amount_cents,0), spPaid=sp.reduce((a,s)=>a+(s.paid_cents||0),0);
+  $('#k-sp').textContent=$$$(spAmt); $('#k-sppaid').textContent=$$$(spPaid)+' collected · '+sp.length+' sponsors';
+  const ik=D.inkind.filter(i=>i.status!=='declined'); $('#k-ik').textContent=$$$(ik.reduce((a,i)=>a+(i.est_value_cents||0),0)); $('#k-ikn').textContent=ik.length+' items · '+ik.filter(i=>i.status!=='pledged').length+' in hand';
+  const total=tix+spAmt+ik.filter(i=>['received','receipted','used'].includes(i.status)).reduce((a,i)=>a+(i.est_value_cents||0),0);
+  const g=D.event&&D.event.goal_cents; $('#k-goal').textContent=g?Math.round(total/g*100)+'%':$$$(total); $('#k-bar').style.width=g?Math.min(100,total/g*100)+'%':'0';
+  D.auction=D.auction||[]; D.bids=D.bids||[]; D.stars=D.stars||[];
+  renderTodo(); renderSponsors(); renderGuests(); renderInkind(); renderAuction(); renderStars(); renderDrawing(); renderScript();
+}
+
+const PAYLINKS=[['Ticket $35','https://square.link/u/MhuK13bT'],['Couple $60','https://square.link/u/d1jsdFyc'],['Supporter $100','https://square.link/u/3wj1onye'],['Hope $250','https://square.link/u/3Ii8HU3Q'],['Change Maker $500','https://square.link/u/q4TJOo8u'],['Champion $1,000','https://square.link/u/YbHo3FMy'],['Partner $2,500','https://square.link/u/YW3KrESO'],['Event page','https://nextrighthing.com/masquerade/']];
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-copylink]');if(!b)return;navigator.clipboard.writeText(b.dataset.copylink).then(()=>toast('Copied: '+b.textContent));});
+function renderTodo(){
+  const sp=D.sponsors.filter(s=>s.status!=='declined');
+  const needLogo=sp.filter(s=>s.tier!=='supporter'&&!s.logo_received);
+  const unpaid=sp.filter(s=>s.status!=='paid');
+  const needApproval=sp.filter(s=>!s.show_publicly);
+  const needTix=sp.filter(s=>TIERS[s.tier].tickets>(s.tickets_issued||0));
+  const needRcpt=sp.filter(s=>s.status==='paid'&&!s.receipt_number);
+  const owed=[]; sp.forEach(s=>benefitsFor(s.tier).forEach(([k,l])=>{ if(!['receipt','thank_you','tickets'].includes(k)&&!(s.benefits_done||{})[k]) owed.push([s,l]); }));
+  const ikIn=D.inkind.filter(i=>i.status==='pledged'), ikR=D.inkind.filter(i=>i.status==='received');
+  const unpaidG=D.rsvps.filter(r=>r.pay_status==='reserved');
+  const li=(arr,f)=>arr.length?arr.map(f).join(''):'<li class="meta">All clear ✓</li>';
+  $('#tab-todo').innerHTML=`<div class="item" style="margin-bottom:14px"><b style="color:var(--gold2)">Payment links</b> <span class="meta">tap to copy, then text or email it to a guest or sponsor</span>
+   <div class="bar" style="margin:10px 0 0">${PAYLINKS.map(([n,u])=>`<button class="btn g" data-copylink="${u}">${n}</button>`).join('')}</div></div>
+  <h2 style="color:var(--gold2)">What needs doing</h2><p class="meta">Every promise on the sponsor flyer, tracked until it's kept. That's what makes the next sponsorship easy to sell.</p>
+  <div class="todo">
+   <h3 style="margin-top:14px">New sponsors to approve for the public wall (${needApproval.length})</h3><ul>${li(needApproval,s=>`<li><b>${esc(s.display_name||s.business_name)}</b> — ${TIERS[s.tier].name}</li>`)}</ul>
+   <h3>Logos still needed for printing (${needLogo.length})</h3><ul>${li(needLogo,s=>`<li><b>${esc(s.business_name)}</b> — ${esc(s.contact_name||'')} ${s.email?`<a href="mailto:${esc(s.email)}?subject=Your%20logo%20for%20the%20Masquerade">${esc(s.email)}</a>`:esc(s.phone||'')}</li>`)}</ul>
+   <h3>Sponsor payments outstanding (${unpaid.length})</h3><ul>${li(unpaid,s=>`<li><b>${esc(s.business_name)}</b> — ${$$$(s.amount_cents-(s.paid_cents||0))} (${s.status})</li>`)}</ul>
+   <h3>Sponsor tickets to issue (${needTix.length})</h3><ul>${li(needTix,s=>`<li><b>${esc(s.business_name)}</b> — ${TIERS[s.tier].tickets-(s.tickets_issued||0)} of ${TIERS[s.tier].tickets}</li>`)}</ul>
+   <h3>Receipts to send (${needRcpt.length})</h3><ul>${li(needRcpt,s=>`<li><b>${esc(s.business_name)}</b></li>`)}</ul>
+   <h3>Promised recognition not yet delivered (${owed.length})</h3><ul>${li(owed,([s,l])=>`<li><b>${esc(s.business_name)}</b> — ${esc(l)}</li>`)}</ul>
+   <h3>In-kind: pick up / drop off (${ikIn.length}) · receipt (${ikR.length})</h3><ul>${li([...ikIn,...ikR],i=>`<li><b>${esc(i.business_name||i.donor_name)}</b> — ${esc(i.description)} <span class="pill p-${i.status}">${i.status}</span></li>`)}</ul>
+   <h3>Guests reserved but not paid (${unpaidG.length})</h3><ul>${li(unpaidG,r=>`<li>${esc(r.full_name)} — ${$$$(ticketCents(r))}</li>`)}</ul>
+  </div>${whoBlock()}`;
+}
+
+function whoBlock(){
+  const m={}, add=(r,f)=>{ const k=r||'_'; m[k]=m[k]||{sp:0,spc:0,paid:0,g:0,ik:0,st:0}; f(m[k]); };
+  D.sponsors.filter(s=>s.status!=='declined').forEach(s=>add(s.referred_by,o=>{o.sp++;o.spc+=s.amount_cents||0;o.paid+=s.paid_cents||0;}));
+  D.rsvps.forEach(r=>add(r.referred_by,o=>o.g++));
+  D.inkind.forEach(i=>add(i.referred_by,o=>o.ik++));
+  (D.stars||[]).forEach(x=>add(x.referred_by,o=>o.st+=x.amount_cents||0));
+  const keys=Object.keys(m).sort((a,b)=>a==='_'?1:b==='_'?-1:m[b].spc-m[a].spc);
+  if(!keys.length) return '';
+  return `<div class="panel" style="margin-top:14px"><h2 style="color:var(--gold2)">Who brought it in</h2>
+   <p class="meta">Each person shares their own link or PDF. Anything that comes in through it is credited to them, even if it gets forwarded. "Direct" means no one's link was used.</p>
+   <div style="overflow-x:auto"><table><tr><th>Through</th><th>Sponsors</th><th>Pledged</th><th>Paid</th><th>Guests</th><th>Items</th><th>Starfish</th></tr>
+   ${keys.map(k=>{const o=m[k];return `<tr><td><b>${k==='_'?'Direct':esc(WHO(k))}</b></td><td>${o.sp}</td><td>${$$$(o.spc)}</td><td>${$$$(o.paid)}</td><td>${o.g}</td><td>${o.ik}</td><td>${$$$(o.st)}</td></tr>`;}).join('')}</table></div></div>`;
+}
+
+function receiptLine(s){
+  const tv=(D.event&&D.event.ticket_value_cents)||3500, ben=(s.tickets_issued||TIERS[s.tier].tickets)*tv, paid=s.paid_cents||0;
+  return {ben,ded:Math.max(0,paid-ben),text:`The Right Thing in Recovery, a 501(c)(3) nonprofit (EIN 93-4316358), gratefully acknowledges ${s.display_name||s.business_name}'s contribution of ${$$$(paid)} to the Flannel to Formal Masquerade Fundraiser. In exchange, the donor received ${(s.tickets_issued||TIERS[s.tier].tickets)} event ticket(s) including dinner, with an estimated value of ${$$$(ben)}. The tax-deductible portion of this contribution is ${$$$(Math.max(0,paid-ben))}.`};
+}
+
+function renderSponsors(){
+  const q=($('#sp-q')||{}).value||'', f=($('#sp-f')||{}).value||'';
+  const rows=D.sponsors.filter(s=>(!f||s.status===f)&&(!q||JSON.stringify(s).toLowerCase().includes(q.toLowerCase())));
+  const counts=s=>D.sponsors.filter(x=>x.status===s).length;
+  $('#tab-sponsors').innerHTML=`<div class="bar"><input id="sp-q" placeholder="Search sponsors" value="${esc(q)}" style="flex:1;min-width:160px">
+   <select id="sp-f"><option value="">All (${D.sponsors.length})</option>${['pledged','invoiced','paid','declined'].map(s=>`<option value="${s}" ${f===s?'selected':''}>${s} (${counts(s)})</option>`).join('')}</select>
+   <button class="btn g" data-add="sponsor">+ Add sponsor</button><button class="btn g" data-csv="sponsors">CSV</button></div>
+   <div class="list">${rows.map(s=>{ const done=s.benefits_done||{}, bl=benefitsFor(s.tier), n=bl.filter(([k])=>done[k]).length, r=receiptLine(s);
+    return `<div class="item" data-id="${s.id}"><div class="hd"><div><h3>${esc(s.display_name||s.business_name)} ${PC(s.photo_consent)}</h3>
+      <div class="meta">${TIERS[s.tier].name}${VIA(s)} · ${$$$(s.amount_cents)} · ${esc(s.contact_name||'')} ${s.email?`· <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`:''} ${s.phone?`· <a href="tel:${esc(s.phone)}">${esc(s.phone)}</a>`:''} ${s.website?`· <a href="${esc(s.website)}" target="_blank" rel="noopener">site</a>`:''}</div>
+      ${s.message?`<div class="meta" style="margin-top:4px">“${esc(s.message)}”</div>`:''}</div>
+      <div style="text-align:right"><span class="pill p-${s.status}">${s.status}</span><div class="prog" style="margin-top:6px">${n}/${bl.length} delivered</div></div></div>
+     <div class="fields">
+      <label>Status<select data-f="status">${['pledged','invoiced','paid','declined'].map(o=>`<option ${s.status===o?'selected':''}>${o}</option>`).join('')}</select></label>
+      <label>Collected ($)<input type="number" inputmode="numeric" data-f="paid_cents" data-money value="${Math.round((s.paid_cents||0)/100)}"></label>
+      <label>Tickets issued<input type="number" inputmode="numeric" data-f="tickets_issued" value="${s.tickets_issued||0}" min="0" max="20"></label>
+      <label>Receipt #<input data-f="receipt_number" value="${esc(s.receipt_number||'')}"></label>
+      <label>Logo URL<input data-f="logo_url" value="${esc(s.logo_url||'')}" placeholder="https://"></label>
+      <label>List as<input data-f="display_name" value="${esc(s.display_name||'')}"></label>
+     </div>
+     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px">
+      <label class="chk"><input type="checkbox" data-f="logo_received" ${s.logo_received?'checked':''}> Logo received</label>
+      <label class="chk"><input type="checkbox" data-f="show_publicly" ${s.show_publicly?'checked':''}> Show on public sponsor wall</label>
+     </div>
+     <div class="ben">${bl.map(([k,l])=>`<label class="${done[k]?'done':''}"><input type="checkbox" data-ben="${k}" ${done[k]?'checked':''}> ${esc(l)}</label>`).join('')}</div>
+     ${s.paid_cents?`<div class="rcpt"><b>Receipt math:</b> paid ${$$$(s.paid_cents)} − benefits ${$$$(r.ben)} = <b>${$$$(r.ded)} deductible</b>. <a href="#" data-copy="${s.id}" style="color:var(--lav)">Copy receipt wording</a></div>`:''}
+     <label style="display:grid;gap:3px;margin-top:10px;font-size:.75rem;color:var(--muted);font-weight:600">Staff notes<textarea data-f="staff_notes" rows="2">${esc(s.staff_notes||'')}</textarea></label>
+    </div>`;}).join('')||'<p class="meta">No sponsors yet.</p>'}</div>`;
+  wireItems('#tab-sponsors','gala_sponsors',D.sponsors);
+  $('#sp-q').oninput=()=>{const p=$('#sp-q').selectionStart;renderSponsors();$('#sp-q').focus();$('#sp-q').setSelectionRange(p,p)}; $('#sp-f').onchange=renderSponsors;
+  $$('[data-copy]').forEach(a=>a.onclick=e=>{e.preventDefault();navigator.clipboard.writeText(receiptLine(D.sponsors.find(x=>x.id===a.dataset.copy)).text).then(()=>toast('Receipt wording copied'))});
+  $$('[data-ben]',$('#tab-sponsors')).forEach(cb=>cb.onchange=()=>{const id=cb.closest('[data-id]').dataset.id, s=D.sponsors.find(x=>x.id===id); const b={...(s.benefits_done||{})}; if(cb.checked) b[cb.dataset.ben]=new Date().toISOString().slice(0,10); else delete b[cb.dataset.ben]; save('gala_sponsors',id,{benefits_done:b});});
+}
+
+function renderGuests(){
+  const q=($('#g-q')||{}).value||'';
+  const rows=D.rsvps.filter(r=>!q||JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
+  const diet=D.rsvps.filter(r=>r.dietary&&r.pay_status!=='cancelled');
+  $('#tab-guests').innerHTML=`<div class="bar"><input id="g-q" placeholder="Search name, email, phone" value="${esc(q)}" style="flex:1;min-width:160px"><button class="btn g" data-add="guest">+ Walk-in / comp</button><button class="btn g" data-csv="rsvps">CSV</button></div>
+   ${(()=>{const np=D.rsvps.filter(r=>r.photo_consent===false&&r.pay_status!=='cancelled');return np.length?`<div class="item" style="margin-bottom:10px;border-color:#a33"><b>🚫 No photos — show this list to the photographer:</b> ${np.map(r=>esc(r.full_name)).join(' · ')}</div>`:''})()}
+   ${diet.length?`<div class="item" style="margin-bottom:10px"><b>Kitchen notes:</b> ${diet.map(r=>`${esc(r.full_name)} (${guestsOf(r)}) — ${esc(r.dietary)}`).join(' · ')}</div>`:''}
+   <div style="overflow-x:auto"><table><thead><tr><th>In</th><th>Name</th><th>Photos</th><th>Seats</th><th>Owes</th><th>Payment</th><th>Contact</th></tr></thead><tbody>
+   ${rows.map(r=>`<tr data-id="${r.id}"><td><input type="checkbox" data-f="checked_in" ${r.checked_in?'checked':''} aria-label="Checked in"></td>
+    <td><b>${esc(r.full_name)}</b>${VIA(r)}${r.guest_names?`<div class="meta">+ ${esc(r.guest_names)}</div>`:''}${r.attire&&r.attire!=='surprise'?`<div class="meta">${esc(r.attire)}</div>`:''}</td>
+    <td><select data-f="photo_consent" data-bool aria-label="Photo consent"><option value="" ${r.photo_consent==null?'selected':''}>Ask</option><option value="true" ${r.photo_consent===true?'selected':''}>Yes</option><option value="false" ${r.photo_consent===false?'selected':''}>No</option></select></td>
+    <td>${guestsOf(r)}</td><td>${r.source==='web'?$$$(ticketCents(r)):'—'}</td>
+    <td><select data-f="pay_status">${['reserved','paid','at_door','comp','cancelled'].map(o=>`<option ${r.pay_status===o?'selected':''}>${o}</option>`).join('')}</select></td>
+    <td class="meta">${r.email?`<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''} ${r.phone?`<a href="tel:${esc(r.phone)}">${esc(r.phone)}</a>`:''}</td></tr>`).join('')}
+   </tbody></table></div>`;
+  wireItems('#tab-guests','gala_rsvps',D.rsvps);
+  $('#g-q').oninput=()=>{const p=$('#g-q').selectionStart;renderGuests();$('#g-q').focus();$('#g-q').setSelectionRange(p,p)};
+}
+
+function renderInkind(){
+  $('#tab-inkind').innerHTML=`<div class="bar"><button class="btn g" data-add="inkind">+ Add item</button><button class="btn g" data-csv="inkind">CSV</button></div>
+   <div class="list">${D.inkind.map(i=>`<div class="item" data-id="${i.id}"><div class="hd"><div><h3>${esc(i.business_name||i.donor_name)} ${PC(i.photo_consent)}</h3>
+     <div class="meta">${esc(i.description)}${VIA(i)} · ${esc(i.category||'')} · ${esc(i.delivery||'')} ${i.email?`· <a href="mailto:${esc(i.email)}">${esc(i.email)}</a>`:''} ${i.phone?`· <a href="tel:${esc(i.phone)}">${esc(i.phone)}</a>`:''}</div></div><span class="pill p-${i.status}">${i.status}</span></div>
+     <div class="fields"><label>Status<select data-f="status">${['pledged','received','receipted','used','declined'].map(o=>`<option ${i.status===o?'selected':''}>${o}</option>`).join('')}</select></label>
+      <label>Est. value ($)<input type="number" inputmode="numeric" data-f="est_value_cents" data-money value="${i.est_value_cents==null?'':Math.round(i.est_value_cents/100)}"></label>
+      <label>Receipt #<input data-f="receipt_number" value="${esc(i.receipt_number||'')}"></label></div>
+     <label class="chk" style="margin-top:10px"><input type="checkbox" data-f="show_publicly" ${i.show_publicly?'checked':''}> Thank publicly (name only)</label></div>`).join('')||'<p class="meta">No in-kind pledges yet.</p>'}</div>
+   <p class="meta" style="margin-top:10px">Issue receipts through Ryan's existing serialized in-kind receipt system, then paste the receipt number here.</p>`;
+  wireItems('#tab-inkind','gala_inkind',D.inkind);
+}
+
+function renderAuction(){
+  const live=D.bids.filter(b=>!b.voided), top=id=>live.filter(b=>b.item_id===id).sort((a,b)=>b.amount_cents-a.amount_cents||a.created_at.localeCompare(b.created_at))[0];
+  const total=D.auction.reduce((a,i)=>{const t=top(i.id);return a+(t?t.amount_cents:0);},0), collected=D.auction.reduce((a,i)=>{const t=top(i.id);return a+(t&&i.winner_paid?t.amount_cents:0);},0);
+  const closes=D.event&&D.event.auction_closes_at?new Date(D.event.auction_closes_at):null;
+  $('#tab-auction').innerHTML=`<h2 style="color:var(--gold2)">Silent auction</h2>
+   <p class="meta">${D.auction.length} items · ${live.length} bids · high bids total <b>${$$$(total)}</b> · ${$$$(collected)} collected${closes?` · bidding closes ${closes.toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}`:''}</p>
+   <p class="meta">Guests bid on the public page. Void a bid only if it's a mistake or a prank; the next highest bid becomes the leader. After close, contact each winner, collect payment, and tick "Paid".</p>
+   <div class="bar" style="margin-top:10px"><button class="btn g" data-add="auction">+ Add item</button></div>
+   <div class="list">${D.auction.map(i=>{const t=top(i.id), bs=D.bids.filter(b=>b.item_id===i.id);
+     return `<div class="item" data-id="${i.id}"><div class="hd"><div><h3>${esc(i.icon||'')} ${esc(i.title)}</h3><div class="meta">${esc(i.donor||'')}${i.value_label?' · '+esc(i.value_label):''} · opens at ${$$$(i.start_bid_cents)}, +${$$$(i.increment_cents)}</div></div>
+       <span class="pill ${t?(i.winner_paid?'p-paid':'p-reserved'):'p-declined'}">${t?(i.winner_paid?'Paid':$$$(t.amount_cents)):'No bids'}</span></div>
+       ${t?`<div class="meta" style="margin-top:6px"><b>Leader:</b> ${esc(t.bidder_name)} ${PC(t.photo_consent)} ${t.phone?`· <a href="tel:${esc(t.phone)}">${esc(t.phone)}</a>`:''} ${t.email?`· <a href="mailto:${esc(t.email)}?subject=${encodeURIComponent('Your Masquerade auction win: '+i.title)}">${esc(t.email)}</a>`:''}</div>`:''}
+       <div class="fields"><label>Opening bid ($)<input type="number" inputmode="numeric" data-f="start_bid_cents" data-money value="${Math.round(i.start_bid_cents/100)}"></label>
+        <label>Bid step ($)<input type="number" inputmode="numeric" data-f="increment_cents" data-money value="${Math.round(i.increment_cents/100)}"></label>
+        <label>Value label<input data-f="value_label" value="${esc(i.value_label||'')}" placeholder="e.g. $300 value"></label></div>
+       <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="active" ${i.active?'checked':''}> Show on the auction page</label>
+       <label class="chk"><input type="checkbox" data-f="winner_paid" ${i.winner_paid?'checked':''}> Winner has paid</label>
+       ${bs.length?`<details style="margin-top:8px"><summary class="meta">All bids (${bs.length})</summary><ul>${bs.map(b=>`<li ${b.voided?'style="opacity:.5;text-decoration:line-through"':''}>${$$$(b.amount_cents)} — ${esc(b.bidder_name)} · ${esc(b.phone||b.email||'')} · ${new Date(b.created_at).toLocaleString()} <button class="btn g" style="padding:2px 8px;font-size:.75rem" data-void="${b.id}" data-v="${b.voided?'0':'1'}">${b.voided?'Restore':'Void'}</button></li>`).join('')}</ul></details>`:''}
+     </div>`;}).join('')||'<p class="meta">No auction items yet.</p>'}</div>`;
+  wireItems('#tab-auction','gala_auction_items',D.auction);
+  $$('[data-void]',$('#tab-auction')).forEach(b=>b.onclick=()=>{ if(b.dataset.v==='1'&&!confirm('Void this bid?')) return; save('gala_bids',b.dataset.void,{voided:b.dataset.v==='1'}); });
+}
+
+function renderStars(){
+  const st=D.stars, lit=st.reduce((a,x)=>a+x.stars,0), pledged=st.reduce((a,x)=>a+x.amount_cents,0), paid=st.filter(x=>x.paid).reduce((a,x)=>a+x.amount_cents,0);
+  $('#tab-stars').innerHTML=`<h2 style="color:var(--gold2)">Starfish Wall</h2>
+   <p class="meta">${st.length} purchases · <b>${lit}</b> starfish · ${$$$(pledged)} started at checkout · ${$$$(paid)} confirmed paid</p>
+   <p class="meta">Each row was entered before Square checkout. Tick "Paid" once you see the matching payment in Square. Print the names from the CSV. Big-screen wall for the event TV: <a href="/masquerade/wall" target="_blank" style="color:var(--gold2)">nextrighthing.com/masquerade/wall</a></p>
+   <div class="bar" style="margin-top:10px"><button class="btn g" id="stars-csv">CSV for the wall</button></div>
+   <div class="list">${st.map(x=>`<div class="item" data-id="${x.id}"><div class="hd"><div><h3>${'⭐'.repeat(x.stars===5?5:1)} ${esc(x.dedication||x.full_name)}</h3>
+     <div class="meta">${esc(x.full_name)}${VIA(x)} ${x.email?`· <a href="mailto:${esc(x.email)}">${esc(x.email)}</a>`:''} · ${$$$(x.amount_cents)} · ${new Date(x.created_at).toLocaleString()} ${PC(x.photo_consent)}</div></div>
+     <span class="pill ${x.paid?'p-paid':'p-reserved'}">${x.paid?'Paid':'Check Square'}</span></div>
+     <div class="fields"><label>Shown on wall as<input data-f="dedication" value="${esc(x.dedication||'')}" placeholder="${esc(x.full_name)}"></label></div>
+     <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="paid" ${x.paid?'checked':''}> Paid in Square</label>
+     <label class="chk"><input type="checkbox" data-f="hidden" ${x.hidden?'checked':''}> Turn off on the wall (unpaid or inappropriate)</label>${(x.slots||[]).length?`<div class="meta">Wall spots: ${(x.slots||[]).join(', ')}</div>`:''}</div>`).join('')||'<p class="meta">No starfish lit yet.</p>'}</div>`;
+  wireItems('#tab-stars','gala_stars',D.stars);
+  $('#stars-csv').onclick=()=>{ const rows=[['Shown as','Name','Email','Starfish','Amount','Paid']].concat(D.stars.map(x=>[x.dedication||x.full_name,x.full_name,x.email||'',x.stars,(x.amount_cents/100).toFixed(2),x.paid?'yes':'no']));
+    const blob=new Blob([rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n')],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='starfish-wall.csv'; a.click(); };
+}
+
+function renderDrawing(){
+  const w=D.drawing.filter(d=>d.is_winner);
+  $('#tab-drawing').innerHTML=`<h2 style="color:var(--gold2)">Opportunity drawing</h2><p class="meta">${D.drawing.length} free entries. Picks are random and logged on the server with who drew and when.</p>
+   <div class="bar" style="margin-top:10px"><button class="btn" id="draw">Draw a winner</button><button class="btn g" data-add="entry">+ Add in-person entry</button><button class="btn g" data-csv="drawing">CSV</button></div>
+   <div id="winbox"></div>
+   <h3 style="margin-top:12px">Winners</h3>${w.length?`<ul>${w.map(d=>`<li><b>${esc(d.full_name)}</b> — ${esc(d.email||d.phone||'')}</li>`).join('')}</ul>`:'<p class="meta">None drawn yet.</p>'}`;
+  $('#draw').onclick=async()=>{ if(!confirm('Draw a winner now?')) return;
+    let r; if(DEMO){ const pool=D.drawing.filter(d=>!d.is_winner); if(!pool.length) return toast('No entries left'); const x=pool[Math.floor(Math.random()*pool.length)]; x.is_winner=true; r={winner:x}; }
+    else { try{ r=await call('POST',{action:'pick_winner'}); const x=D.drawing.find(d=>d.id===r.winner.id); if(x) x.is_winner=true; }catch(e){ return toast(e.message); } }
+    renderDrawing(); $('#winbox').innerHTML=`<div class="item" style="text-align:center"><div class="meta">Winner</div><div class="winner">${esc(r.winner.full_name)}</div></div>`; };
+}
+
+function renderScript(){
+  const sp=D.sponsors.filter(s=>s.status!=='declined'), by=t=>sp.filter(s=>s.tier===t).map(s=>s.display_name||s.business_name);
+  const join=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a.slice(-1);
+  const presenting=by('presenting'), partners=by('partner'), champs=by('champion'), others=[...by('changemaker'),...by('hope'),...by('supporter')];
+  const ik=D.inkind.filter(i=>i.status!=='declined'&&i.show_publicly).map(i=>i.business_name||i.donor_name);
+  let s='RIBBON CUTTING (5:00 PM)\nWelcome to the new home of The Next Right Thing in Recovery at 7669 S Redwood Rd. [Ribbon cutting.]\n\nWELCOME (≈ 6:30 PM)\nThank you all for being here tonight. Every dollar raised this evening benefits The Right Thing in Recovery, helping provide recovery opportunities, sober activities, transportation, peer support and resources to individuals working to rebuild their lives.\n\n';
+  if(presenting.length) s+=`PRESENTING SPONSOR\nTonight's Flannel to Formal Masquerade is presented by ${join(presenting)}. [Invite them to stand / say a few words.]\n\n`;
+  if(partners.length) s+=`SPECIAL RECOGNITION — RECOVERY PARTNERS\nTonight would not be possible without our Recovery Partner${partners.length>1?'s':''}, ${join(partners)}. [Invite them to stand / say a few words.]\n\n`;
+  if(champs.length) s+=`COMMUNITY CHAMPIONS\nWe also want to thank our Community Champion${champs.length>1?'s':''}: ${join(champs)}.\n\n`;
+  if(others.length) s+=`AND OUR SPONSORS\nA heartfelt thank-you to ${join(others)}.\n\n`;
+  if(ik.length) s+=`IN-KIND GIFTS\nDinner by Pat\u2019s BBQ and our silent auction were made possible by ${join(ik)}.\n\n`;
+  s+='SILENT AUCTION\nThe silent auction closes at 8:30 PM. Last chance to bid from your phone!\n\nSTARFISH WALL\nLight a starfish for $5, or five for $20, and add your name to our wall tonight.\n\nCLOSING\nCome for the fun, stay for the mission. Thank you for being part of the next right thing.';
+  $('#tab-script').innerHTML=`<h2 style="color:var(--gold2)">Night-of recognition script</h2><p class="meta">Builds itself from the sponsor list, so Champions and Partners always get the verbal recognition their level promised. No dollar amounts are read aloud.</p>
+    <div class="script" id="scr">${esc(s)}</div><p><button class="btn g" id="cp">Copy script</button></p>`;
+  $('#cp').onclick=()=>navigator.clipboard.writeText(s).then(()=>toast('Script copied'));
+}
+
+function wireItems(scope,table,arr){
+  $$('[data-f]',$(scope)).forEach(el=>{
+    const ev=el.tagName==='SELECT'||el.type==='checkbox'?'change':'change';
+    el.addEventListener(ev,()=>{ const id=el.closest('[data-id]').dataset.id, k=el.dataset.f;
+      let v=el.type==='checkbox'?el.checked:el.value;
+      if(el.dataset.bool!==undefined) v=v==='true'?true:v==='false'?false:null;
+      else if(el.dataset.money!==undefined) v=v===''?null:Math.round(parseFloat(v)*100);
+      else if(el.type==='number') v=parseInt(v,10)||0;
+      else if(typeof v==='string') v=v.trim()||null;
+      save(table,id,{[k]:v}); });
+  });
+  $$('[data-csv]',$(scope)).forEach(b=>b.onclick=()=>csv(b.dataset.csv));
+  $$('[data-add]',$(scope)).forEach(b=>b.onclick=()=>add(b.dataset.add));
+}
+
+function csv(key){
+  const rows=D[key]; if(!rows.length) return toast('Nothing to export');
+  const cols=Object.keys(rows[0]); const cell=v=>{v=v==null?'':typeof v==='object'?JSON.stringify(v):String(v); if(/^[=+\-@]/.test(v)) v="'"+v; return '"'+v.replace(/"/g,'""')+'"'};
+  const out=[cols.join(','),...rows.map(r=>cols.map(c=>cell(r[c])).join(','))].join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([out],{type:'text/csv'})); a.download='masquerade-'+key+'.csv'; a.click();
+}
+
+async function add(kind){
+  const ask=(m,d='')=>{const v=prompt(m,d); return v==null?null:v.trim();};
+  let table,row,list;
+  if(kind==='sponsor'){ const n=ask('Business or family name'); if(!n) return; const t=ask('Tier: supporter, hope, changemaker, champion, partner, presenting','hope'); if(!TIERS[t]) return toast('Unknown tier');
+    const c=ask('Email or phone'); if(!c) return; const amt=t==='partner'?parseInt(ask('Amount ($)','2500'),10)||2500:TIERS[t].amt;
+    const w=(ask('Who brought them in? (first name, or leave blank)','')||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,30);
+    table='gala_sponsors'; list='sponsors'; row={business_name:n,tier:t,amount_cents:amt*100,[c.includes('@')?'email':'phone']:c,status:'pledged'}; if(w) row.referred_by=w; }
+  else if(kind==='guest'){ const n=ask('Guest name'); if(!n) return; const c=ask('Email or phone'); if(!c) return; const ty=ask('Type "1" for individual or "2" for couple','1');
+    const st=ask('Payment: paid, at_door or comp','at_door'); table='gala_rsvps'; list='rsvps';
+    row={full_name:n,[c.includes('@')?'email':'phone']:c,individual_qty:ty==='2'?0:1,couple_qty:ty==='2'?1:0,pay_status:['paid','at_door','comp'].includes(st)?st:'at_door',source:'staff'}; }
+  else if(kind==='inkind'){ const n=ask('Donor / business name'); if(!n) return; const d=ask('What is it?'); if(!d) return; const c=ask('Email or phone'); if(!c) return;
+    table='gala_inkind'; list='inkind'; row={donor_name:n,description:d,[c.includes('@')?'email':'phone']:c,status:'pledged'}; }
+  else if(kind==='auction'){ const n=ask('Item title'); if(!n) return; const dn=ask('Donated by'); const sb=parseInt(ask('Opening bid ($)','25'),10)||25; const st=parseInt(ask('Bid step ($)','5'),10)||5;
+    table='gala_auction_items'; list='auction'; row={title:n,donor:dn||null,start_bid_cents:sb*100,increment_cents:st*100,active:true}; }
+  else if(kind==='entry'){ const n=ask('Entrant name'); if(!n) return; const c=ask('Email or phone'); if(!c) return; table='gala_drawing'; list='drawing'; row={full_name:n,[c.includes('@')?'email':'phone']:c}; }
+  try{ const r=DEMO?{...row,id:'x'+Date.now(),created_at:new Date().toISOString(),benefits_done:{},tickets_issued:0,paid_cents:0,checked_in:false,is_winner:false,individual_qty:row.individual_qty||0,couple_qty:row.couple_qty||0}:await call('POST',{action:'insert',table,row});
+    D[list].unshift(r); render(); toast('Added ✓'); }catch(e){ toast('Not added: '+e.message); }
+}
+
+$$('.tabs button').forEach(b=>b.onclick=()=>{ tab=b.dataset.tab; $$('.tabs button').forEach(x=>x.classList.toggle('on',x===b)); $$('section.panel').forEach(s=>s.classList.toggle('hidden',s.id!=='tab-'+tab)); });
+$('#refresh').onclick=load;
+$('#setgoal').onclick=async e=>{ e.preventDefault(); const v=prompt('Fundraising goal in dollars (leave blank to hide the goal)', D.event&&D.event.goal_cents?D.event.goal_cents/100:''); if(v===null) return;
+  const c=v.trim()===''?null:Math.round(parseFloat(v)*100); try{ await call('POST',{action:'goal',goal_cents:c}); D.event=D.event||{}; D.event.goal_cents=c; render(); toast('Goal saved'); }catch(err){ toast(err.message); } };
+async function doorCheckin(){
+  const id=new URLSearchParams(location.search).get('checkin'); if(!id||!D) return;
+  const r=D.rsvps.find(x=>x.id===id);
+  const box=document.createElement('div');
+  box.style.cssText='position:fixed;inset:0;z-index:60;background:rgba(5,6,20,.82);display:grid;place-items:center;padding:16px';
+  const seats=r?r.individual_qty+r.couple_qty*2:0, owes=r&&r.source==='web'&&!['paid','comp'].includes(r.pay_status)?ticketCents(r):0;
+  box.innerHTML=r?`<div class="panel" style="max-width:420px;width:100%;text-align:center">
+      <div class="meta">Ticket MQ-${esc(id.replace(/-/g,'').slice(0,8).toUpperCase())}</div>
+      <h2 style="color:var(--gold2);font-size:2rem;margin:6px 0">${esc(r.full_name)}</h2>
+      <div style="font-size:1.2rem;font-weight:700">Admit ${seats}</div>
+      ${r.guest_names?`<div class="meta">+ ${esc(r.guest_names)}</div>`:''}
+      ${r.dietary?`<div class="meta">Dietary: ${esc(r.dietary)}</div>`:''}
+      <div style="margin:10px 0 0">${PC(r.photo_consent)}${r.photo_consent==null?'<div class="meta">Ask their photo choice and set it in the Guests tab.</div>':''}</div>
+      <div style="margin:12px 0">${r.checked_in?'<span class="pill p-paid">Already checked in</span>':(owes?`<span class="pill p-reserved">Collect ${$$$(owes)}</span>`:'<span class="pill p-paid">Paid</span>')}</div>
+      <div style="display:grid;gap:8px">
+        ${r.checked_in?'':(owes?'<button class="btn" data-a="paid">Collected payment + check in</button>':'')}
+        ${r.checked_in?'':'<button class="btn '+(owes?'g':'')+'" data-a="in">Check in</button>'}
+        <button class="btn g" data-a="close">Close</button>
+      </div></div>`
+   :`<div class="panel" style="max-width:420px;text-align:center"><h2 style="color:var(--err)">Ticket not found</h2><p class="meta">It may have been cancelled. Check the Guests tab.</p><button class="btn g" data-a="close">Close</button></div>`;
+  document.body.appendChild(box);
+  box.onclick=async e=>{const a=e.target.dataset&&e.target.dataset.a; if(!a) return;
+    if(a==='paid') await save('gala_rsvps',id,{pay_status:'paid',checked_in:true});
+    if(a==='in') await save('gala_rsvps',id,{checked_in:true});
+    history.replaceState(null,'',location.pathname); box.remove(); };
+}
+load().then(doorCheckin);
+})();
+</script>
+</body>
+</html>

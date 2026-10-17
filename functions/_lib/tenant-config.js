@@ -1,0 +1,57 @@
+// functions/_lib/tenant-config.js
+// This deployment's org identity - name, contact info, colors, licensing
+// jurisdiction, named programs. One file per customer, edited once when
+// standing up a new organization's copy of this site.
+//
+// Staff emails/access live in roster.js instead - that's "who is allowed to
+// see what," this is "who are we." Keeping them separate means forking this
+// file for a new customer never touches who has access to anything.
+export const TENANT = {
+  orgName: 'The Next Right Thing',
+  orgLegalName: 'The Next Right Thing in Recovery',
+  secondEntityName: 'The Right Thing in Recovery', // sibling 501(c)(3), or null if there isn't one
+  emailDomain: 'nextrighthing.com',
+
+  phoneDisplay: '(801) 816-4977',
+  phoneTel: '8018164977',
+  address: '7669 South Redwood Road, West Jordan, UT 84084',
+  website: 'nextrighthing.com',
+
+  colors: { navy: '#1a2744', navyDeep: '#121c33', sand: '#c9a96e', sandLight: '#e8d5b0' },
+
+  licensingBody: 'Utah Office of Licensing',
+  licensingPhone: '(801) 890-2007',
+  licensingPortalNote: 'the Provider Portal within one business day',
+
+  programs: { workCrew: { key: 'rent_a_husband', label: 'Rent A Husband' } },
+
+  // The one event actually in front of the public right now. Mission Control's
+  // Events tile reads this instead of pointing at whatever was built last - the
+  // car wash was a single Saturday in July and has been a dead link ever since.
+  // Retiring an event and starting the next one is an edit to this block, and
+  // nothing else. When the real Events module lands it reads rows in this shape.
+  // No event in front of the public right now. The end-of-summer yard sale ran
+  // 4-7 Sept 2026 and closed; leaving it here made Mission Control count down to
+  // a date in the past. Starting the next one is an edit to this block, nothing
+  // else. Retired events, newest first, are kept below as a record only - nothing
+  // reads pastEvents yet.
+  currentEvent: null,
+
+  pastEvents: [
+    { key: 'fall-yard-sale-2026', name: 'End-of-Summer Yard Sale', url: '/yard-sale',
+      startsOn: '2026-09-04', endsOn: '2026-09-07', drawingOn: '2026-09-07' }
+  ],
+
+  defaultFromName: 'NRT Patrol',
+  defaultFromAddress: 'patrol@nextrighthing.com',
+
+  // Quick links shown at the top of Case Management - the tools case managers
+  // already use, so the page is their launch pad instead of somewhere they leave.
+  // Add or remove links here; nothing else needs to change.
+  caseLinks: [
+    { label: 'Utah Medicaid eligibility lookup', url: 'https://medicaid.utah.gov/eligibility/' },
+    { label: 'Utah Medicaid Online (providers)', url: 'https://medicaid.utah.gov/medicaid-online' },
+    { label: '211 Utah - community resources', url: 'https://211utah.org' },
+    { label: '988 Suicide & Crisis Lifeline', url: 'https://988lifeline.org' }
+  ]
+};

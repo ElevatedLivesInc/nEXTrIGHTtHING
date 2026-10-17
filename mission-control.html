@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Mission Control — The Next Right Thing</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.6rem 1.5rem;}
+  .top-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:2rem;line-height:1.1;}
+  h1 em{color:var(--sand-light);font-style:italic;}
+  .tag{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.35rem;}
+  .viewer{font-size:.72rem;color:rgba(255,255,255,.5);text-align:right;}
+  .wrap{max-width:1180px;margin:0 auto;padding:1.6rem 1.5rem 3rem;}
+  .sec{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sand);margin:1.8rem 0 .9rem;}
+  .sec:first-of-type{margin-top:0;}
+  .alerts{display:flex;flex-direction:column;gap:.55rem;margin-bottom:.5rem;}
+  .alert{display:flex;align-items:center;gap:.8rem;padding:.75rem 1rem;border-radius:8px;font-size:.85rem;border:1px solid;}
+  .alert.hot{background:rgba(224,120,120,.12);border-color:rgba(224,120,120,.45);color:#f3c9c9;}
+  .alert.warm{background:rgba(224,150,90,.12);border-color:rgba(224,150,90,.45);color:#f3d3af;}
+  .alert.calm{background:rgba(120,200,150,.1);border-color:rgba(120,200,150,.35);color:#bfe8d1;}
+  .alert a{color:inherit;font-weight:700;margin-left:auto;white-space:nowrap;text-decoration:none;border-bottom:1px solid;}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1rem;}
+  .tile{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:1.3rem 1.4rem;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:.55rem;transition:border-color .15s,transform .15s;}
+  .tile:hover{border-color:rgba(201,169,110,.55);transform:translateY(-2px);}
+  .tile h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.35rem;color:var(--sand-light);}
+  .tile p{font-size:.78rem;color:rgba(255,255,255,.6);font-weight:300;line-height:1.55;}
+  .nums{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:auto;padding-top:.5rem;}
+  .num{display:flex;flex-direction:column;}
+  .num b{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;font-weight:400;}
+  .num span{font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);}
+  .num.flag b{color:#f0b6b6;}
+  .soon{opacity:.55;}
+  .soon .tile{cursor:default;}
+  .soon .tile:hover{border-color:rgba(255,255,255,.1);transform:none;}
+  .pill{display:inline-block;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .5rem;border-radius:4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.15);}
+  .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.6rem;}
+  .links a{display:flex;flex-direction:column;gap:.2rem;padding:.8rem 1rem;border-radius:9px;text-decoration:none;background:rgba(201,169,110,.07);border:1px solid rgba(201,169,110,.28);transition:border-color .15s;}
+  .links a:hover{border-color:rgba(201,169,110,.65);}
+  .links b{color:var(--sand-light);font-weight:600;font-size:.86rem;}
+  .links span{color:rgba(255,255,255,.5);font-size:.72rem;font-weight:300;line-height:1.5;}
+  .note{max-width:620px;margin:3rem auto;text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8;}
+  .band{margin-top:1.8rem;}
+  .tile.soon{opacity:.42;cursor:default;pointer-events:none;}
+  .tile.soon:hover{border-color:rgba(255,255,255,.1);transform:none;}
+  .chip-soon{display:inline-block;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;padding:.15rem .45rem;border-radius:4px;background:rgba(201,169,110,.14);color:var(--sand);border:1px solid rgba(201,169,110,.3);vertical-align:.22em;margin-left:.45rem;}
+  /* Quick actions are verbs. They are deliberately not tiles - a tile is a
+     place you go, a quick action is a thing you do in the next ten seconds. */
+  .qa{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.6rem;}
+  .qa a{display:flex;align-items:center;gap:.55rem;padding:.85rem 1rem;border-radius:9px;text-decoration:none;
+        background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.32);color:var(--sand-light);
+        font-size:.84rem;font-weight:600;transition:border-color .15s,background .15s;}
+  .qa a:hover{border-color:rgba(201,169,110,.7);background:rgba(201,169,110,.16);}
+  .qa a .plus{font-size:1.1rem;line-height:1;color:var(--sand);font-weight:400;}
+  .qa a.soon{opacity:.4;pointer-events:none;}
+  /* The clinical band. Quieter on purpose: it is not part of the operations
+     lane, and it is the only place on this page where a client's own record
+     is one click away. Lavender instead of gold so the eye can tell at a
+     glance which side of the wall it is looking at. */
+  .walled{border-left:2px solid rgba(201,182,240,.35);padding-left:1.1rem;}
+  .walled .sec{color:var(--lav);}
+  .walled .tile h3{color:var(--lav);}
+  .walled .tile{background:rgba(201,182,240,.045);border-color:rgba(201,182,240,.16);}
+  .walled .tile:hover{border-color:rgba(201,182,240,.5);}
+  .wallnote{font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.6;margin:-.4rem 0 .9rem;max-width:60ch;}
+  .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <div>
+    <h1>Mission <em>Control</em></h1>
+    <div class="tag">The Next Right Thing in Recovery</div>
+  </div>
+  <div class="viewer" id="viewer"></div>
+</div></div>
+
+<div class="wrap">
+  <div id="alertwrap" style="display:none">
+    <div class="sec">Needs Attention Today</div>
+    <div class="alerts" id="alerts"></div>
+  </div>
+
+  <div id="capwrap" style="display:none">
+    <div class="sec">Beds &amp; Where People Come From</div>
+    <div class="tiles" style="margin-bottom:.5rem">
+      <div class="tile" style="cursor:default">
+        <h3>Beds vs. Pipeline</h3>
+        <p id="capLine">&nbsp;</p>
+        <div class="nums">
+          <div class="num flag"><b id="capOpen">–</b><span>Open Beds</span></div>
+          <div class="num"><b id="capPipeline">–</b><span>In Pipeline</span></div>
+          <div class="num"><b id="capReady">–</b><span>Ready Now</span></div>
+        </div>
+      </div>
+      <div class="tile" style="cursor:default">
+        <h3>Where Intakes Come From</h3>
+        <p>Every request on file, by how they reached us. Not creative direction &mdash; just which doors are actually being used, as a starting point for that conversation.</p>
+        <div id="sourceBreak" style="font-size:.8rem;line-height:1.75;color:rgba(255,255,255,.8)"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="band" data-band>
+  <div class="sec">Systems</div>
+  <div class="tiles" id="tiles">
+
+    <a class="tile" href="/intake-queue" data-scope="client" data-needs="intake-queue">
+      <h3>Pre-Intake Queue</h3>
+      <p>Everyone who reached out for help &mdash; triaged, tracked from first contact through intake.</p>
+      <div class="nums">
+        <div class="num"><b id="iNew">&ndash;</b><span>New</span></div>
+        <div class="num flag"><b id="iUrgent">&ndash;</b><span>Reach Out 24h</span></div>
+        <div class="num"><b id="iOpen">&ndash;</b><span>Open</span></div>
+        <div class="num"><b id="iDone">&ndash;</b><span>Intaked</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/case-management#funding" data-scope="client" data-needs="case-management">
+      <h3>Funding Navigator</h3>
+      <p>Every scholarship funder with its real rules and contacts, and every application with the date its coverage runs out.</p>
+      <div class="nums">
+        <div class="num"><b id="fApproved">&ndash;</b><span>Approved</span></div>
+        <div class="num"><b id="fPending">&ndash;</b><span>Awaiting Decision</span></div>
+        <div class="num flag"><b id="fExpiring">&ndash;</b><span>Coverage Ends 30d</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/in-kind-report" data-scope="donor" data-needs="in-kind-report">
+      <h3>Quartermaster</h3>
+      <p>Goods, services and donated experiences &mdash; issued codes, receipts, and grant-ready monthly totals. Needs, sourcing and inventory land here next. <span class="pill">Nonprofit</span></p>
+      <div class="nums">
+        <div class="num"><b id="kTotal">&ndash;</b><span>Issued</span></div>
+        <div class="num"><b id="kRedeemed">&ndash;</b><span>Receipted</span></div>
+        <div class="num"><b id="kValue">&ndash;</b><span>Declared Value</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/donations-report" data-scope="donor" data-needs="donations-report">
+      <h3>Funding Command</h3>
+      <p>Every Square gift, monthly totals, donor emails for stewardship. Cash and grants live here; goods live in Quartermaster. <span class="pill">Nonprofit</span></p>
+      <div class="nums"><div class="num"><b>Square</b><span>Live Feed</span></div></div>
+    </a>
+
+    <a class="tile" href="/rounds" data-scope="client" data-needs="housing">
+      <h3>Rounds <span style="font-size:.6rem;letter-spacing:.14em;color:#c9a96e;vertical-align:middle;border:1px solid rgba(201,169,110,.5);border-radius:50px;padding:.15rem .5rem;margin-left:.4rem">PHONE</span></h3>
+      <p>Walk the houses with one thumb. Every resident, one tap each &mdash; talked to, meeting, UA, warning, payment. Built for a hallway, not a desk.</p>
+      <div class="nums">
+        <div class="num"><b id="rdLeft">&ndash;</b><span>Left To See</span></div>
+        <div class="num flag"><b id="rdQuiet">&ndash;</b><span>Quiet 14d+</span></div>
+        <div class="num flag"><b id="rdNotice">&ndash;</b><span>On Notice</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/housing" data-scope="client" data-needs="housing">
+      <h3>Housing Command</h3>
+      <p>Six houses, every bed &mdash; occupancy, balances, funding cliffs, and each resident's success record.</p>
+      <div class="nums">
+        <div class="num"><b id="hOcc">&ndash;</b><span>Occupancy</span></div>
+        <div class="num flag"><b id="hOpen">&ndash;</b><span>Open Beds</span></div>
+        <div class="num flag"><b id="hOwed">&ndash;</b><span>Outstanding</span></div>
+      </div>
+    </a>
+
+    <div class="tile soon" data-scope="client">
+      <h3>Launchpad <span class="chip-soon">Not built yet</span></h3>
+      <p>Work readiness, barriers, employer leads, first day, and whether they were still there at thirty days. The crew signups and employment fields already exist &mdash; this is the screen over them.</p>
+      <div class="nums"><div class="num"><b>&ndash;</b><span>Waiting On A Shift</span></div></div>
+    </div>
+
+    <a class="tile" href="/gala-tracker" data-scope="donor" data-needs="gala-tracker">
+      <h3>Masquerade &middot; Nov 13</h3>
+      <p>Flannel to Formal fundraiser. Guests, sponsors, in-kind, the free drawing &mdash; and every sponsor promise tracked until it is kept.</p>
+      <div class="nums">
+        <div class="num"><b id="gGuests">&ndash;</b><span>Guests</span></div>
+        <div class="num"><b id="gSponsors">&ndash;</b><span>Sponsors</span></div>
+        <div class="num flag"><b id="gTodo">&ndash;</b><span>To-Do</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/patrol/run?preview=1" target="_blank">
+      <h3>Patrol Agent</h3>
+      <p>Preview today's briefs, or let it email them automatically each morning to whoever owns the work.</p>
+      <div class="nums"><div class="num"><b>Preview</b><span>Today's Briefs</span></div></div>
+    </a>
+
+  </div>
+  </div>
+
+  <div class="band" data-band>
+  <div class="sec">Quick Actions</div>
+  <div class="qa" id="qa">
+    <a href="/intake-queue" data-scope="client" data-needs="intake-queue"><span class="plus">+</span>New Intake Inquiry</a>
+    <a href="/admin-issue" data-scope="donor" data-needs="in-kind-report"><span class="plus">+</span>Log Contribution</a>
+    <a class="soon" href="#"><span class="plus">+</span>Submit Resource Need</a>
+    <a href="/rounds" data-scope="client" data-needs="housing"><span class="plus">&rarr;</span>Run Rounds</a>
+    <a class="soon" href="#"><span class="plus">+</span>Add Event</a>
+    <a href="/case-management#apps" data-scope="client" data-needs="case-management"><span class="plus">+</span>Add Funding Application</a>
+  </div>
+  </div>
+
+  <div class="band walled" data-band>
+  <div class="sec">Clinical &amp; Compliance</div>
+  <p class="wallnote">Behind the wall on purpose. Client records and incident narratives are not part of the operations lane above, and nothing here feeds it &mdash; the modules up top read dates and statuses, never the story.</p>
+  <div class="tiles">
+
+    <a class="tile" href="/case-management" data-scope="client" data-needs="case-management">
+      <h3>Case Management</h3>
+      <p>Every client, every contact, every goal, every meeting with a real date on it. Rent and balances are not loaded here &mdash; on purpose.</p>
+      <div class="nums">
+        <div class="num"><b id="cmActive">&ndash;</b><span>Active Clients</span></div>
+        <div class="num flag"><b id="cmStale">&ndash;</b><span>Not Talked To 7d</span></div>
+        <div class="num flag"><b id="cmDue">&ndash;</b><span>Follow-Ups Overdue</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/incident-log" data-scope="client" data-needs="incident">
+      <h3>Incident Log</h3>
+      <p>Sober living and treatment center. Dated to when it happened, escalatable up the chain, licensing-ready.</p>
+      <div class="nums">
+        <div class="num"><b id="nOpen">&ndash;</b><span>Open</span></div>
+        <div class="num flag"><b id="nCrit">&ndash;</b><span>Critical</span></div>
+        <div class="num flag"><b id="nVoice">&ndash;</b><span>Speak Up New</span></div>
+      </div>
+    </a>
+
+    <a class="tile" href="/incident-report" data-scope="client" data-needs="incident">
+      <h3>File an Incident</h3>
+      <p>Two minutes, on a phone, standing in the house. Facts while they are fresh.</p>
+      <div class="nums"><div class="num"><b>New</b><span>Report</span></div></div>
+    </a>
+
+  </div>
+  </div>
+
+  <div class="band" data-band>
+  <div class="sec">Pages You Can Send Anyone</div>
+  <div class="links">
+    <a href="/get-help" target="_blank"><b>Get Help</b><span>Six honest doors in &mdash; each one states the real cost. Public.</span></a>
+    <a href="/payment-options" target="_blank"><b>Payment Options</b><span>For any resident who is behind. Text it or hand it to them. Public.</span></a>
+    <a href="/speak-up" target="_blank"><b>Speak Up Line</b><span>Anonymous concern line for clients, residents and families. No login, no IP stored.</span></a>
+    <a href="/fellowship-hall-meetings" target="_blank"><b>Fellowship Hall Meetings</b><span>The meeting schedule. Public.</span></a>
+    <a href="/in-kind" target="_blank"><b>Give Something</b><span>Donate goods or services. Becomes a Quartermaster record and a donor receipt.</span></a>
+    <a href="/masquerade" target="_blank"><b>Current Event</b><span>Flannel to Formal Masquerade, Fri Nov 13 &mdash; tickets, sponsors, in-kind, free drawing. Public.</span></a>
+    <a href="/" target="_blank"><b>Main Site</b><span>nextrighthing.com &mdash; the front door.</span></a>
+  </div>
+  </div>
+
+  <div class="note" id="note" style="display:none">Loading…</div>
+
+  <div class="foot">
+    <b>Two entities, one command center.</b> Treatment-center operations (intake, housing, residents) and nonprofit operations (donations, scholarships, events) are tracked separately by design — The Next Right Thing in Recovery and The Right Thing in Recovery are distinct organizations and their records never blend.<br>
+    <em>"I made a difference to that one."</em>
+  </div>
+</div>
+
+<script>
+
+/* No dead ends. If you are not signed in, you get a door - not an error. */
+function showWelcome(title, blurb, status){
+  var path = location.pathname.replace(/\/$/,'') || '/mission-control';
+  var forbidden = (status === 403);
+  var el = document.getElementById('note');
+  if(!el) return;
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div style="max-width:520px;margin:3rem auto;text-align:center">'
+    + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.9rem;color:#e8d5b0;font-weight:300;margin-bottom:.6rem">'
+    + (forbidden ? 'This one is not yours' : 'Welcome to ' + title)
+    + '</div>'
+    + '<p style="color:rgba(255,255,255,.72);font-weight:300;line-height:1.75;font-size:.95rem;margin-bottom:1.5rem">'
+    + (forbidden
+        ? 'You are signed in, but your account is not set up for this system. That is on purpose &mdash; each person sees only what they need. Text Gabe and it is a two-minute fix.'
+        : blurb)
+    + '</p>'
+    + (forbidden ? '' :
+        '<a href="/signin?next=' + encodeURIComponent(path) + '" style="display:inline-block;background:linear-gradient(145deg,#e8d5b0,#c9a96e);color:#1a2744;font-weight:700;padding:.9rem 2rem;border-radius:7px;text-decoration:none;font-size:.95rem">Sign in with your work email</a>'
+      + '<div style="font-size:.8rem;color:rgba(255,255,255,.45);margin-top:1.3rem;line-height:1.8">'
+      + 'No password. You will get a 6-digit code by email &mdash; type it in and you are back here.<br>'
+      + 'Use your <b style="color:rgba(255,255,255,.7)">@nextrighthing.com</b> address.'
+      + '</div>')
+    + '<div style="margin-top:2rem"><a href="/mission-control" style="color:#c9a96e;font-size:.8rem;text-decoration:none">&larr; Mission Control</a></div>'
+    + '</div>';
+}
+function esc(t){const d=document.createElement('div');d.textContent=(t==null?'':t);return d.innerHTML;}
+function money(v){return '$'+Number(v||0).toLocaleString('en-US');}
+(async function(){
+  const note=document.getElementById('note');
+  try{
+    const res=await fetch('/mission-control/summary');
+    const d=await res.json();
+    if(res.status===401||res.status===403){showWelcome('Mission Control', 'One address for everything you own. Sign in once and it remembers you for about a week.', res.status); return;}
+    if(d.error){note.style.display='block';note.textContent='Error: '+d.error;return;}
+    const EXTRA=[];
+    const scopes=d.scopes||[], canClient=scopes.indexOf('client')>-1, canDonor=scopes.indexOf('donor')>-1;
+    document.getElementById('viewer').innerHTML='Signed in as '+esc(d.viewer||'')+'<br><span style="opacity:.7">'+(canClient&&canDonor?'Full access':(canClient?'Treatment-center access':'Nonprofit access'))+'</span>';
+    // Hide systems this person doesn't own. Two entities, separate records.
+    // Scope now rides on the element as data-scope instead of a list of hrefs
+    // kept in step by hand, so a card, a quick action and a walled tile are all
+    // governed by the same one line and a moved link cannot fall out of scope.
+    document.querySelectorAll('[data-scope]').forEach(function(el){
+      const sc=el.getAttribute('data-scope');
+      if(sc==='client' && !canClient) el.remove();
+      if(sc==='donor'  && !canDonor)  el.remove();
+    });
+    // Entity scope says which side of the house. Roster membership says which
+    // door actually opens. Both have to pass, or the hub hands somebody a tile
+    // that answers "this one is not yours" - which is a dead end, and this
+    // system does not do dead ends.
+    const mods=d.modules||null;
+    if(mods) document.querySelectorAll('[data-needs]').forEach(function(el){
+      if(mods.indexOf(el.getAttribute('data-needs'))===-1) el.remove();
+    });
+    // A band that lost everything it held should not leave its heading behind.
+    document.querySelectorAll('[data-band]').forEach(function(b){
+      if(!b.querySelector('.tiles > *, .qa > *, .links > *')) b.style.display='none';
+    });
+    const I=d.intake||{},K=d.inkind||{},F=d.funding||{};
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    set('iNew',I.new??0); set('iUrgent',I.urgent??0); set('iOpen',I.open??0); set('iDone',I.intaked??0);
+    set('kTotal',K.total??0); set('kRedeemed',K.redeemed??0); set('kValue',money(K.value));
+    set('fApproved',F.approved??0); set('fPending',F.pending??0); set('fExpiring',F.expiringSoon??0);
+    const H=d.housing||{};
+    set('hOcc',H.occupancy!=null?H.occupancy+'%':'–');
+    const RD=d.rounds||{};
+    set('rdLeft',RD.left!=null?RD.left:'–');
+    set('rdQuiet',RD.quiet!=null?RD.quiet:'–');
+    set('rdNotice',RD.notice!=null?RD.notice:'–');
+    // Events tile. One live event at a time, named in tenant-config, so the hub
+    // is about this weekend rather than about whatever got built last.
+    const EV=d.event;
+    if(EV){
+      set('evName', EV.name);
+      const el=document.getElementById('evTile'); if(el&&EV.url) el.setAttribute('href',EV.url);
+      const when = EV.live ? 'Happening now'
+        : (EV.daysToStart!=null && EV.daysToStart>0 ? 'Opens in '+EV.daysToStart+' day'+(EV.daysToStart===1?'':'s')
+        : (EV.daysToDrawing!=null && EV.daysToDrawing>=0 ? 'Sale over — drawing pending' : 'Wrapped'));
+      set('evBlurb', when+'. '+(EV.blurb||''));
+      set('evEntries', EV.entries!=null?EV.entries:'–');
+      set('evToday', EV.today!=null?EV.today:'–');
+      set('evReferred', EV.referred!=null?EV.referred:'–');
+      // Who is actually bringing people. One line - this is a hub tile, not a report.
+      const tr=document.getElementById('evRefs');
+      if(tr){
+        const top=(EV.topReferrers||[]).slice(0,3);
+        tr.innerHTML = top.length
+          ? 'Bringing people: '+top.map(r=>esc(r.name)+' ('+r.count+')').join(' · ')
+          : '';
+        tr.style.display = top.length ? 'block' : 'none';
+      }
+      if(EV.live){ set('evWhen', EV.daysToDrawing!=null?EV.daysToDrawing:'–'); set('evWhenLabel','Days To Drawing'); }
+      else if(EV.daysToStart!=null && EV.daysToStart>0){ set('evWhen', EV.daysToStart); set('evWhenLabel','Days Until It Opens'); }
+      else { set('evWhen', EV.daysToDrawing!=null&&EV.daysToDrawing>=0?EV.daysToDrawing:'–'); set('evWhenLabel','Days To Drawing'); }
+      // Nobody has entered yet is a fact worth surfacing, not a blank.
+      if(EV.entries===0){
+        const b=document.getElementById('evBlurb');
+        if(b) b.innerHTML=esc(when)+'. <b style="color:#f0d9a0">No entries yet</b> — the drawing form is live at '+esc(EV.url)+'.';
+      }
+    }
+
+    // Masquerade tile - live counts from the tracker's own endpoint.
+    if(canDonor && document.getElementById('gGuests')){
+      fetch('/gala-tracker/data').then(r=>r.ok?r.json():null).then(g=>{
+        if(!g) return;
+        const live=(g.rsvps||[]).filter(r=>r.pay_status!=='cancelled');
+        const sp=(g.sponsors||[]).filter(s=>s.status!=='declined');
+        set('gGuests', live.reduce((a,r)=>a+(r.individual_qty||0)+(r.couple_qty||0)*2,0));
+        set('gSponsors', sp.length);
+        set('gTodo', sp.filter(s=>!s.show_publicly||s.status!=='paid').length+(g.inkind||[]).filter(i=>i.status==='pledged'||i.status==='received').length);
+      }).catch(()=>{});
+    }
+
+    const CM=d.caseload||{};
+    set('cmActive',CM.active!=null?CM.active:'–');
+    set('cmStale',CM.stale!=null?CM.stale:'–');
+    set('cmDue',CM.overdue!=null?CM.overdue:'–');
+    set('hOpen',H.openBeds??'–');
+    set('hOwed',H.outstanding!=null?money(H.outstanding):'–');
+
+    if(canClient && H.openBeds!=null){
+      const openBeds=H.openBeds, pipeline=I.open??0, ready=I.ready??0;
+      set('capOpen',openBeds); set('capPipeline',pipeline); set('capReady',ready);
+      document.getElementById('capLine').textContent = openBeds
+        ? (ready>=openBeds
+            ? ready+' ready to move in now covers all '+openBeds+' open bed'+(openBeds===1?'':'s')+'.'
+            : 'Need '+(openBeds-ready)+' more ready-to-admit to fill '+openBeds+' open bed'+(openBeds===1?'':'s')+' — '+pipeline+' total in the pipeline.')
+        : 'No open beds right now.';
+      const LABELS={'unspecified':'Not recorded','get-help-page':'Get Help page (no door picked)','phone':'Phone','walk-in':'Walk-in',
+        'professional':'Professional referral','court':'Court / probation','hospital':'Hospital / detox discharge',
+        'alumni':'Alumni / word of mouth','other':'Other','main-site-contact-form':'Main site contact form'};
+      const label=k=>{
+        if(LABELS[k])return LABELS[k];
+        if(k.indexOf('utm:')===0)return 'Tagged link — '+k.slice(4);
+        if(k.indexOf('get-help:')===0)return 'Get Help — '+k.slice(9);
+        return k;
+      };
+      const src=I.bySource||{};
+      const rows=Object.keys(src).sort((a,b)=>src[b]-src[a]);
+      const total=rows.reduce((t,k)=>t+src[k],0)||1;
+      document.getElementById('sourceBreak').innerHTML = rows.length ? rows.map(k=>{
+        const pct=Math.round(src[k]/total*100);
+        return '<div style="display:flex;justify-content:space-between;gap:.6rem"><span>'+esc(label(k))+'</span><span style="white-space:nowrap;opacity:.7">'+src[k]+' &middot; '+pct+'%</span></div>';
+      }).join('') : '<span style="opacity:.6">No intake requests yet.</span>';
+      document.getElementById('capwrap').style.display='block';
+    }
+
+    if(canClient){
+      try{
+        const ir=await fetch('/incident/list');
+        if(ir.ok){
+          const idata=await ir.json();
+          const inc=idata.incidents||[], con=idata.concerns||[];
+          set('nOpen', inc.filter(x=>(x.status||'open')!=='closed').length);
+          set('nCrit', inc.filter(x=>x.critical_incident&&!x.ol_reported).length);
+          set('nVoice', con.filter(x=>(x.status||'new')==='new').length);
+          const openCrit=inc.filter(x=>x.critical_incident&&!x.ol_reported).length;
+          const newVoice=con.filter(x=>(x.status||'new')==='new').length;
+          if(openCrit) EXTRA.push({c:'hot',t:openCrit+' critical incident'+(openCrit>1?'s':'')+' not yet reported to the Office of Licensing',l:'/incident-log',b:'Open log'});
+          if(newVoice) EXTRA.push({c:'warm',t:newVoice+' new Speak Up submission'+(newVoice>1?'s':'')+' waiting to be read',l:'/incident-log',b:'Read them'});
+        }
+      }catch(_){}
+    }
+
+    const A=[].concat(EXTRA);
+    if(I.urgent)A.push({c:'hot',t:I.urgent+' intake request'+(I.urgent>1?'s':'')+' flagged for contact within 24 hours',l:'/intake-queue',b:'Open queue'});
+    if(F.expiringSoon){
+      const names=(F.expiringList||[]).map(x=>x.name).filter(Boolean).slice(0,3).join(', ');
+      A.push({c:'warm',t:F.expiringSoon+' funding coverage'+(F.expiringSoon>1?'s':'')+' ending within 30 days'+(names?' — '+names:''),l:'/case-management#apps',b:'Review funding'});
+    }
+    if(EV && EV.daysToStart!=null && EV.daysToStart>=0 && EV.daysToStart<=10 && EV.entries<25){
+      A.push({c:'warm',t:EV.name+' opens in '+EV.daysToStart+' day'+(EV.daysToStart===1?'':'s')+' with only '+EV.entries+' drawing entr'+(EV.entries===1?'y':'ies')+' so far',l:EV.url,b:'Open the page'});
+    }
+    if(K.pending)A.push({c:'warm',t:K.pending+' in-kind code'+(K.pending>1?'s':'')+' issued but no receipt generated yet',l:'/in-kind-report',b:'View donations'});
+    if(I.new)A.push({c:'calm',t:I.new+' new intake request'+(I.new>1?'s':'')+' waiting for first contact',l:'/intake-queue',b:'Open queue'});
+    if(!A.length)A.push({c:'calm',t:'Nothing urgent right now — queues are clear.',l:'/intake-queue',b:'Open queue'});
+    document.getElementById('alerts').innerHTML=A.map(a=>'<div class="alert '+a.c+'"><span>'+esc(a.t)+'</span><a href="'+a.l+'">'+esc(a.b)+' &rarr;</a></div>').join('');
+    document.getElementById('alertwrap').style.display='block';
+  }catch(_){note.style.display='block';note.textContent='Could not load the summary. Check your connection and reload.';}
+})();
+</script>
+<script src="/assistant-widget.js" data-module="mission-control" defer></script>
+</body>
+</html>

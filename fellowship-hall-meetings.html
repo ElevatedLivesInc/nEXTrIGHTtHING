@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fellowship Hall — Meeting Schedule &amp; Recovery Resources | Salt Lake City</title>
+<meta name="description" content="Summer 2026 meeting schedule, hours, and recovery hotlines for Fellowship Hall, a twelve-step meeting place and café in Salt Lake City. A community resource shared by The Next Right Thing in Recovery." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --midnight:#12203B;
+    --ink:#1B2A4A;
+    --ink-soft:#33436a;
+    --gold:#C79A3B;
+    --gold-bright:#E0B450;
+    --lilac:#D9CFE8;
+    --lavender:#EDE9F4;
+    --paper:#FAF9FC;
+    --card:#FFFFFF;
+    --line:#E3DEEE;
+    --muted:#5c6480;
+
+    /* program colors */
+    --p-aa:#24406e;
+    --p-na:#1f7a6d;
+    --p-ca:#6b4aa0;
+    --p-aaa:#b5642a;
+    --p-an:#a84673;
+    --p-fa:#8a6d3b;
+    --p-fh:#7a6aa8;
+    --p-jc:#9a5b3b;
+    --p-sr:#4a5a6a;
+    --p-fr:#9c7b1e;
+    --p-ma:#6f7a3a;
+    --p-special:#b98a17;
+
+    --maxw:960px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:
+      radial-gradient(1200px 400px at 78% -10%, rgba(224,180,80,.16), transparent 60%),
+      linear-gradient(180deg,var(--midnight),var(--ink) 70%);
+    color:#eef1f8;
+    border-bottom:4px solid var(--gold);
+    padding:40px 0 30px;
+    position:relative;
+  }
+  .hero::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:6px;
+    background:linear-gradient(90deg,var(--gold-bright),var(--gold),var(--gold-bright));
+  }
+  .eyebrow{
+    font-family:"DM Mono",monospace;
+    font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--gold-bright);margin:0 0 14px;
+  }
+  .hero h1{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:600;
+    font-size:clamp(2.4rem,7vw,4rem);
+    line-height:1.02;
+    margin:0;
+    letter-spacing:-.01em;
+  }
+  .hero .est{
+    font-family:"DM Mono",monospace;
+    font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#c9d2e6;margin:10px 0 0;
+  }
+  .hero .tag{
+    font-family:"Fraunces",serif;font-style:italic;font-weight:400;
+    font-size:clamp(1.05rem,2.6vw,1.35rem);
+    color:#e9edf7;margin:16px 0 0;max-width:34ch;
+  }
+  .hero .addr{
+    margin:20px 0 0;font-size:.95rem;color:#cfd7e8;
+  }
+  .hero .addr a{color:var(--gold-bright);text-decoration:none;}
+
+  /* ---------- NOW / NEXT board (signature) ---------- */
+  .board{
+    margin:26px 0 0;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(224,180,80,.35);
+    border-radius:12px;
+    padding:16px 18px;
+    display:flex;flex-wrap:wrap;gap:8px 26px;align-items:center;
+  }
+  .board .clock{
+    font-family:"DM Mono",monospace;font-size:.78rem;letter-spacing:.08em;
+    text-transform:uppercase;color:#aeb9d4;
+  }
+  .board .clock b{color:var(--gold-bright);font-weight:500;}
+  .board .status{font-size:1rem;color:#eef1f8;flex:1 1 260px;min-width:0;}
+  .board .status .dot{
+    display:inline-block;width:9px;height:9px;border-radius:50%;
+    background:#57c98a;margin-right:8px;vertical-align:middle;
+    box-shadow:0 0 0 4px rgba(87,201,138,.18);
+  }
+  .board .status .dot.off{background:#8792ad;box-shadow:0 0 0 4px rgba(135,146,173,.14);}
+  .board .status strong{font-weight:600;}
+  .board .status .mono{font-family:"DM Mono",monospace;font-size:.9rem;color:var(--gold-bright);}
+
+  /* ---------- INFO CARDS ---------- */
+  .info{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+    margin:-26px 0 0;position:relative;z-index:2;
+  }
+  .info .card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px 16px 14px;box-shadow:0 8px 24px rgba(18,32,59,.06);
+  }
+  .card h3{
+    font-family:"DM Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 8px;
+  }
+  .card p{margin:0;font-size:.92rem;color:var(--ink-soft);}
+  .card a{color:var(--p-aa);text-decoration:none;font-weight:600;}
+  .card a:hover{text-decoration:underline;}
+
+  section{padding:34px 0;}
+  .section-head{margin:0 0 6px;}
+  .section-head .kicker{
+    font-family:"DM Mono",monospace;font-size:.7rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 6px;
+  }
+  .section-head h2{
+    font-family:"Fraunces",serif;font-weight:600;
+    font-size:clamp(1.6rem,4vw,2.2rem);margin:0;letter-spacing:-.01em;color:var(--ink);
+  }
+  .section-head p.sub{margin:8px 0 0;color:var(--muted);font-size:.95rem;max-width:60ch;}
+
+  /* ---------- CONTROLS ---------- */
+  .controls{margin:22px 0 8px;}
+  .control-label{
+    font-family:"DM Mono",monospace;font-size:.68rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 8px;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;}
+  .chip{
+    font-family:"Public Sans",sans-serif;font-size:.82rem;font-weight:600;
+    border:1px solid var(--lilac);background:#fff;color:var(--ink-soft);
+    padding:7px 14px;border-radius:999px;cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .chip:hover{border-color:var(--gold);}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .days{display:flex;flex-wrap:wrap;gap:6px;}
+  .day-btn{
+    font-family:"DM Mono",monospace;font-size:.8rem;font-weight:500;
+    border:1px solid var(--line);background:#fff;color:var(--ink-soft);
+    padding:9px 14px;border-radius:8px;cursor:pointer;position:relative;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .day-btn:hover{border-color:var(--gold);}
+  .day-btn[aria-pressed="true"]{background:var(--gold);color:#2a2306;border-color:var(--gold);font-weight:500;}
+  .day-btn .today-dot{
+    position:absolute;top:5px;right:6px;width:6px;height:6px;border-radius:50%;
+    background:#57c98a;
+  }
+  .day-btn[aria-pressed="true"] .today-dot{background:#2a2306;}
+
+  /* ---------- SCHEDULE BOARD ---------- */
+  .board-title{
+    font-family:"Fraunces",serif;font-weight:600;font-size:1.45rem;
+    margin:24px 0 4px;color:var(--ink);display:flex;align-items:baseline;gap:12px;
+  }
+  .board-title .count{
+    font-family:"DM Mono",monospace;font-size:.72rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);font-weight:400;
+  }
+  .schedule{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:0 8px 24px rgba(18,32,59,.05);margin-top:12px;
+  }
+  .row{
+    display:grid;
+    grid-template-columns:132px 54px 1fr;
+    gap:14px;align-items:center;
+    padding:13px 18px;
+    border-bottom:1px solid var(--line);
+  }
+  .row:last-child{border-bottom:none;}
+  .row.now{background:linear-gradient(90deg,rgba(224,180,80,.14),rgba(224,180,80,.03));}
+  .row .time{
+    font-family:"DM Mono",monospace;font-size:.86rem;color:var(--ink);
+    white-space:nowrap;letter-spacing:-.01em;
+  }
+  .row .now-flag{
+    display:block;font-family:"DM Mono",monospace;font-size:.6rem;
+    letter-spacing:.14em;text-transform:uppercase;color:#2f9d63;margin-top:2px;
+  }
+  .prog{
+    font-family:"DM Mono",monospace;font-weight:500;font-size:.72rem;
+    color:#fff;text-align:center;padding:4px 0;border-radius:6px;letter-spacing:.03em;
+  }
+  .row .name{font-size:.98rem;font-weight:600;color:var(--ink);}
+  .row .note{
+    display:inline-block;margin-left:8px;font-size:.72rem;font-weight:600;
+    font-family:"DM Mono",monospace;letter-spacing:.03em;
+    color:var(--ink-soft);background:var(--lavender);border:1px solid var(--lilac);
+    padding:2px 8px;border-radius:999px;vertical-align:middle;
+  }
+  .empty{padding:26px 18px;color:var(--muted);font-size:.95rem;text-align:center;}
+
+  /* program tag colors */
+  .prog.AA{background:var(--p-aa);} .prog.NA{background:var(--p-na);}
+  .prog.CA{background:var(--p-ca);} .prog.AAA{background:var(--p-aaa);}
+  .prog.AN{background:var(--p-an);} .prog.FA{background:var(--p-fa);}
+  .prog.FH{background:var(--p-fh);} .prog.JC{background:var(--p-jc);}
+  .prog.SR{background:var(--p-sr);} .prog.FR{background:var(--p-fr);}
+  .prog.MA{background:var(--p-ma);} .prog.SPECIAL{background:var(--p-special);}
+
+  /* ---------- LEGEND ---------- */
+  .legend{
+    margin:18px 0 0;background:var(--lavender);border:1px solid var(--lilac);
+    border-radius:12px;padding:16px 18px;
+  }
+  .legend h4{
+    font-family:"DM Mono",monospace;font-size:.68rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-soft);margin:0 0 12px;
+  }
+  .legend-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px 18px;
+  }
+  .legend-grid span{font-size:.85rem;color:var(--ink-soft);display:flex;align-items:center;gap:9px;}
+  .legend-grid .k{
+    font-family:"DM Mono",monospace;font-weight:500;font-size:.7rem;color:#fff;
+    padding:3px 7px;border-radius:5px;min-width:38px;text-align:center;
+  }
+
+  /* ---------- EVENTS + RESOURCES columns ---------- */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:34px;}
+  .stack .item{
+    display:flex;justify-content:space-between;gap:16px;
+    padding:12px 0;border-bottom:1px solid var(--line);
+  }
+  .stack .item:last-child{border-bottom:none;}
+  .stack .item .lbl{font-weight:600;color:var(--ink);font-size:.96rem;}
+  .stack .item .lbl small{display:block;font-weight:400;color:var(--muted);font-size:.82rem;margin-top:2px;}
+  .stack .item .when{
+    font-family:"DM Mono",monospace;font-size:.82rem;color:var(--ink-soft);
+    text-align:right;white-space:nowrap;flex-shrink:0;
+  }
+
+  .resources{
+    background:var(--ink);color:#e9edf7;border-radius:16px;padding:26px 24px;
+  }
+  .resources .section-head h2{color:#fff;}
+  .resources .section-head .kicker{color:var(--gold-bright);}
+  .resources .section-head p.sub{color:#b9c2da;}
+  .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin-top:20px;}
+  .res{
+    display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+    padding:11px 0;border-bottom:1px solid rgba(255,255,255,.1);
+  }
+  .res .who{font-size:.95rem;color:#eef1f8;}
+  .res a,.res .val{
+    font-family:"DM Mono",monospace;font-size:.9rem;color:var(--gold-bright);
+    text-decoration:none;white-space:nowrap;font-weight:500;
+  }
+  .res a:hover{text-decoration:underline;}
+
+  /* ---------- MISSION ---------- */
+  .mission{background:var(--lavender);border-top:1px solid var(--lilac);}
+  .mission .quote{
+    font-family:"Fraunces",serif;font-weight:400;font-style:italic;
+    font-size:clamp(1.15rem,2.6vw,1.5rem);line-height:1.5;color:var(--ink);
+    max-width:52ch;margin:8px 0 0;
+  }
+  .notes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0 0;}
+  .note-card{
+    background:#fff;border:1px solid var(--lilac);border-radius:12px;padding:16px;
+    font-size:.9rem;color:var(--ink-soft);
+  }
+  .note-card b{color:var(--ink);}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--midnight);color:#c7d0e6;padding:34px 0;border-top:4px solid var(--gold);}
+  footer .brand{font-family:"Fraunces",serif;font-weight:600;font-size:1.3rem;color:#fff;}
+  footer .est{font-family:"DM Mono",monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-bright);margin:4px 0 0;}
+  footer a{color:var(--gold-bright);text-decoration:none;font-weight:600;}
+  footer .fine{font-size:.82rem;color:#94a0bd;margin:18px 0 0;line-height:1.6;max-width:70ch;}
+  footer .disclaimer{
+    font-style:italic;color:#aab4d0;font-size:.86rem;margin:14px 0 0;max-width:70ch;
+    border-left:2px solid var(--gold);padding-left:14px;
+  }
+  .credit{
+    margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);
+    font-size:.82rem;color:#94a0bd;
+  }
+  .credit b{color:#e9edf7;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:760px){
+    .info{grid-template-columns:1fr;margin-top:18px;}
+    .split{grid-template-columns:1fr;gap:26px;}
+    .res-grid{grid-template-columns:1fr;}
+    .notes{grid-template-columns:1fr;}
+    .row{grid-template-columns:96px 46px 1fr;gap:10px;padding:12px 14px;}
+    .row .time{font-size:.76rem;white-space:normal;}
+    .wrap{padding:0 16px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;}
+  }
+  :focus-visible{outline:3px solid var(--gold-bright);outline-offset:2px;border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Community Recovery Resource · Shared by NRT</p>
+    <h1>Fellowship Hall</h1>
+    <p class="est">Est. 1951 · Clean &amp; Sober · Salt Lake City, Utah</p>
+    <p class="tag">A twelve-step meeting place &amp; café — open, welcoming, and drug- and alcohol-free.</p>
+    <p class="addr">
+      2060 S Windsor St (840 East), Salt Lake City, UT 84105 &nbsp;·&nbsp;
+      <a href="tel:+18014854451">801-485-4451</a> &nbsp;·&nbsp;
+      <a href="https://fellowshiputah.com" target="_blank" rel="noopener">fellowshiputah.com</a>
+    </p>
+
+    <div class="board" aria-live="polite">
+      <span class="clock">Mountain Time · <b id="clock">—</b></span>
+      <span class="status" id="nownext"><span class="dot off"></span>Loading today’s meetings…</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== INFO CARDS ===================== -->
+<div class="wrap">
+  <div class="info">
+    <div class="card">
+      <h3>Location</h3>
+      <p>2060 S Windsor St (840 East)<br />Salt Lake City, UT 84105<br />Wheelchair accessible</p>
+    </div>
+    <div class="card">
+      <h3>Hours</h3>
+      <p>Mon–Fri&nbsp; 6 am – 8 pm<br />Saturday&nbsp; 8 am – midnight<br />Sunday&nbsp; 7 am – 8 pm<br /><em>Kitchen open all day</em></p>
+    </div>
+    <div class="card">
+      <h3>Contact</h3>
+      <p><a href="tel:+18014854451">801-485-4451</a><br /><a href="https://fellowshiputah.com" target="_blank" rel="noopener">fellowshiputah.com</a><br />Ask about new meeting time slots</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCHEDULE ===================== -->
+<section id="schedule">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker">Summer 2026 Meeting Schedule</p>
+      <h2>Find a meeting</h2>
+      <p class="sub">All meetings are <strong>open</strong> (visitors welcome) unless a note says otherwise. Pick a day to see the full list; filter by fellowship if you’re looking for something specific.</p>
+    </div>
+
+    <div class="controls">
+      <p class="control-label">Filter by fellowship</p>
+      <div class="chips" id="chips" role="group" aria-label="Filter meetings by fellowship"></div>
+      <p class="control-label">Choose a day</p>
+      <div class="days" id="days" role="group" aria-label="Choose a day of the week"></div>
+    </div>
+
+    <h3 class="board-title"><span id="dayName">Today</span><span class="count" id="dayCount"></span></h3>
+    <div class="schedule" id="scheduleList"></div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <h4>Meeting Key</h4>
+      <div class="legend-grid">
+        <span><em class="k prog AA">AA</em> Alcoholics Anonymous</span>
+        <span><em class="k prog NA">NA</em> Narcotics Anonymous</span>
+        <span><em class="k prog CA">CA</em> Cocaine Anonymous</span>
+        <span><em class="k prog AAA">AAA</em> All Addictions Anonymous</span>
+        <span><em class="k prog AN">AN</em> Al-Anon</span>
+        <span><em class="k prog MA">MA</em> Marijuana Anonymous</span>
+        <span><em class="k prog SR">SR</em> Sober Riders</span>
+        <span><em class="k prog FR">FR</em> Free Riders</span>
+        <span><em class="k prog FH">FH</em> Yoga / meditation</span>
+        <span><em class="k prog FA">FA</em> Fellowship (as listed)</span>
+        <span><em class="k prog JC">JC</em> Faith-based study</span>
+        <span><em class="k prog SPECIAL">★</em> Special event</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EVENTS + WATCH-FOR ===================== -->
+<section style="padding-top:8px;">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <div class="section-head">
+          <p class="kicker">Every Month</p>
+          <h2>Recurring events</h2>
+        </div>
+        <div class="stack">
+          <div class="item"><span class="lbl">Karaoke! <small>9 pm – 12 am</small></span><span class="when">1st Sat.</span></div>
+          <div class="item"><span class="lbl">Hall Board Meeting</span><span class="when">1st Sat.</span></div>
+          <div class="item"><span class="lbl">Hall Membership Meeting</span><span class="when">1st Sat. / quarter</span></div>
+          <div class="item"><span class="lbl">AA Dist. 2 DCM / GSR</span><span class="when">2nd Mon.</span></div>
+          <div class="item"><span class="lbl">5:30 Sobriety Hour Business Mtg <small>Non-smoking · 6:39 pm</small></span><span class="when">3rd Mon.</span></div>
+          <div class="item"><span class="lbl">Free Riders <small>Meeting 2:30 · Officers &amp; Biz 3:30</small></span><span class="when">1st Sun.</span></div>
+          <div class="item"><span class="lbl">Art &amp; Farmers’ Market</span><span class="when">Saturdays</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-head">
+          <p class="kicker">Mark Your Calendar</p>
+          <h2>Special dates</h2>
+        </div>
+        <div class="stack">
+          <div class="item"><span class="lbl">Summer Yard Sale</span><span class="when">June</span></div>
+          <div class="item"><span class="lbl">Thanksgiving Dinner</span><span class="when">Nov 27</span></div>
+          <div class="item"><span class="lbl">Christmas Dinner</span><span class="when">Dec 25</span></div>
+        </div>
+        <p class="sub" style="margin-top:16px;color:var(--muted);font-size:.9rem;">
+          Bands play, memorial and service meetings happen as needed. Watch the board at the Hall or
+          <a href="https://fellowshiputah.com" target="_blank" rel="noopener" style="color:var(--p-aa);font-weight:600;">fellowshiputah.com</a>
+          for what’s new.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOTLINES ===================== -->
+<section>
+  <div class="wrap">
+    <div class="resources">
+      <div class="section-head">
+        <p class="kicker">Numbers Good to Have</p>
+        <h2>Recovery hotlines &amp; help</h2>
+        <p class="sub">Tap any number to call. If you or someone you love is in crisis, reach out — help is available right now.</p>
+      </div>
+      <div class="res-grid">
+        <div class="res"><span class="who">AA Central Office — SLC</span><a href="tel:+18014847871">801-484-7871</a></div>
+        <div class="res"><span class="who">AA Hotline — SLC</span><a href="tel:+18012428754">801-242-8754</a></div>
+        <div class="res"><span class="who">Cocaine Anonymous</span><a href="tel:+18014937879">801-493-7879</a></div>
+        <div class="res"><span class="who">Narcotics Anonymous</span><a href="tel:+18012525326">801-252-5326</a></div>
+        <div class="res"><span class="who">Heroin Anonymous</span><a href="https://heroinanonymous.org" target="_blank" rel="noopener">heroinanonymous.org</a></div>
+        <div class="res"><span class="who">Al-Anon</span><a href="tel:+18884252666">888-425-2666</a></div>
+        <div class="res"><span class="who">Al-Anon — Murray Distribution Ctr.</span><a href="tel:+18012629587">801-262-9587</a></div>
+        <div class="res"><span class="who">Fellowship Hall</span><a href="tel:+18014854451">801-485-4451</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MISSION ===================== -->
+<section class="mission">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker">Mission</p>
+      <h2>Why the doors stay open</h2>
+    </div>
+    <p class="quote">“The Fellowship Foundation exists to provide a facility for mutually supportive association among its members — where better living, good citizenship, charity, justice, and brotherly love may be cultivated in a safe, alcohol- and drug-free environment.”</p>
+    <div class="notes">
+      <div class="note-card"><b>Open &amp; accessible.</b> All meetings are considered open (visitors welcome, non-specific) unless otherwise noted, and all meetings are wheelchair accessible.</div>
+      <div class="note-card"><b>Newcomers welcome.</b> Members keep the doors open so newcomers can come in and twelve-step meetings can be safely held.</div>
+      <div class="note-card"><b>A 501(c)(3) charity.</b> The Fellowship Foundation owns and operates the Hall as a nonprofit charitable organization.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <p class="brand">Fellowship Hall</p>
+    <p class="est">A Twelve-Step Meeting Place &amp; Café · Est. 1951</p>
+    <p class="fine">
+      2060 S Windsor St (840 East), Salt Lake City, UT 84105 &nbsp;·&nbsp;
+      <a href="tel:+18014854451">801-485-4451</a> &nbsp;·&nbsp;
+      <a href="https://fellowshiputah.com" target="_blank" rel="noopener">fellowshiputah.com</a>
+    </p>
+    <p class="disclaimer">Monthly events do change, bands play, memorial services may occur, and various service meetings may be held as needed. Please keep posted or inquire as to what might be going on — or needed.</p>
+    <p class="credit">Shared as a community resource by <b>The Next Right Thing in Recovery</b>. Fellowship Hall is an independent organization and is not affiliated with, operated by, or a service of NRT. Schedule reflects the Summer 2026 printed program — please confirm current times with the Hall before you go.</p>
+  </div>
+</footer>
+
+<script>
+/* ---------------- MEETING DATA (Summer 2026) ---------------- */
+/* t = clock label, s/e = minutes from midnight (for now/next), p = program code, n = name, note = optional tag */
+const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+const SCHEDULE = {
+  Sunday: [
+    {t:"8 – 9 am",       s:480, e:540,  p:"AA",  n:"Weekend Get AA Too"},
+    {t:"10 – 11 am",     s:600, e:660,  p:"NA",  n:"Donut Use Today"},
+    {t:"11:05 am – 12:05 pm", s:665, e:725, p:"CA", n:"CA Big-Book Study"},
+    {t:"12 – 1 pm",      s:720, e:780,  p:"AA",  n:"Old Fashioned AA", note:"Closed"},
+    {t:"5:30 – 6:30 pm", s:1050,e:1110, p:"AA",  n:"The 5:30 Sobriety Hour"},
+    {t:"6 – 7 pm",       s:1080,e:1140, p:"AA",  n:"7th Street Alumni"},
+    {t:"7 – 8 pm",       s:1140,e:1200, p:"FA",  n:"Blues No More"}
+  ],
+  Monday: [
+    {t:"6:30 – 7:30 am", s:390, e:450,  p:"AA",  n:"Sunrise"},
+    {t:"10 – 11 am",     s:600, e:660,  p:"AA",  n:"Starting the Day"},
+    {t:"10 – 11 am",     s:600, e:660,  p:"FH",  n:"Yoga Meditation"},
+    {t:"12 – 1 pm",      s:720, e:780,  p:"AA",  n:"Unity Lunch Bunch"},
+    {t:"2 – 3 pm",       s:840, e:900,  p:"AA",  n:"Out from Under"},
+    {t:"3 – 4 pm",       s:900, e:960,  p:"JC",  n:"Life Recovery Bible Study", note:"Women only"},
+    {t:"4 – 5 pm",       s:960, e:1020, p:"FH",  n:"Yoga 11th Step Meditation"},
+    {t:"5:30 – 6:30 pm", s:1050,e:1110, p:"AA",  n:"The 5:30 Sobriety Hour"},
+    {t:"5:30 – 6:30 pm", s:1050,e:1110, p:"AN",  n:"Al-Anon"},
+    {t:"7 – 8:30 pm",    s:1140,e:1230, p:"NA",  n:"W.T.S.O.D.M.F", note:"Book study"},
+    {t:"7 – 8 pm",       s:1140,e:1200, p:"SR",  n:"Black Rock Church"},
+    {t:"9:30 – 10:30 pm",s:1290,e:1350, p:"AA",  n:"THE Nightlight Group"}
+  ],
+  Tuesday: [
+    {t:"6:30 – 7:30 am", s:390, e:450,  p:"AA",  n:"Sunrise"},
+    {t:"12 – 1 pm",      s:720, e:780,  p:"AA",  n:"Unity Lunch Bunch"},
+    {t:"5:30 – 6:30 pm", s:1050,e:1110, p:"AA",  n:"The 5:30 Sobriety Hour"},
+    {t:"7 – 8 pm",       s:1140,e:1200, p:"AA",  n:"No One Left Behind"},
+    {t:"8:30 – 9:30 pm", s:1230,e:1290, p:"AA",  n:"974 Group"}
+  ],
+  Wednesday: [
+    {t:"6:30 – 7:30 am", s:390, e:450,  p:"AA",  n:"Sunrise"},
+    {t:"12 – 1 pm",      s:720, e:780,  p:"AA",  n:"Unity Lunch Bunch"},
+    {t:"12 – 1 pm",      s:720, e:780,  p:"AAA", n:"All Addictions Anonymous"},
+    {t:"5:30 – 6:30 pm", s:1050,e:1110, p:"AA",  n:"The 5:30 Sobriety Hour"},
+    {t:"6:45 – 7:45 pm", s:1005,e:1065, p:"AA",  n:"Back to Basics", note:"Steps 1–12"},
+    {t:"7 – 8 pm",       s:1140,e:1200, p:"FR",  n:"Free Riders"}
+  ],
+  Thursday: [
+    {t:"6:30 – 7:30 am", s:390, e:450,  p:"AA",  n:"Sunrise"},
+    {t:"12 – 1 pm",      s:720, e:780,  p:"AA",  n:"Unity Lunch Bunch"},
+    {t:"12 – 1 pm",      s:720, e:780,  p:"CA",  n:"Thursday at Noon"},
+    {t:"1 – 2 pm",       s:780, e:840,  p:"AN",  n:"Hope for Today"},
+    {t:"5:30 – 6:30 pm", s:1050,e:1110, p:"AA",  n:"The 5:30 Sobriety Hour"},
+    {t:"7 – 8 pm",       s:1140,e:1200, p:"AA",  n:"Primary Purpose", note:"Closed"},
+    {t:"7 – 8 pm",       s:1140,e:1200, p:"SR",  n:"Sober Riders"},
+    {t:"8:30 – 9:30 pm", s:1230,e:1290, p:"AA",  n:"Fireside"}
+  ],
+  Friday: [
+    {t:"6:30 – 7:30 am", s:390, e:450,  p:"AA",  n:"Sunrise"},
+    {t:"10 – 11 am",     s:600, e:660,  p:"AA",  n:"Starting the Day"},
+    {t:"12 – 1 pm",      s:720, e:780,  p:"AA",  n:"Unity Lunch Bunch"},
+    {t:"2 – 3 pm",       s:840, e:900,  p:"AA",  n:"Out from Under"},
+    {t:"5:30 – 6:30 pm", s:1050,e:1110, p:"AA",  n:"The 5:30 Sobriety Hour"}
+  ],
+  Saturday: [
+    {t:"9 – 10 am",      s:540, e:600,  p:"AN",  n:"Men’s Al-Anon Meeting", note:"Men only"},
+    {t:"4 – 5 pm",       s:960, e:1020, p:"MA",  n:"Saturday Smokers"},
+    {t:"5:30 – 6:30 pm", s:1050,e:1110, p:"AA",  n:"The 5:30 Sobriety Hour"},
+    {t:"7 – 8 pm",       s:1140,e:1200, p:"AA",  n:"Saturday Night Speaker’s Mtg"},
+    {t:"9 pm – 12 am",   s:1260,e:1440, p:"SPECIAL", n:"Karaoke!", note:"1st Sat."},
+    {t:"11:59 pm – 1 am",s:1439,e:1500, p:"AA",  n:"Midnight Miracles"}
+  ]
+};
+
+/* Fellowships offered as filter chips */
+const FILTERS = [
+  {key:"ALL", label:"All meetings"},
+  {key:"AA",  label:"AA"},
+  {key:"NA",  label:"NA"},
+  {key:"CA",  label:"CA"},
+  {key:"AN",  label:"Al-Anon"},
+  {key:"OTHER", label:"Other groups"}
+];
+const CORE = ["AA","NA","CA","AN"];
+
+let activeFilter = "ALL";
+let activeDay = null;
+
+/* ---------- current Mountain-Time context ---------- */
+function mtNow(){
+  const parts = new Intl.DateTimeFormat("en-US",{
+    timeZone:"America/Denver", weekday:"short", hour:"2-digit", minute:"2-digit", hour12:false
+  }).formatToParts(new Date());
+  const get = t => parts.find(p=>p.type===t)?.value;
+  const wk = {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[get("weekday")];
+  let h = parseInt(get("hour"),10); if(h===24) h=0;
+  const m = parseInt(get("minute"),10);
+  return {dayIdx:wk, mins:h*60+m};
+}
+function fmtClock(){
+  return new Intl.DateTimeFormat("en-US",{
+    timeZone:"America/Denver", hour:"numeric", minute:"2-digit", hour12:true
+  }).format(new Date());
+}
+
+/* ---------- render helpers ---------- */
+function matches(m){
+  if(activeFilter==="ALL") return true;
+  if(activeFilter==="OTHER") return !CORE.includes(m.p);
+  return m.p===activeFilter;
+}
+function progLabel(p){ return p==="SPECIAL" ? "★" : p; }
+
+function renderDay(){
+  const list = document.getElementById("scheduleList");
+  const dayName = document.getElementById("dayName");
+  const dayCount = document.getElementById("dayCount");
+  const now = mtNow();
+  const isToday = DAYS[now.dayIdx]===activeDay;
+
+  dayName.textContent = activeDay + (isToday ? " · Today" : "");
+  const meetings = SCHEDULE[activeDay].filter(matches);
+  dayCount.textContent = meetings.length + (meetings.length===1?" meeting":" meetings");
+
+  if(meetings.length===0){
+    list.innerHTML = '<div class="empty">No meetings match this filter on '+activeDay+'. Try “All meetings.”</div>';
+    return;
+  }
+
+  list.innerHTML = meetings.map(m=>{
+    let onNow=false;
+    if(isToday){
+      let end = m.e > m.s ? m.e : m.e+1440;
+      if(now.mins>=m.s && now.mins<end) onNow=true;
+    }
+    const note = m.note ? '<span class="note">'+m.note+'</span>' : '';
+    const flag = onNow ? '<span class="now-flag">On now</span>' : '';
+    return '<div class="row'+(onNow?' now':'')+'">'
+      + '<div class="time">'+m.t+flag+'</div>'
+      + '<div class="prog '+m.p+'">'+progLabel(m.p)+'</div>'
+      + '<div class="name">'+m.n+note+'</div>'
+      + '</div>';
+  }).join("");
+}
+
+function renderChips(){
+  const box = document.getElementById("chips");
+  box.innerHTML = FILTERS.map(f=>
+    '<button class="chip" data-key="'+f.key+'" aria-pressed="'+(f.key===activeFilter)+'">'+f.label+'</button>'
+  ).join("");
+  box.querySelectorAll(".chip").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      activeFilter = btn.dataset.key;
+      box.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed", b.dataset.key===activeFilter));
+      renderDay();
+    });
+  });
+}
+
+function renderDayButtons(){
+  const box = document.getElementById("days");
+  const todayName = DAYS[mtNow().dayIdx];
+  box.innerHTML = DAYS.map(d=>
+    '<button class="day-btn" data-day="'+d+'" aria-pressed="'+(d===activeDay)+'">'
+    + d.slice(0,3)
+    + (d===todayName ? '<span class="today-dot" title="Today"></span>' : '')
+    + '</button>'
+  ).join("");
+  box.querySelectorAll(".day-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      activeDay = btn.dataset.day;
+      box.querySelectorAll(".day-btn").forEach(b=>b.setAttribute("aria-pressed", b.dataset.day===activeDay));
+      renderDay();
+    });
+  });
+}
+
+/* ---------- NOW / NEXT board ---------- */
+function updateBoard(){
+  document.getElementById("clock").textContent = fmtClock();
+  const now = mtNow();
+  const today = SCHEDULE[DAYS[now.dayIdx]];
+  const el = document.getElementById("nownext");
+
+  const live = today.filter(m=>{
+    let end = m.e>m.s?m.e:m.e+1440;
+    return now.mins>=m.s && now.mins<end;
+  });
+  const upcoming = today.filter(m=>m.s>now.mins).sort((a,b)=>a.s-b.s);
+
+  if(live.length){
+    const names = live.map(m=>m.n).join(", ");
+    el.innerHTML = '<span class="dot"></span><strong>Happening now:</strong> '+names;
+  } else if(upcoming.length){
+    const nx = upcoming[0];
+    el.innerHTML = '<span class="dot off"></span><strong>Next up:</strong> '+nx.n+' <span class="mono">'+nx.t+'</span>';
+  } else {
+    el.innerHTML = '<span class="dot off"></span>No more meetings scheduled today — see you tomorrow.';
+  }
+}
+
+/* ---------- init ---------- */
+function init(){
+  activeDay = DAYS[mtNow().dayIdx];
+  renderChips();
+  renderDayButtons();
+  renderDay();
+  updateBoard();
+  setInterval(updateBoard, 30000);
+}
+init();
+</script>
+</body>
+</html>
