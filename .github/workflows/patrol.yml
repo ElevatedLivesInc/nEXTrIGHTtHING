@@ -17,4 +17,8 @@ jobs:
           PATROL_KEY: ${{ secrets.PATROL_KEY }}
         run: |
           if [ -z "$PATROL_KEY" ]; then echo "PATROL_KEY secret is not set"; exit 1; fi
-          curl -fsS --max-time 60 "https://www.nextrighthing.com/patrol/run?key=$PATROL_KEY" -H "Accept: application/json" | head -c 2000
+          # Call the bare domain (www answers with a redirect) and follow redirects just in case.
+          OUT=$(curl -fsSL --max-time 60 "https://nextrighthing.com/patrol/run?key=$PATROL_KEY" -H "Accept: application/json")
+          echo "$OUT" | head -c 2000
+          # Only go green if Patrol actually sent. A redirect page or "turned off" reply now fails loudly.
+          echo "$OUT" | grep -q '"ok": true' || { echo; echo "Patrol did not send - see the reply above."; exit 1; }
