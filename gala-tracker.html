@@ -164,6 +164,7 @@ async function load(){
 const guestsOf=r=>r.individual_qty+r.couple_qty*2;
 const WHO=r=>r?r.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' '):'';
 const VIA=x=>x&&x.referred_by?` <span class="pill" style="background:rgba(201,169,110,.18);color:var(--gold2)" title="Came in through this person's link">via ${esc(WHO(x.referred_by))}</span>`:'';
+const KP=v=>v===true?' <span class="pill p-paid" title="Asked to be kept posted about The Right Thing in Recovery">✉ Keep posted</span>':'';
 const PC=v=>v===true?'<span class="pill p-paid" title="Photo consent: yes">📷 Photos OK</span>':v===false?'<span class="pill p-declined" title="Photo consent: no" style="background:#5a1620;color:#ffd5d5">🚫 No photos</span>':'<span class="pill p-reserved" title="Not answered">📷 Ask</span>';
 const ticketCents=r=>(r.individual_qty*35+r.couple_qty*60)*100;
 
@@ -238,7 +239,7 @@ function renderSponsors(){
    <select id="sp-f"><option value="">All (${D.sponsors.length})</option>${['pledged','invoiced','paid','declined'].map(s=>`<option value="${s}" ${f===s?'selected':''}>${s} (${counts(s)})</option>`).join('')}</select>
    <button class="btn g" data-add="sponsor">+ Add sponsor</button><button class="btn g" data-csv="sponsors">CSV</button></div>
    <div class="list">${rows.map(s=>{ const done=s.benefits_done||{}, bl=benefitsFor(s.tier), n=bl.filter(([k])=>done[k]).length, r=receiptLine(s);
-    return `<div class="item" data-id="${s.id}"><div class="hd"><div><h3>${esc(s.display_name||s.business_name)} ${PC(s.photo_consent)}</h3>
+    return `<div class="item" data-id="${s.id}"><div class="hd"><div><h3>${esc(s.display_name||s.business_name)} ${PC(s.photo_consent)}${KP(s.keep_posted)}</h3>
       <div class="meta">${TIERS[s.tier].name}${VIA(s)} · ${$$$(s.amount_cents)} · ${esc(s.contact_name||'')} ${s.email?`· <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`:''} ${s.phone?`· <a href="tel:${esc(s.phone)}">${esc(s.phone)}</a>`:''} ${s.website?`· <a href="${esc(s.website)}" target="_blank" rel="noopener">site</a>`:''}</div>
       ${s.message?`<div class="meta" style="margin-top:4px">“${esc(s.message)}”</div>`:''}</div>
       <div style="text-align:right"><span class="pill p-${s.status}">${s.status}</span><div class="prog" style="margin-top:6px">${n}/${bl.length} delivered</div></div></div>
@@ -268,12 +269,12 @@ function renderGuests(){
   const q=($('#g-q')||{}).value||'';
   const rows=D.rsvps.filter(r=>!q||JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
   const diet=D.rsvps.filter(r=>r.dietary&&r.pay_status!=='cancelled');
-  $('#tab-guests').innerHTML=`<div class="bar"><input id="g-q" placeholder="Search name, email, phone" value="${esc(q)}" style="flex:1;min-width:160px"><button class="btn g" data-add="guest">+ Walk-in / comp</button><button class="btn g" data-csv="rsvps">CSV</button></div>
+  $('#tab-guests').innerHTML=`<div class="bar"><input id="g-q" placeholder="Search name, email, phone" value="${esc(q)}" style="flex:1;min-width:160px"><button class="btn g" data-add="guest">+ Walk-in / comp</button><button class="btn g" data-csv="rsvps">CSV</button><button class="btn g" id="kp-copy">Copy keep-posted emails</button></div>
    ${(()=>{const np=D.rsvps.filter(r=>r.photo_consent===false&&r.pay_status!=='cancelled');return np.length?`<div class="item" style="margin-bottom:10px;border-color:#a33"><b>🚫 No photos — show this list to the photographer:</b> ${np.map(r=>esc(r.full_name)).join(' · ')}</div>`:''})()}
    ${diet.length?`<div class="item" style="margin-bottom:10px"><b>Kitchen notes:</b> ${diet.map(r=>`${esc(r.full_name)} (${guestsOf(r)}) — ${esc(r.dietary)}`).join(' · ')}</div>`:''}
    <div style="overflow-x:auto"><table><thead><tr><th>In</th><th>Name</th><th>Photos</th><th>Seats</th><th>Owes</th><th>Payment</th><th>Contact</th></tr></thead><tbody>
    ${rows.map(r=>`<tr data-id="${r.id}"><td><input type="checkbox" data-f="checked_in" ${r.checked_in?'checked':''} aria-label="Checked in"></td>
-    <td><b>${esc(r.full_name)}</b>${VIA(r)}${r.guest_names?`<div class="meta">+ ${esc(r.guest_names)}</div>`:''}${r.attire&&r.attire!=='surprise'?`<div class="meta">${esc(r.attire)}</div>`:''}</td>
+    <td><b>${esc(r.full_name)}</b>${KP(r.keep_posted)}${VIA(r)}${r.guest_names?`<div class="meta">+ ${esc(r.guest_names)}</div>`:''}${r.attire&&r.attire!=='surprise'?`<div class="meta">${esc(r.attire)}</div>`:''}</td>
     <td><select data-f="photo_consent" data-bool aria-label="Photo consent"><option value="" ${r.photo_consent==null?'selected':''}>Ask</option><option value="true" ${r.photo_consent===true?'selected':''}>Yes</option><option value="false" ${r.photo_consent===false?'selected':''}>No</option></select></td>
     <td>${guestsOf(r)}</td><td>${r.source==='web'?$$$(ticketCents(r)):'—'}</td>
     <td><select data-f="pay_status">${['reserved','paid','at_door','comp','cancelled'].map(o=>`<option ${r.pay_status===o?'selected':''}>${o}</option>`).join('')}</select></td>
@@ -285,7 +286,7 @@ function renderGuests(){
 
 function renderInkind(){
   $('#tab-inkind').innerHTML=`<div class="bar"><button class="btn g" data-add="inkind">+ Add item</button><button class="btn g" data-csv="inkind">CSV</button></div>
-   <div class="list">${D.inkind.map(i=>`<div class="item" data-id="${i.id}"><div class="hd"><div><h3>${esc(i.business_name||i.donor_name)} ${PC(i.photo_consent)}</h3>
+   <div class="list">${D.inkind.map(i=>`<div class="item" data-id="${i.id}"><div class="hd"><div><h3>${esc(i.business_name||i.donor_name)} ${PC(i.photo_consent)}${KP(i.keep_posted)}</h3>
      <div class="meta">${esc(i.description)}${VIA(i)} · ${esc(i.category||'')} · ${esc(i.delivery||'')} ${i.email?`· <a href="mailto:${esc(i.email)}">${esc(i.email)}</a>`:''} ${i.phone?`· <a href="tel:${esc(i.phone)}">${esc(i.phone)}</a>`:''}</div></div><span class="pill p-${i.status}">${i.status}</span></div>
      <div class="fields"><label>Status<select data-f="status">${['pledged','received','receipted','used','declined'].map(o=>`<option ${i.status===o?'selected':''}>${o}</option>`).join('')}</select></label>
       <label>Est. value ($)<input type="number" inputmode="numeric" data-f="est_value_cents" data-money value="${i.est_value_cents==null?'':Math.round(i.est_value_cents/100)}"></label>
@@ -376,6 +377,11 @@ function wireItems(scope,table,arr){
       save(table,id,{[k]:v}); });
   });
   $$('[data-csv]',$(scope)).forEach(b=>b.onclick=()=>csv(b.dataset.csv));
+  const kpb=document.getElementById('kp-copy'); if(kpb) kpb.onclick=()=>{
+    const list=[...new Set([...(D.rsvps||[]),...(D.sponsors||[]),...(D.inkind||[])].filter(x=>x.keep_posted&&x.email).map(x=>x.email.trim().toLowerCase()))];
+    if(!list.length) return toast('Nobody has asked to be kept posted yet');
+    (navigator.clipboard?navigator.clipboard.writeText(list.join(', ')):Promise.reject()).then(()=>toast(list.length+' email'+(list.length>1?'s':'')+' copied. Paste into BCC.'),()=>toast('Copy was blocked. Use the CSV instead.'));
+  };
   $$('[data-add]',$(scope)).forEach(b=>b.onclick=()=>add(b.dataset.add));
 }
 

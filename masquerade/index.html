@@ -120,6 +120,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--lav);outline-off
 .consent legend{padding:0 6px;font-weight:700;color:var(--gold2);font-size:.9rem;letter-spacing:.04em}
 .consent p{margin:0 0 8px;font-size:.88rem;color:var(--muted)}
 .consent .check{margin:6px 0}
+.check.keep{display:block;margin:4px 0 10px;font-size:.9rem;line-height:1.45}
+.check.keep small{color:var(--muted)}
 .reqstar{color:var(--err)}
 .check input{width:20px;height:20px;margin-top:2px;flex:none}
 .stepper{display:flex;align-items:center;gap:8px}
@@ -528,6 +530,7 @@ window.GALA = {
           <label class="check"><input type="radio" name="photo_consent" value="yes" required> Yes, you may include me in event photos and video.</label>
           <label class="check"><input type="radio" name="photo_consent" value="no" required> No, please don't photograph me.</label>
         </fieldset>
+        <label class="check keep"><input type="checkbox" name="keep_posted" value="yes"> Keep me posted about The Right Thing in Recovery: what's next and how to help. <small>(Optional. A few emails a year. Just ask and we'll stop.)</small></label>
         <div class="ferr" role="alert"></div>
         <button class="btn" type="submit">Reserve my seat</button>
       </form>
@@ -586,6 +589,7 @@ window.GALA = {
           <label class="check"><input type="radio" name="photo_consent" value="yes" required> Yes, you may include me in event photos and video.</label>
           <label class="check"><input type="radio" name="photo_consent" value="no" required> No, please don't photograph me.</label>
         </fieldset>
+        <label class="check keep"><input type="checkbox" name="keep_posted" value="yes"> Keep me posted about The Right Thing in Recovery: what's next and how to help. <small>(Optional. A few emails a year. Just ask and we'll stop.)</small></label>
         <div class="ferr" role="alert"></div>
         <button class="btn" type="submit">Become a sponsor</button>
       </form>
@@ -656,6 +660,7 @@ window.GALA = {
           <label class="check"><input type="radio" name="photo_consent" value="yes" required> Yes, you may include me in event photos and video.</label>
           <label class="check"><input type="radio" name="photo_consent" value="no" required> No, please don't photograph me.</label>
         </fieldset>
+        <label class="check keep"><input type="checkbox" name="keep_posted" value="yes"> Keep me posted about The Right Thing in Recovery: what's next and how to help. <small>(Optional. A few emails a year. Just ask and we'll stop.)</small></label>
         <div class="ferr" role="alert"></div>
         <button class="btn" type="submit">Pledge my donation</button>
       </form>
@@ -736,6 +741,7 @@ window.GALA = {
       <label class="check"><input type="radio" name="pc" value="yes"> Yes, you may include me in event photos and video.</label>
       <label class="check"><input type="radio" name="pc" value="no"> No, please don't photograph me.</label>
     </fieldset>
+    <div id="qb-keep-wrap"><label class="check keep"><input type="checkbox" name="keep_posted" value="yes"> Keep me posted about The Right Thing in Recovery: what's next and how to help. <small>(Optional. A few emails a year. Just ask and we'll stop.)</small></label></div>
     <div class="ferr" role="alert" id="qb-err"></div>
     <button class="btn" type="submit" id="qb-go">Continue to payment</button>
     <p class="small">You'll finish paying on Square's secure page. Your QR ticket or sponsor details follow by email.</p>
@@ -946,7 +952,7 @@ wire('#f-rsvp','#ok-rsvp', fd=>{
   if(!clean(fd.full_name)) return 'Please add your name.';
   if(qty.individual_qty+qty.couple_qty===0) return 'Choose at least one ticket.';
   if(!fd.photo_consent) return PC_MSG;
-  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), attire:fd.attire||'surprise'};
+  return {photo_consent:fd.photo_consent==='yes', keep_posted:fd.keep_posted==='yes', event_slug:C.slug, full_name:clean(fd.full_name), email:clean(fd.email), phone:clean(fd.phone), individual_qty:qty.individual_qty, couple_qty:qty.couple_qty, guest_names:clean(fd.guest_names), attire:fd.attire||'surprise'};
 }, '@rsvp', async (fd,row,res)=>{
   const total=row.individual_qty*35+row.couple_qty*60;
   $('#ok-rsvp-msg').textContent = `Seat${row.individual_qty+row.couple_qty*2>1?'s':''} reserved for ${row.full_name}. Your total is $${total} — pay online now or at the door.`;
@@ -971,7 +977,7 @@ wire('#f-sponsor','#ok-sponsor', fd=>{
   const t=TIERS.find(x=>x.id===fd.tier); let amt=t.amt;
   if(t.id==='partner'){ amt=parseInt(fd.amount,10)||0; if(amt<2500) return 'Recovery Partner starts at $2,500.'; }
   if(fd.website && !/^https?:\/\//i.test(fd.website.trim())) fd.website='https://'+fd.website.trim();
-  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, tier:t.id, amount_cents:amt*100, business_name:clean(fd.business_name), contact_name:clean(fd.contact_name), email:clean(fd.email), phone:clean(fd.phone), website:clean(fd.website), display_name:clean(fd.display_name), message:clean(fd.message)};
+  return {photo_consent:fd.photo_consent==='yes', keep_posted:fd.keep_posted==='yes', event_slug:C.slug, tier:t.id, amount_cents:amt*100, business_name:clean(fd.business_name), contact_name:clean(fd.contact_name), email:clean(fd.email), phone:clean(fd.phone), website:clean(fd.website), display_name:clean(fd.display_name), message:clean(fd.message)};
 }, 'gala_sponsors', async (fd,row)=>{ $('#ok-sp-name').textContent=row.display_name||row.business_name; $('#sp-pay').innerHTML=payBtn(C.square[row.tier],'Pay your sponsorship online'); });
 
 wire('#f-inkind','#ok-inkind', fd=>{
@@ -979,7 +985,7 @@ wire('#f-inkind','#ok-inkind', fd=>{
   if(!clean(fd.description)) return 'Tell us what you\'d like to donate.';
   if(!fd.photo_consent) return PC_MSG;
   const v=parseInt(fd.est_value,10);
-  return {photo_consent:fd.photo_consent==='yes', event_slug:C.slug, donor_name:clean(fd.donor_name), business_name:clean(fd.business_name), email:clean(fd.email), phone:clean(fd.phone), description:clean(fd.description), category:fd.category, est_value_cents:isNaN(v)?null:v*100, delivery:fd.delivery};
+  return {photo_consent:fd.photo_consent==='yes', keep_posted:fd.keep_posted==='yes', event_slug:C.slug, donor_name:clean(fd.donor_name), business_name:clean(fd.business_name), email:clean(fd.email), phone:clean(fd.phone), description:clean(fd.description), category:fd.category, est_value_cents:isNaN(v)?null:v*100, delivery:fd.delivery};
 }, 'gala_inkind');
 
 })();
@@ -1003,6 +1009,7 @@ wire('#f-inkind','#ok-inkind', fd=>{
     document.getElementById('qb-amt').textContent=ITEMS[k][1]+(k==='partner'?' (you choose the amount at checkout)':'');
     var biz=document.getElementById('qb-biz-wrap'), isStar=(k==='star1'||k==='star5');
     biz.style.display=(k==='individual'||k==='couple')?'none':'';
+    var kw=document.getElementById('qb-keep-wrap'); if(kw) kw.style.display=isStar?'none':'';
     biz.firstChild.textContent=isStar?'Name or message for your starfish ':'Business or family name ';
     biz.querySelector('small').textContent=isStar?'(up to 80 characters, shown on the wall)':"(as you'd like it listed)";
     biz.querySelector('input').maxLength=isStar?80:160;
@@ -1024,9 +1031,9 @@ wire('#f-inkind','#ok-inkind', fd=>{
         if(!rr||!rr.ok){ err.textContent=(rr&&rr.error)||'Something went wrong. Please try again.'; go.disabled=false; go.textContent='Continue to payment'; if(window.__sfReload) window.__sfReload(); return; }
         if(window.__sfLitNow) window.__sfLitNow(picks,(fd.business||'').trim()||name);
       } else if(k==='individual'||k==='couple'){
-        await fetch('/masquerade/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event_slug:G.slug,full_name:name,email:email,individual_qty:k==='individual'?1:0,couple_qty:k==='couple'?1:0,attire:'surprise',photo_consent:pc,drawing:false})});
+        await fetch('/masquerade/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event_slug:G.slug,full_name:name,email:email,individual_qty:k==='individual'?1:0,couple_qty:k==='couple'?1:0,attire:'surprise',photo_consent:pc,keep_posted:fd.keep_posted==='yes',drawing:false})});
       } else {
-        await fetch(G.supabaseUrl+'/rest/v1/gala_sponsors',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify({event_slug:G.slug,tier:k,amount_cents:ITEMS[k][2],business_name:(fd.business||'').trim()||name,contact_name:name,email:email,photo_consent:pc,message:'Quick checkout via Square'})});
+        await fetch(G.supabaseUrl+'/rest/v1/gala_sponsors',{method:'POST',headers:{apikey:G.supabaseKey,authorization:'Bearer '+G.supabaseKey,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify({event_slug:G.slug,tier:k,amount_cents:ITEMS[k][2],business_name:(fd.business||'').trim()||name,contact_name:name,email:email,photo_consent:pc,keep_posted:fd.keep_posted==='yes',message:'Quick checkout via Square'})});
       }
     }catch(_){ /* never block payment; staff can confirm details at the door */ }
     location.href=G.square[k];
