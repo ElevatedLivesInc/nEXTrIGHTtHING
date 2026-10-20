@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Outcomes &amp; Protocol — Mission Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1a2744;--navy-deep:#121c33;--sand:#c9a96e;--sand-light:#e8d5b0;--lav:#c9b6f0;--ok:#8fd6a8;--warn:#f0c674;--bad:#f09a9a;--line:rgba(255,255,255,.1);--dim:rgba(255,255,255,.58);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--navy-deep);color:#fff;font-family:'Raleway',sans-serif;min-height:100vh;font-size:15px;line-height:1.5}
+  a{color:var(--sand-light)}
+  .top{background:var(--navy);border-bottom:2px solid rgba(201,169,110,.5);padding:1.4rem 1.2rem}
+  .top-inner,.wrap{max-width:1180px;margin:0 auto}
+  .top-inner{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:2rem;line-height:1.1}
+  h1 em{color:var(--sand-light);font-style:italic}
+  .tag{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.35rem}
+  .viewer{font-size:.72rem;color:var(--dim);text-align:right}
+  .viewer a{font-weight:600}
+  .wrap{padding:1.4rem 1.2rem 3rem;display:flex;flex-direction:column;gap:1.8rem}
+  .sec{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sand);margin-bottom:.8rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:baseline}
+  .sec span{letter-spacing:.04em;text-transform:none;color:var(--dim);font-size:.78rem}
+  .msg{padding:1rem 1.1rem;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--dim)}
+  .msg.err{border-color:rgba(240,154,154,.45);color:#f3c9c9}
+  .score{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.9rem}
+  .card{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.5rem;min-width:0;border-top:3px solid var(--line)}
+  .card.ok{border-top-color:var(--ok)} .card.warn{border-top-color:var(--warn)} .card.bad{border-top-color:var(--bad)}
+  .card .k{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between;gap:.5rem}
+  .card .v{font-family:'Cormorant Garamond',serif;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums}
+  .card .t{font-size:.8rem;color:var(--dim)}
+  .card .sub{font-size:.82rem;color:rgba(255,255,255,.78)}
+  .st{font-size:.62rem;font-weight:700;letter-spacing:.08em;border-radius:50px;padding:.12rem .5rem;white-space:nowrap}
+  .st.ok{background:rgba(143,214,168,.15);color:var(--ok)} .st.warn{background:rgba(240,198,116,.15);color:var(--warn)} .st.bad{background:rgba(240,154,154,.15);color:var(--bad)} .st.na{background:rgba(255,255,255,.08);color:var(--dim)}
+  .bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;position:relative;overflow:visible}
+  .bar i{display:block;height:100%;border-radius:3px;background:var(--sand)}
+  .bar b{position:absolute;top:-4px;width:2px;height:14px;background:#fff;opacity:.7}
+  .panel{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.2rem;min-width:0}
+  .two{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:.9rem}
+  @media(max-width:860px){.two{grid-template-columns:1fr}}
+  svg{display:block;width:100%;height:auto}
+  .legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.75rem;color:var(--dim);margin-top:.5rem}
+  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:.35rem}
+  .tbl{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.84rem;font-variant-numeric:tabular-nums}
+  th{text-align:left;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:600;padding:.45rem .5rem;border-bottom:1px solid var(--line)}
+  td{padding:.55rem .5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+  td.r,th.r{text-align:right}
+  .ex{display:flex;flex-direction:column;gap:.9rem}
+  .grp h3{font-size:.85rem;font-weight:700;display:flex;justify-content:space-between;gap:.6rem;align-items:center;margin-bottom:.4rem}
+  .grp h3 a{font-size:.72rem;font-weight:600;text-decoration:none;border-bottom:1px solid}
+  .grp ul{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+  .grp li{font-size:.84rem;display:flex;justify-content:space-between;gap:.8rem;padding:.4rem .6rem;background:rgba(255,255,255,.03);border-radius:6px}
+  .grp li span:last-child{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .grp.bad h3{color:var(--bad)} .grp.warn h3{color:var(--warn)}
+  .clear{color:var(--ok);font-size:.88rem}
+  .report{white-space:pre-wrap;font-size:.84rem;background:rgba(0,0,0,.25);border:1px dashed var(--line);border-radius:8px;padding:.9rem;color:rgba(255,255,255,.85)}
+  .btn{background:var(--sand);color:var(--navy-deep);border:0;border-radius:6px;padding:.55rem 1rem;font:700 .8rem 'Raleway',sans-serif;cursor:pointer}
+  .btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .proto{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.5rem;font-size:.8rem;color:var(--dim)}
+  .proto b{color:#fff;font-weight:600}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-inner">
+  <div><h1>Outcomes <em>&amp; Protocol</em></h1><div class="tag">Measured against the standards your team agreed to</div></div>
+  <div class="viewer"><div id="who">Loading…</div><a href="/mission-control">&larr; Mission Control</a></div>
+</div></header>
+
+<main class="wrap" id="app">
+  <div class="msg" id="state">Loading your numbers…</div>
+</main>
+
+<script>
+(function(){
+  var app=document.getElementById('app');
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function n(v){v=parseFloat(v);return isNaN(v)?0:v;}
+  function money(v){return '$'+Math.round(v).toLocaleString('en-US');}
+  function pct(v){return Math.round(v*100)+'%';}
+  var DAY=86400000, now=Date.now();
+  function days(d){if(!d)return null;var t=new Date(String(d).length<=10?d+'T12:00:00':d).getTime();return Math.round((t-now)/DAY);}
+  function hrs(a,b){return (new Date(b).getTime()-new Date(a).getTime())/3600000;}
+  function ago(h){return h<48?Math.round(h)+'h':Math.round(h/24)+'d';}
+  function median(a){if(!a.length)return null;a=a.slice().sort(function(x,y){return x-y;});var m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2;}
+  function status(good,warn){return good?'ok':warn?'warn':'bad';}
+  var LBL={ok:'On protocol',warn:'Watch',bad:'Off protocol',na:'Not tracking yet'};
+
+  fetch('/outcomes/data',{credentials:'include'}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});}).then(function(x){
+    if(!x.ok){ document.getElementById('state').className='msg err'; document.getElementById('state').innerHTML=esc(x.j.error||'Could not load.')+' <a href="/mission-control">Open Mission Control</a>'; document.getElementById('who').textContent=''; return; }
+    render(x.j);
+  }).catch(function(){ document.getElementById('state').className='msg err'; document.getElementById('state').textContent='Could not reach the server. Check your connection and reload.'; });
+
+  function render(D){
+    var P=D.protocol||{}; var cbH=P.callbackHours||4, crisisM=P.crisisCallbackMinutes||30, occT=P.occupancyTarget||0.9, colT=P.collectionTarget||0.95, quiet=P.quietDays||14, decD=P.fundingDecisionDays||14, cliffD=P.fundingCliffDays||14, insD=P.insuranceWarnDays||30, pdFlag=P.pastDueFlag||1;
+    document.getElementById('who').textContent=D.viewer||'';
+
+    /* ---- intake ---- */
+    var intake=D.intake||[], d30=now-30*DAY;
+    var contacted=intake.filter(function(r){return r.first_contact_at && new Date(r.first_contact_at).getTime()>d30;});
+    var times=contacted.map(function(r){return hrs(r.created_at,r.first_contact_at);});
+    var med=median(times), within=times.length?times.filter(function(t){return t<=cbH;}).length/times.length:null;
+    var waiting=intake.filter(function(r){return (r.status||'new')==='new';}).map(function(r){return {r:r,h:hrs(r.created_at,new Date().toISOString())};}).sort(function(a,b){return b.h-a.h;});
+    var overSla=waiting.filter(function(w){return w.r.crisis_flag? w.h*60>crisisM : w.h>cbH;});
+    var crisisOpen=waiting.filter(function(w){return w.r.crisis_flag;});
+
+    /* ---- housing ---- */
+    var res=D.residents||[], active=res.filter(function(r){return r.status==='active';}), open=res.filter(function(r){return r.status==='open';});
+    var houseNames={}; (D.houses||[]).forEach(function(h){houseNames[h.name]=h;});
+    var byHouse={}; res.forEach(function(r){ if(r.status!=='active'&&r.status!=='open')return; var k=r.house_name||'Unassigned'; (byHouse[k]=byHouse[k]||{name:k,filled:0,open:0,owed:0,pd:0,billed:0,paid:0}); var h=byHouse[k];
+      if(r.status==='active'){h.filled++; var bill=n(r.past_due)+n(r.current_due); h.billed+=bill; h.paid+=n(r.amount_paid); var bal=bill-n(r.amount_paid); if(bal>0)h.owed+=bal; if(n(r.past_due)>=pdFlag)h.pd++;} else h.open++; });
+    var houses=Object.keys(byHouse).map(function(k){var h=byHouse[k]; var cap=(houseNames[k]&&houseNames[k].bed_count)||(h.filled+h.open); h.cap=Math.max(cap,h.filled); return h;}).sort(function(a,b){return b.cap-a.cap;});
+    var cap=houses.reduce(function(t,h){return t+h.cap;},0), filled=active.length, occ=cap?filled/cap:null;
+    var avgRent=active.length?active.reduce(function(t,r){return t+n(r.monthly_rent);},0)/active.length:0;
+    var openBeds=Math.max(0,cap-filled), emptyRent=openBeds*avgRent;
+    var billed=active.reduce(function(t,r){return t+n(r.past_due)+n(r.current_due);},0), paid=active.reduce(function(t,r){return t+n(r.amount_paid);},0);
+    var coll=billed>0?Math.min(1,paid/billed):null, outstanding=Math.max(0,billed-paid);
+    var pastDue=active.filter(function(r){return n(r.past_due)>=pdFlag;}).sort(function(a,b){return n(b.past_due)-n(a.past_due);});
+    var quietRes=active.filter(function(r){var d=days(r.last_talked||r.last_contact);return d===null||-d>=quiet;}).sort(function(a,b){return (days(a.last_talked||a.last_contact)||-999)-(days(b.last_talked||b.last_contact)||-999);});
+    var evictions=active.filter(function(r){return r.eviction_pending;});
+    var insurance=active.filter(function(r){var d=days(r.insurance_renewal_date);return d!==null&&d>=0&&d<=insD;}).sort(function(a,b){return days(a.insurance_renewal_date)-days(b.insurance_renewal_date);});
+    var resCliffs=active.filter(function(r){var d=days(r.funding_end);return d!==null&&d>=0&&d<=cliffD;});
+
+    /* ---- funding ---- */
+    var apps=D.applications||[];
+    var pend=apps.filter(function(a){return (a.status||'pending')==='pending';}), appr=apps.filter(function(a){return a.status==='approved';});
+    var awarded=appr.reduce(function(t,a){return t+n(a.amount);},0);
+    var stale=pend.filter(function(a){var d=days(a.applied_date||a.created_at);return d!==null&&-d>decD;});
+    var appCliffs=appr.filter(function(a){var d=days(a.coverage_end);return d!==null&&d>=0&&d<=cliffD;});
+    var decided=apps.filter(function(a){return a.status==='approved'||a.status==='denied';});
+    var winRate=decided.length?appr.length/decided.length:null;
+
+    /* ---- scorecard ---- */
+    var cards=[];
+    var cbState=!D.tracking.callback?'na':med===null?'na':status(med<=cbH,med<=cbH*2);
+    cards.push({k:'Time to first call',st:cbState,v:med===null?'—':(med<1?Math.round(med*60)+'m':med.toFixed(1)+'h'),t:'Median, last 30 days · protocol '+cbH+'h',sub:!D.tracking.callback?'Starts recording when the outcomes database update is applied.':within===null?'Starts filling in as inquiries are moved off New.':pct(within)+' of '+times.length+' inquiries called within protocol.',bar:within===null?null:[within,0.9]});
+    cards.push({k:'Waiting on a call',st:crisisOpen.length?'bad':status(!overSla.length,overSla.length<=2),v:waiting.length,t:'Inquiries still marked New',sub:overSla.length?overSla.length+' past protocol'+(waiting[0]?' · oldest '+ago(waiting[0].h):''):'None past protocol.'});
+    cards.push({k:'Occupancy',st:occ===null?'na':status(occ>=occT,occ>=occT-0.1),v:occ===null?'—':pct(occ),t:filled+' of '+cap+' beds · protocol '+pct(occT),sub:openBeds?openBeds+' open bed'+(openBeds===1?'':'s')+' ≈ '+money(emptyRent)+'/month in rent':'Every bed is filled.',bar:occ===null?null:[occ,occT]});
+    cards.push({k:'Rent collected',st:coll===null?'na':status(coll>=colT,coll>=colT-0.1),v:coll===null?'—':pct(coll),t:money(paid)+' of '+money(billed)+' due · protocol '+pct(colT),sub:outstanding?money(outstanding)+' outstanding · '+pastDue.length+' resident'+(pastDue.length===1?'':'s')+' past due':'Nothing outstanding.',bar:coll===null?null:[coll,colT]});
+    cards.push({k:'Funding',st:status(!stale.length&&!appCliffs.length,stale.length+appCliffs.length<=2),v:money(awarded),t:'Approved across '+appr.length+' application'+(appr.length===1?'':'s'),sub:pend.length+' pending · '+stale.length+' with no decision after '+decD+'d'+(winRate===null?'':' · '+pct(winRate)+' approval rate')});
+    cards.push({k:'Resident contact',st:status(!quietRes.length,quietRes.length<=Math.max(2,active.length*0.1)),v:quietRes.length,t:'Active residents with no contact in '+quiet+'+ days',sub:active.length?pct(1-quietRes.length/active.length)+' of residents contacted within protocol.':''});
+
+    var html='';
+    html+='<section><div class="sec">Protocol scorecard <span>Live from Intake, Housing and Funding</span></div><div class="score">'+cards.map(function(c){
+      return '<div class="card '+c.st+'"><div class="k"><span>'+esc(c.k)+'</span><span class="st '+c.st+'">'+LBL[c.st]+'</span></div><div class="v">'+esc(c.v)+'</div><div class="t">'+esc(c.t)+'</div>'+
+        (c.bar?'<div class="bar"><i style="width:'+Math.min(100,c.bar[0]*100).toFixed(1)+'%"></i><b style="left:'+(c.bar[1]*100).toFixed(1)+'%"></b></div>':'')+
+        '<div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('')+'</div></section>';
+
+    /* ---- trend ---- */
+    var S=(D.snapshots||[]).filter(function(s){return n(s.beds_total)>0;});
+    html+='<section class="two"><div class="panel"><div class="sec" style="margin-bottom:.5rem">Trend <span>One point per day</span></div>'+trend(S,occT,colT)+'</div>';
+
+    /* ---- by house ---- */
+    html+='<div class="panel"><div class="sec" style="margin-bottom:.5rem">By house <span>'+houses.length+' houses</span></div><div class="tbl"><table><thead><tr><th>House</th><th class="r">Beds</th><th class="r">Filled</th><th class="r">Occ.</th><th class="r">Owed</th></tr></thead><tbody>'+
+      houses.map(function(h){var o=h.cap?h.filled/h.cap:0;return '<tr><td>'+esc(h.name)+'</td><td class="r">'+h.cap+'</td><td class="r">'+h.filled+'</td><td class="r" style="color:'+(o>=occT?'var(--ok)':o>=occT-0.1?'var(--warn)':'var(--bad)')+'">'+pct(o)+'</td><td class="r">'+(h.owed?money(h.owed):'—')+'</td></tr>';}).join('')+
+      '</tbody></table></div></div></section>';
+
+    /* ---- off protocol ---- */
+    var groups=[
+      {c:'bad',t:'Crisis inquiries not yet called',href:'/intake-queue',items:crisisOpen.map(function(w){return ['Inquiry from '+new Date(w.r.created_at).toLocaleDateString(),ago(w.h)+' waiting'];})},
+      {c:'bad',t:'Inquiries past the '+cbH+'-hour callback',href:'/intake-queue',items:overSla.filter(function(w){return !w.r.crisis_flag;}).map(function(w){return ['Inquiry from '+new Date(w.r.created_at).toLocaleDateString()+(w.r.urgency?' · '+w.r.urgency:''),ago(w.h)+' waiting'];})},
+      {c:'bad',t:'Evictions pending',href:'/housing',items:evictions.map(function(r){return [r.name+' · '+(r.house_name||''),'pending'];})},
+      {c:'warn',t:'Funding ending within '+cliffD+' days',href:'/case-management#funding',items:resCliffs.map(function(r){return [r.name+' · '+(r.funding_source||'funding'),'in '+days(r.funding_end)+'d'];}).concat(appCliffs.map(function(a){return [a.resident_name+' · '+(a.funder_name||'award'),'in '+days(a.coverage_end)+'d'];}))},
+      {c:'warn',t:'Applications with no decision after '+decD+' days',href:'/case-management#apps',items:stale.map(function(a){return [a.resident_name+' · '+(a.funder_name||''),(-days(a.applied_date||a.created_at))+'d'];})},
+      {c:'warn',t:'Past-due balances',href:'/housing',items:pastDue.slice(0,12).map(function(r){return [r.name+' · '+(r.house_name||''),money(r.past_due)];})},
+      {c:'warn',t:'Insurance renewals within '+insD+' days',href:'/housing',items:insurance.map(function(r){return [r.name,'in '+days(r.insurance_renewal_date)+'d'];})},
+      {c:'warn',t:'No contact in '+quiet+'+ days',href:'/rounds',items:quietRes.slice(0,12).map(function(r){var d=days(r.last_talked||r.last_contact);return [r.name+' · '+(r.house_name||''),d===null?'never logged':(-d)+'d'];})}
+    ].filter(function(g){return g.items.length;});
+    var offCount=groups.reduce(function(t,g){return t+g.items.length;},0);
+    html+='<section><div class="sec">Off protocol today <span>'+(offCount?offCount+' item'+(offCount===1?'':'s')+' to clear':'All clear')+'</span></div><div class="panel ex">'+
+      (groups.length?groups.map(function(g){return '<div class="grp '+g.c+'"><h3>'+esc(g.t)+' ('+g.items.length+')<a href="'+g.href+'">Fix it &rarr;</a></h3><ul>'+g.items.map(function(i){return '<li><span>'+esc(i[0])+'</span><span>'+esc(i[1])+'</span></li>';}).join('')+'</ul></div>';}).join(''):'<p class="clear">Everything is within protocol today.</p>')+
+      '</div></section>';
+
+    /* ---- outcomes report ---- */
+    var month=new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    var rep=[D.org+' · Outcomes report · '+month,'',
+      'Time to first call: '+(med===null?'not enough data yet':(med<1?Math.round(med*60)+' minutes':med.toFixed(1)+' hours')+' median'+(within===null?'':', '+pct(within)+' within the '+cbH+'-hour protocol')),
+      'Inquiries waiting: '+waiting.length+(overSla.length?' ('+overSla.length+' past protocol)':''),
+      'Occupancy: '+(occ===null?'—':pct(occ))+' ('+filled+' of '+cap+' beds, target '+pct(occT)+')',
+      'Rent collected: '+(coll===null?'—':pct(coll))+' ('+money(paid)+' of '+money(billed)+', target '+pct(colT)+')',
+      'Funding approved: '+money(awarded)+' across '+appr.length+' application'+(appr.length===1?'':'s')+'; '+pend.length+' pending',
+      'Residents contacted within '+quiet+' days: '+(active.length?pct(1-quietRes.length/active.length):'—'),
+      'Off-protocol items open: '+offCount].join('\n');
+    html+='<section class="two"><div class="panel"><div class="sec" style="margin-bottom:.5rem">Monthly outcomes report <span>Copy and send</span></div><div class="report" id="rep">'+esc(rep)+'</div><div style="margin-top:.7rem;display:flex;gap:.7rem;align-items:center"><button class="btn" id="copy" type="button">Copy report</button><span id="toast" style="font-size:.8rem;color:var(--ok)"></span></div></div>'+
+      '<div class="panel"><div class="sec" style="margin-bottom:.5rem">Your protocol <span>Set with your leadership</span></div><div class="proto">'+
+      '<div>First call: <b>'+cbH+' hours</b></div><div>Crisis first call: <b>'+crisisM+' minutes</b></div><div>Occupancy: <b>'+pct(occT)+'</b></div><div>Rent collected: <b>'+pct(colT)+'</b></div><div>Resident contact: <b>every '+quiet+' days</b></div><div>Funding decision chase: <b>'+decD+' days</b></div><div>Funding cliff warning: <b>'+cliffD+' days</b></div><div>Insurance renewal warning: <b>'+insD+' days</b></div>'+
+      '</div></div></section>';
+
+    app.innerHTML=html;
+    document.getElementById('copy').onclick=function(){var t=document.getElementById('rep').textContent,s=document.getElementById('toast');
+      function sel(){var r=document.createRange();r.selectNodeContents(document.getElementById('rep'));var g=getSelection();g.removeAllRanges();g.addRange(r);s.textContent='Selected. Copy with your device.';}
+      try{navigator.clipboard.writeText(t).then(function(){s.textContent='Copied.';},sel);}catch(e){sel();}};
+  }
+
+  function trend(S,occT,colT){
+    if(S.length<2) return '<p class="msg">The trend line starts recording one point a day once the outcomes database update is applied. '+(S.length===1?'First point recorded today.':'')+'</p>';
+    var W=560,H=210,L=40,R=12,T=12,B=26, xs=function(i){return L+(W-L-R)*i/(S.length-1);}, ys=function(v){return T+(H-T-B)*(1-v);};
+    var occ=S.map(function(s,i){return xs(i).toFixed(1)+','+ys(Math.min(1,n(s.beds_filled)/n(s.beds_total))).toFixed(1);});
+    var col=S.map(function(s,i){var b=n(s.rent_billed);return b>0?xs(i).toFixed(1)+','+ys(Math.min(1,n(s.rent_paid)/b)).toFixed(1):null;}).filter(Boolean);
+    var grid=[0,.5,1].map(function(v){return '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+ys(v)+'" y2="'+ys(v)+'" stroke="rgba(255,255,255,.08)"/><text x="'+(L-6)+'" y="'+(ys(v)+4)+'" font-size="10" text-anchor="end" fill="rgba(255,255,255,.5)">'+(v*100)+'%</text>';}).join('');
+    var lab=[0,S.length-1].map(function(i){return '<text x="'+xs(i)+'" y="'+(H-6)+'" font-size="10" text-anchor="'+(i?'end':'start')+'" fill="rgba(255,255,255,.5)">'+esc(S[i].day)+'</text>';}).join('');
+    var tgt='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+ys(occT)+'" y2="'+ys(occT)+'" stroke="#c9a96e" stroke-dasharray="4 4" opacity=".6"/>';
+    return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Occupancy and rent collection by day">'+grid+tgt+lab+
+      '<polyline points="'+occ.join(' ')+'" fill="none" stroke="#e8d5b0" stroke-width="2.2"/>'+
+      (col.length>1?'<polyline points="'+col.join(' ')+'" fill="none" stroke="#c9b6f0" stroke-width="2.2"/>':'')+'</svg>'+
+      '<div class="legend"><span><i style="background:#e8d5b0"></i>Occupancy</span><span><i style="background:#c9b6f0"></i>Rent collected</span><span><i style="background:#c9a96e;opacity:.6"></i>Occupancy protocol</span></div>';
+  }
+})();
+</script>
+</body>
+</html>
