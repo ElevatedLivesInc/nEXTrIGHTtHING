@@ -858,7 +858,7 @@ async function load(){
   try{
     const res=await fetch('/housing/list');
     const d=await res.json();
-    if(res.status===401||res.status===403){showWelcome('Housing Command', 'Six houses, every bed, every balance, and each resident&rsquo;s house record &mdash; on one screen. Sign in and it is all here.', res.status); return;}
+    if(res.status===401||res.status===403){showWelcome('Housing Command', 'Seven houses, every bed, every balance, and each resident&rsquo;s house record &mdash; on one screen. Sign in and it is all here.', res.status); return;}
     if(d.error){note.innerHTML='Error: '+esc(d.error)+'<br><br>If this says the table is missing, run <code>1-housing-schema.sql</code> then <code>2-housing-import.sql</code> in Supabase.';return;}
     HOUSES=d.houses||[];RES=d.residents||[];EVENTS=d.events||[];
     FUNDERS=d.funders||[];APPS=d.applications||[];PAY=d.payments||[];

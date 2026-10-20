@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Give — The Right Thing in Recovery</title>
-<meta name="description" content="A tax-deductible gift to The Right Thing in Recovery, a 501(c)(3). Keeps people housed while they get back on their feet.">
+<meta name="description" content="A gift to The Right Thing in Recovery, a 501(c)(3) nonprofit, keeps people in recovery housed and connected while they get back on their feet.">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Raleway:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{--navy:#1a2744;--deep:#121c33;--sand:#c9a96e;--sandl:#e8d5b0;--line:rgba(232,213,176,.22);}
@@ -27,6 +27,10 @@
         border:1px solid var(--line);border-radius:9px;}
   .amt{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--sandl);min-width:3.6rem;line-height:1.1;}
   .tier p{font-size:.9rem;color:rgba(255,255,255,.74);font-weight:300;}
+  button.tier{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%;transition:border-color .15s,background .15s;}
+  button.tier:hover,button.tier:focus-visible{border-color:var(--sand);background:rgba(201,169,110,.1);outline:none;}
+  button.tier[disabled]{opacity:.6;cursor:wait;}
+  .tierhint{font-size:.8rem;color:rgba(255,255,255,.55);text-align:center;}
   .note{border-left:2px solid var(--sand);padding:.9rem 1.1rem;background:rgba(201,169,110,.07);
         font-size:.87rem;color:rgba(255,255,255,.76);font-weight:300;border-radius:0 7px 7px 0;margin-top:1.6rem;}
   .other{margin-top:2.2rem;padding-top:1.6rem;border-top:1px solid rgba(255,255,255,.1);font-size:.92rem;
@@ -47,17 +51,19 @@ gtag('js',new Date());gtag('config','G-0C0HFSKP85');</script>
   <header>
     <div class="kicker">The Right Thing in Recovery &middot; 501(c)(3)</div>
     <h1>Most programs end on a Friday.<br>We're the <em>Monday</em>.</h1>
-    <p class="lede">Seven houses, seventy beds, and a Clubhouse with the lights on &mdash; for people who just
+    <p class="lede">Seven houses and a Clubhouse with the lights on &mdash; for people who just
       finished treatment and have nowhere to be on Monday morning.</p>
   </header>
 
-  <a class="btn" href="https://square.link/u/vWCGfNO4" target="_blank" rel="noopener">Give now &mdash; tax-deductible</a>
+  <a class="btn" id="giveAny" href="https://square.link/u/vWCGfNO4" target="_blank" rel="noopener">Give any amount</a>
 
   <div class="tiers">
-    <div class="tier"><div class="amt">$25</div><p>A week of Clubhouse access for someone in early recovery.</p></div>
-    <div class="tier"><div class="amt">$50</div><p>A life-skills session &mdash; budgeting, job prep, credit repair.</p></div>
-    <div class="tier"><div class="amt">$100</div><p>An hour of case management, where housing or work actually moves.</p></div>
-    <div class="tier"><div class="amt">$250</div><p>A full month of Clubhouse programming for one person.</p></div>
+    <button type="button" class="tier" data-amt="25"><span class="amt">$25</span><p>A week of Clubhouse access for someone in early recovery.</p></button>
+    <button type="button" class="tier" data-amt="50"><span class="amt">$50</span><p>A life-skills session &mdash; budgeting, job prep, or credit repair.</p></button>
+    <button type="button" class="tier" data-amt="100"><span class="amt">$100</span><p>One hour of case management, where housing, work, or family actually moves forward.</p></button>
+    <button type="button" class="tier" data-amt="250"><span class="amt">$250</span><p>A full month of Clubhouse programming for one person.</p></button>
+    <button type="button" class="tier" data-amt="500"><span class="amt">$500</span><p>Two full months of Clubhouse programming for one person.</p></button>
+    <p class="tierhint" id="tierHint">Tap an amount to give it. Checkout is secure through Square.</p>
   </div>
 
   <div class="note">
@@ -80,5 +86,27 @@ gtag('js',new Date());gtag('config','G-0C0HFSKP85');</script>
     No goods or services are provided in exchange for a cash gift.
   </footer>
 </div>
+<script>
+/* Each amount goes through the same dynamic checkout as the homepage, so the
+   thank-you page can name the gift. If that call fails, the matching static
+   Square link is the fallback, so a gift is never lost to an error. */
+(function(){
+  var LINKS={'25':'https://square.link/u/JYdXMYbn','50':'https://square.link/u/k4o9usgH','100':'https://square.link/u/XNIrcIBu','250':'https://square.link/u/uDddv7RB','500':'https://square.link/u/DUalu33k'};
+  var p=new URLSearchParams(location.search), utm=p.get('utm_source');
+  var SOURCE=utm?'utm:'+[utm,p.get('utm_medium'),p.get('utm_campaign')].filter(Boolean).join('/'):'donate-page';
+  var hint=document.getElementById('tierHint');
+  document.querySelectorAll('button.tier').forEach(function(b){
+    b.addEventListener('click',function(){
+      var amt=b.getAttribute('data-amt');
+      document.querySelectorAll('button.tier').forEach(function(x){x.disabled=true;});
+      if(hint) hint.textContent='Preparing secure checkout for $'+amt+'…';
+      fetch('/api/custom-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:Number(amt),tier:amt,source:SOURCE})})
+        .then(function(r){return r.json();})
+        .then(function(d){ if(d&&d.url){ location.href=d.url; } else { throw new Error('no url'); } })
+        .catch(function(){ location.href=LINKS[amt]; });
+    });
+  });
+})();
+</script>
 </body>
 </html>
