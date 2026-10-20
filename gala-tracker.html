@@ -228,7 +228,7 @@ function whoBlock(){
 
 function receiptLine(s){
   const tv=(D.event&&D.event.ticket_value_cents)||3500, ben=(s.tickets_issued||TIERS[s.tier].tickets)*tv, paid=s.paid_cents||0;
-  return {ben,ded:Math.max(0,paid-ben),text:`The Right Thing in Recovery, a 501(c)(3) nonprofit (EIN 93-4316358), gratefully acknowledges ${s.display_name||s.business_name}'s contribution of ${$$$(paid)} to the Flannel to Formal Masquerade Fundraiser. In exchange, the donor received ${(s.tickets_issued||TIERS[s.tier].tickets)} event ticket(s) including dinner, with an estimated value of ${$$$(ben)}. The tax-deductible portion of this contribution is ${$$$(Math.max(0,paid-ben))}.`};
+  return {ben,ded:Math.max(0,paid-ben),text:`The Right Thing in Recovery, a 501(c)(3) nonprofit (EIN 93-4316358), gratefully acknowledges ${s.display_name||s.business_name}'s contribution of ${$$$(paid)} to the Flannel to Formal Masquerade Fundraiser. In exchange, the donor received ${(s.tickets_issued||TIERS[s.tier].tickets)} event ticket(s) including dinner, with an estimated value of ${$$$(ben)}. The amount of this contribution exceeding the estimated value of goods and services received is ${$$$(Math.max(0,paid-ben))}. Please consult your tax advisor about deductibility.`};
 }
 
 function renderSponsors(){
@@ -256,7 +256,7 @@ function renderSponsors(){
       <label class="chk"><input type="checkbox" data-f="show_publicly" ${s.show_publicly?'checked':''}> Show on public sponsor wall</label>
      </div>
      <div class="ben">${bl.map(([k,l])=>`<label class="${done[k]?'done':''}"><input type="checkbox" data-ben="${k}" ${done[k]?'checked':''}> ${esc(l)}</label>`).join('')}</div>
-     ${s.paid_cents?`<div class="rcpt"><b>Receipt math:</b> paid ${$$$(s.paid_cents)} − benefits ${$$$(r.ben)} = <b>${$$$(r.ded)} deductible</b>. <a href="#" data-copy="${s.id}" style="color:var(--lav)">Copy receipt wording</a></div>`:''}
+     ${s.paid_cents?`<div class="rcpt"><b>Receipt math:</b> paid ${$$$(s.paid_cents)} − benefits ${$$$(r.ben)} = <b>${$$$(r.ded)} net gift</b>. <a href="#" data-copy="${s.id}" style="color:var(--lav)">Copy receipt wording</a></div>`:''}
      <label style="display:grid;gap:3px;margin-top:10px;font-size:.75rem;color:var(--muted);font-weight:600">Staff notes<textarea data-f="staff_notes" rows="2">${esc(s.staff_notes||'')}</textarea></label>
     </div>`;}).join('')||'<p class="meta">No sponsors yet.</p>'}</div>`;
   wireItems('#tab-sponsors','gala_sponsors',D.sponsors);

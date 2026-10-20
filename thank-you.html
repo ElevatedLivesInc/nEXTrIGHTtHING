@@ -151,7 +151,7 @@
         <dt>Date</dt><dd id="rDate"></dd>
         <dd id="rAmountRow" style="display:none;grid-column:1/-1"></dd>
       </dl>
-      <p class="statement">No goods or services were provided in exchange for this contribution. Your gift is tax-deductible to the extent allowed by law. Please retain this acknowledgment for your tax records.</p>
+      <p class="statement">No goods or services were provided in exchange for this contribution. Please retain this acknowledgment for your records, and consult your tax advisor about deductibility.</p>
     </section>
 
     <div class="sign">
@@ -166,9 +166,8 @@
       <a class="btn ghost" href="https://nextrighthing.com">Return to Website</a>
     </div>
 
-    <p class="foot">
-      Square has emailed your payment confirmation, and your formal written acknowledgment &mdash; the one the IRS asks for on gifts of $250 or more &mdash; is on its way separately.<br>
-      Questions about your gift? Email <a href="mailto:info@nextrighthing.com">info@nextrighthing.com</a>.
+    <p class="foot" id="footNote">
+      Square has emailed your payment confirmation. Your written acknowledgment, the one the IRS asks for on gifts of $250 or more, follows separately.
     </p>
   </main>
 
@@ -187,8 +186,8 @@
 
     var fundsByAmount = {
       '25':'a week of Clubhouse access for someone in early recovery',
-      '50':'a life skills session: budgeting, job prep, or credit repair',
-      '100':'a one hour case management session',
+      '50':'a life-skills session: budgeting, job prep, or credit repair',
+      '100':'one hour of case management, where housing, work, or family moves forward',
       '250':'a full month of Clubhouse programming for one person',
       '500':'two full months of Clubhouse programming for someone in recovery'
     };
@@ -204,17 +203,18 @@
       var clean = amount.replace(/[^0-9.]/g,'');
       var isMonthly = freq === 'monthly' || freq === 'recurring';
       var label = '$'+clean+(isMonthly?' / month':'');
-      var funds = fundsByTier[tier] || fundsByAmount[clean] || 'the Peer Connection Clubhouse and its community';
+      var funds = fundsByTier[tier] || fundsByAmount[clean] || '';
 
       var ab = document.getElementById('amountBlock');
       ab.style.display='block';
       document.getElementById('amountValue').textContent =
         (isMonthly?'Your monthly gift of ':'Your gift of ')+label;
-      document.getElementById('amountFunds').textContent = 'Provides '+funds+'.';
+      document.getElementById('amountFunds').textContent = funds ? 'Provides '+funds+'.' : 'Supports the Peer Connection Clubhouse and the people it serves.';
 
       var row = document.getElementById('rAmountRow');
       row.style.display='block';
       row.innerHTML = '<span style="color:var(--lav);font-weight:500">Gift amount &nbsp;</span>'+label+(isMonthly?' (recurring)':'');
+      document.getElementById('footNote').textContent = 'Square has emailed the payment confirmation for your '+(isMonthly?'monthly ':'')+'gift of '+label.replace(' / month','')+'. Your written acknowledgment, the one the IRS asks for on gifts of $250 or more, follows separately.';
     }
   })();
 </script>
