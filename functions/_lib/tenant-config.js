@@ -48,6 +48,22 @@ export const TENANT = {
   // Quick links shown at the top of Case Management - the tools case managers
   // already use, so the page is their launch pad instead of somewhere they leave.
   // Add or remove links here; nothing else needs to change.
+  // The operating protocol: the standards Mission Control measures this
+  // organization against on /outcomes and in the morning brief. Every number
+  // here is a target this org agreed to, not a benchmark from anywhere else.
+  // Change a target here and every screen that measures it follows.
+  protocol: {
+    callbackHours: 4,            // first contact after an inquiry arrives
+    crisisCallbackMinutes: 30,   // first contact when crisis language is flagged
+    occupancyTarget: 0.90,       // filled beds / (filled + open)
+    collectionTarget: 0.95,      // paid / (past due + current due), active residents
+    pastDueFlag: 1,              // any past-due balance at or above this is flagged
+    quietDays: 14,               // no recorded contact with a resident for this long
+    fundingDecisionDays: 14,     // a pending application with no decision
+    fundingCliffDays: 14,        // funding or coverage ending within this many days
+    insuranceWarnDays: 30        // insurance renewal coming up
+  },
+
   caseLinks: [
     { label: 'Utah Medicaid eligibility lookup', url: 'https://medicaid.utah.gov/eligibility/' },
     { label: 'Utah Medicaid Online (providers)', url: 'https://medicaid.utah.gov/medicaid-online' },
