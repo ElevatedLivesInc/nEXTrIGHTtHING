@@ -423,9 +423,9 @@ window.GALA = {
     </div>
     <div class="meter" role="progressbar" aria-label="Fundraising progress" aria-valuemin="0" aria-valuemax="100" id="t-meter"><i id="t-bar"></i></div>
     <div class="stats">
-      <div><b id="t-guests">—</b><span>Guests coming</span></div>
-      <div><b id="t-sponsors">—</b><span>Sponsors</span></div>
-      <div><b id="t-items">—</b><span>Items donated</span></div>
+      <div><b id="t-sponsors">—</b><span>Businesses &amp; families giving</span></div>
+      <div><b id="t-items">—</b><span>Gifts donated</span></div>
+      <div id="t-guests-c"><b id="t-guests">—</b><span>Guests coming</span></div>
     </div>
   </div>
 </div></div>
@@ -869,7 +869,7 @@ function renderBoard(d){
   if(d.goal_cents){ const pct=Math.min(100,Math.round((d.raised_cents||0)/d.goal_cents*100));
     $('#t-goal').textContent='of '+money(d.goal_cents)+' goal'; $('#t-meter').setAttribute('aria-valuenow',pct); requestAnimationFrame(()=>$('#t-bar').style.width=Math.max(pct,2)+'%'); }
   else { $('#t-goal').textContent='pledged & raised'; $('#t-meter').hidden=true; }
-  $('#t-guests').textContent=d.guests||0; $('#t-sponsors').textContent=d.sponsor_count||0; $('#t-items').textContent=d.inkind_count||0;
+  $('#t-guests').textContent=d.guests||0; if((d.guests||0)<10){ const dl=Math.max(0,Math.floor((new Date('2026-11-13T17:00:00-07:00')-Date.now())/864e5)); $('#t-guests').textContent=dl; $('#t-guests-c span').textContent=dl===1?'Day to go':'Days to go'; } $('#t-sponsors').textContent=d.sponsor_count||0; $('#t-items').textContent=d.inkind_count||0;
   const sp=d.sponsors||[];
   if(sp.length){ $('#wall').innerHTML = [...TIERS].reverse().map(t=>{ const list=sp.filter(s=>s.tier===t.id); if(!list.length) return '';
       return `<div class="wall-tier"><h4>${t.name}s</h4><div class="wall">${list.map(s=>{ const u=safeUrl(s.url), l=safeUrl(s.logo);
@@ -881,7 +881,7 @@ function renderBoard(d){
 const STEWARD="The Massimi Household";
 const PARTNERS=["Pat's BBQ","Kirk's Photography"];
 const SITES={"Pat's BBQ":'https://www.patsbbq.com',"Hale Centre Theatre":'https://www.hct.org',"Snowbird":'https://www.snowbird.com',"The Grand America Hotel":'https://www.grandamerica.com',"Minky Couture":'https://www.softminkyblankets.com',"Beans & Brews":'https://www.beansandbrews.com',"Let's Roam":'https://www.letsroam.com',"Cinemark Theatres":'https://www.cinemark.com',"Scheels":'https://www.scheels.com',"Shake Shack":'https://shakeshack.com'};
-let _auDonors=null;
+let _auDonors=null, _auCount=0;
 function swLogo(name,url,logo){
   const ini=esc((name.replace(/^The /,'').match(/[A-Za-z0-9]/)||['★'])[0].toUpperCase());
   let src=safeUrl(logo); if(!src&&url){ try{ src='https://www.google.com/s2/favicons?sz=128&domain='+new URL(url).hostname; }catch(e){} }
@@ -900,13 +900,18 @@ async function sponsorWall(d){
   // cash sponsors (other tiers) already render into #wall by tier; hide presenting there
   $$('#wall .wall-tier').forEach(el=>{ if(/^Presenting/.test(el.querySelector('h4').textContent)) el.remove(); });
   const ik=(d.inkind||[]).slice();
-  if(_auDonors===null){ try{ const a=await api('rpc/gala_auction_public',{p_slug:C.slug}); _auDonors=[...new Set((a.items||[]).map(i=>i.donor).filter(Boolean))]; }catch(e){ _auDonors=[]; } }
+  if(_auDonors===null){ try{ const a=await api('rpc/gala_auction_public',{p_slug:C.slug}); _auCount=(a.items||[]).length; _auDonors=[...new Set((a.items||[]).map(i=>i.donor).filter(Boolean))]; }catch(e){ _auDonors=[]; } }
   const cash=new Set(sp.map(s=>s.name));
   const all=[...new Set([...ik,..._auDonors])].filter(n=>n&&!cash.has(n));
   $('#sw-steward').innerHTML = all.includes(STEWARD) ? `<div class="sw-stew"><div class="k">Our first Stewardship Sponsor</div><div class="n">${esc(STEWARD)}</div></div>` : '';
   const rest=all.filter(n=>n!==STEWARD).sort((a,b)=>{ const pa=PARTNERS.indexOf(a), pb=PARTNERS.indexOf(b); if(pa>-1||pb>-1) return (pa<0?99:pa)-(pb<0?99:pb); return a.replace(/^The /,'').localeCompare(b.replace(/^The /,'')); });
   $('#sw-donors').innerHTML = rest.map(n=>swTile(n,SITES[n])).join('');
   $('#sw-donors-h').hidden = !rest.length;
+  /* real counts only: everyone on the wall below, every gift in hand */
+  const givers=cash.size+all.length;
+  $('#t-sponsors').textContent=givers; $('#t-items').textContent=(d.inkind_count||0)+_auCount;
+  if(givers && d.goal_cents && (d.raised_cents||0) < d.goal_cents*0.05){
+    $('#t-raised').textContent=givers+' businesses & families'; $('#t-goal').textContent='already giving toward our '+money(d.goal_cents)+' goal.'; $('#t-meter').hidden=true; }
 }
 async function loadBoard(){
   try{ const d = await api('rpc/gala_public',{p_slug:C.slug}); renderBoard(d); }
