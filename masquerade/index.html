@@ -362,7 +362,7 @@ window.GALA = {
     individual: 'https://square.link/u/MhuK13bT',   // Masquerade Ticket — Individual ($35)
     couple: 'https://square.link/u/d1jsdFyc',       // Masquerade Ticket — Couple ($60)
     supporter: 'https://square.link/u/3wj1onye',    // Recovery Supporter Sponsorship ($100)
-    hope: 'https://square.link/u/3Ii8HU3Q',         // Hope Sponsor Sponsorship ($250)
+    hope: 'https://square.link/u/3Ii8HU3Q',         // Hope Sponsor Sponsorship ($300)
     changemaker: 'https://square.link/u/q4TJOo8u',  // Change Maker Sponsorship ($500)
     champion: 'https://square.link/u/YbHo3FMy',     // Community Champion Sponsorship ($1,000)
     partner: 'https://square.link/u/YW3KrESO',      // Recovery Partner Sponsorship ($2,500+, buyer enters amount)
@@ -788,7 +788,7 @@ let DEMO = false;
 
 const TIERS = [
   {id:'supporter', name:'Recovery Supporter', amt:100,  tag:'Small support. Big impact.', perks:['Name listed on sponsor board','Social media thank-you']},
-  {id:'hope',      name:'Hope Sponsor',       amt:250,  tag:'Hope builds brighter futures.', perks:['All Recovery Supporter benefits','Business name/logo on event materials','2 event tickets']},
+  {id:'hope',      name:'Hope Sponsor',       amt:300,  tag:'Hope builds brighter futures.', perks:['All Recovery Supporter benefits','Business name/logo on event materials','2 event tickets']},
   {id:'changemaker',name:'Change Maker',      amt:500,  tag:'Be the change.', perks:['All Hope Sponsor benefits','Logo prominently displayed at event','4 event tickets','Social media spotlight']},
   {id:'champion',  name:'Community Champion', amt:1000, tag:'Stronger together.', perks:['All Change Maker benefits','Large logo on event signage','6 event tickets','Verbal recognition during event','Dedicated social media post']},
   {id:'partner',   name:'Recovery Partner',   amt:2500, plus:true, tag:'Invest in lasting change.', perks:['All Community Champion benefits','Premier logo placement','8 event tickets','Special recognition during event','Opportunity to provide promotional materials/items for guests']},
@@ -1007,7 +1007,7 @@ wire('#f-inkind','#ok-inkind', fd=>{
 /* quick buy: every Square link, with name + email + photo consent captured first */
 (function(){
   var G=window.GALA, d=document.getElementById('qb'), f=document.getElementById('qb-form'), err=document.getElementById('qb-err'), cur=null;
-  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000],presenting:['Presenting Sponsor','$5,000',500000]};
+  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$300',30000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000],presenting:['Presenting Sponsor','$5,000',500000]};
   function open(k){ if(ITEMS[k]&&!G.square[k]){ var sel=document.getElementById('s-tier'); if(sel&&[].some.call(sel.options,function(o){return o.value===k;})){ sel.value=k; if(sel.onchange) sel.onchange(); var fs=document.getElementById('f-sponsor'); if(fs) fs.scrollIntoView({behavior:'smooth',block:'start'}); } return; }
     if(!ITEMS[k]||!G.square[k]) return; cur=k; f.reset(); err.textContent='';
     document.getElementById('qb-title').textContent=ITEMS[k][0];
