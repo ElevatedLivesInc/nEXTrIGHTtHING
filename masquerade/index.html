@@ -838,7 +838,7 @@ $('#tiers').innerHTML = TSHOW.map(t=>{const i=t.feature?4:TIERS.filter(x=>!x.fea
   <div class="lvl" aria-label="Level ${i+1} of 5">${Array.from({length:5},(_,k)=>STAR.replace('class="star"',`class="star" style="opacity:${k<=i?1:.18}"`).replace(/id="sg"/,`id="sg${i}${k}"`).replace('url(#sg)',`url(#sg${i}${k})`)).join('')}</div>
   <div class="tag">${t.tag}</div><div class="rule"></div>
   <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn small ${(t.plus||t.feature)?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<button class="btn small ${(t.plus||t.feature)?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`;}).join('');
+  <div class="btns">${t.feature?`<a class="btn small" href="tel:+13852530538">Call Ryan · (385) 253-0538</a><a class="btn small ghost" href="mailto:ryan@nextrighthing.com?subject=Presenting%20Sponsor%20-%20Masquerade">Email Ryan</a>`:`<button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>`}${C.square[t.id]?`<button class="btn small ${(t.plus||t.feature)?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`;}).join('');
 $('#buy-now').innerHTML=(C.square.individual?`<button class="btn small" type="button" data-buy="individual">Buy individual · $35</button>`:'')+(C.square.couple?`<button class="btn small" type="button" data-buy="couple">Buy couple · $60</button>`:'');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
 $('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
@@ -896,7 +896,7 @@ async function sponsorWall(d){
   const pres=sp.filter(s=>s.tier==='presenting');
   $('#sw-presenting').innerHTML = pres.length
     ? pres.map(s=>{ const u=safeUrl(s.url), l=safeUrl(s.logo); const body=`<div class="k">Presented by</div><div class="n">${esc(s.name)}</div>${l?`<img src="${esc(l)}" alt="">`:''}`; return u?`<a href="${esc(u)}" target="_blank" rel="noopener" style="text-decoration:none;display:block" class="sw-pres">${body}</a>`:`<div class="sw-pres">${body}</div>`; }).join('')
-    : `<div class="sw-pres open"><div class="k">Presenting Sponsor &middot; only one</div><div class="n">Your name here</div><p style="margin:6px 0 12px;color:var(--muted)">&ldquo;Flannel to Formal Masquerade, presented by you.&rdquo; On this page, on the signage, and on the night.</p><button class="btn small" type="button" data-buy="presenting">Become our Presenting Sponsor</button></div>`;
+    : `<div class="sw-pres open"><div class="k">Presenting Sponsor &middot; only one</div><div class="n">Your name here</div><p style="margin:6px 0 12px;color:var(--muted)">&ldquo;Flannel to Formal Masquerade, presented by you.&rdquo; On this page, on the signage, and on the night.</p><a class="btn small" href="tel:+13852530538">Call Ryan to claim it · (385) 253-0538</a></div>`;
   // cash sponsors (other tiers) already render into #wall by tier; hide presenting there
   $$('#wall .wall-tier').forEach(el=>{ if(/^Presenting/.test(el.querySelector('h4').textContent)) el.remove(); });
   const ik=(d.inkind||[]).slice();
