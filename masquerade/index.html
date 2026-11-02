@@ -362,7 +362,7 @@ window.GALA = {
     individual: 'https://square.link/u/MhuK13bT',   // Masquerade Ticket — Individual ($35)
     couple: 'https://square.link/u/d1jsdFyc',       // Masquerade Ticket — Couple ($60)
     supporter: 'https://square.link/u/3wj1onye',    // Recovery Supporter Sponsorship ($100)
-    hope: 'https://square.link/u/3Ii8HU3Q',         // Hope Sponsor Sponsorship ($250)
+    hope: 'https://square.link/u/3Ii8HU3Q',         // Hope Sponsor Sponsorship ($300)
     changemaker: 'https://square.link/u/q4TJOo8u',  // Change Maker Sponsorship ($500)
     champion: 'https://square.link/u/YbHo3FMy',     // Community Champion Sponsorship ($1,000)
     partner: 'https://square.link/u/YW3KrESO',      // Recovery Partner Sponsorship ($2,500+, buyer enters amount)
@@ -788,7 +788,7 @@ let DEMO = false;
 
 const TIERS = [
   {id:'supporter', name:'Recovery Supporter', amt:100,  tag:'Small support. Big impact.', perks:['Name listed on sponsor board','Social media thank-you']},
-  {id:'hope',      name:'Hope Sponsor',       amt:250,  tag:'Hope builds brighter futures.', perks:['All Recovery Supporter benefits','Business name/logo on event materials','2 event tickets']},
+  {id:'hope',      name:'Hope Sponsor',       amt:300,  tag:'Hope builds brighter futures.', perks:['All Recovery Supporter benefits','Business name/logo on event materials','2 event tickets']},
   {id:'changemaker',name:'Change Maker',      amt:500,  tag:'Be the change.', perks:['All Hope Sponsor benefits','Logo prominently displayed at event','4 event tickets','Social media spotlight']},
   {id:'champion',  name:'Community Champion', amt:1000, tag:'Stronger together.', perks:['All Change Maker benefits','Large logo on event signage','6 event tickets','Verbal recognition during event','Dedicated social media post']},
   {id:'partner',   name:'Recovery Partner',   amt:2500, plus:true, tag:'Invest in lasting change.', perks:['All Community Champion benefits','Premier logo placement','8 event tickets','Special recognition during event','Opportunity to provide promotional materials/items for guests']},
@@ -838,7 +838,7 @@ $('#tiers').innerHTML = TSHOW.map(t=>{const i=t.feature?4:TIERS.filter(x=>!x.fea
   <div class="lvl" aria-label="Level ${i+1} of 5">${Array.from({length:5},(_,k)=>STAR.replace('class="star"',`class="star" style="opacity:${k<=i?1:.18}"`).replace(/id="sg"/,`id="sg${i}${k}"`).replace('url(#sg)',`url(#sg${i}${k})`)).join('')}</div>
   <div class="tag">${t.tag}</div><div class="rule"></div>
   <ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>
-  <div class="btns"><button class="btn small ${(t.plus||t.feature)?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>${C.square[t.id]?`<button class="btn small ${(t.plus||t.feature)?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`;}).join('');
+  <div class="btns">${t.feature?`<a class="btn small" href="tel:+13852530538">Call Ryan · (385) 253-0538</a><a class="btn small ghost" href="mailto:ryan@nextrighthing.com?subject=Presenting%20Sponsor%20-%20Masquerade">Email Ryan</a>`:`<button class="btn small ${t.plus?'':'ghost'}" type="button" data-tier="${t.id}">Sign up</button>`}${C.square[t.id]?`<button class="btn small ${(t.plus||t.feature)?'ghost':''}" type="button" data-buy="${t.id}">Pay $${t.amt.toLocaleString()}${t.plus?'+':''} now</button>`:''}</div></div>`;}).join('');
 $('#buy-now').innerHTML=(C.square.individual?`<button class="btn small" type="button" data-buy="individual">Buy individual · $35</button>`:'')+(C.square.couple?`<button class="btn small" type="button" data-buy="couple">Buy couple · $60</button>`:'');
 $('#s-tier').innerHTML = TIERS.map(t=>`<option value="${t.id}">${t.name} — $${t.amt.toLocaleString()}${t.plus?'+':''}</option>`).join('');
 $('#s-tier').onchange=()=>{ $('#s-amt-wrap').hidden = $('#s-tier').value!=='partner'; };
@@ -896,7 +896,7 @@ async function sponsorWall(d){
   const pres=sp.filter(s=>s.tier==='presenting');
   $('#sw-presenting').innerHTML = pres.length
     ? pres.map(s=>{ const u=safeUrl(s.url), l=safeUrl(s.logo); const body=`<div class="k">Presented by</div><div class="n">${esc(s.name)}</div>${l?`<img src="${esc(l)}" alt="">`:''}`; return u?`<a href="${esc(u)}" target="_blank" rel="noopener" style="text-decoration:none;display:block" class="sw-pres">${body}</a>`:`<div class="sw-pres">${body}</div>`; }).join('')
-    : `<div class="sw-pres open"><div class="k">Presenting Sponsor &middot; only one</div><div class="n">Your name here</div><p style="margin:6px 0 12px;color:var(--muted)">&ldquo;Flannel to Formal Masquerade, presented by you.&rdquo; On this page, on the signage, and on the night.</p><button class="btn small" type="button" data-buy="presenting">Become our Presenting Sponsor</button></div>`;
+    : `<div class="sw-pres open"><div class="k">Presenting Sponsor &middot; only one</div><div class="n">Your name here</div><p style="margin:6px 0 12px;color:var(--muted)">&ldquo;Flannel to Formal Masquerade, presented by you.&rdquo; On this page, on the signage, and on the night.</p><a class="btn small" href="tel:+13852530538">Call Ryan to claim it · (385) 253-0538</a></div>`;
   // cash sponsors (other tiers) already render into #wall by tier; hide presenting there
   $$('#wall .wall-tier').forEach(el=>{ if(/^Presenting/.test(el.querySelector('h4').textContent)) el.remove(); });
   const ik=(d.inkind||[]).slice();
@@ -1007,7 +1007,7 @@ wire('#f-inkind','#ok-inkind', fd=>{
 /* quick buy: every Square link, with name + email + photo consent captured first */
 (function(){
   var G=window.GALA, d=document.getElementById('qb'), f=document.getElementById('qb-form'), err=document.getElementById('qb-err'), cur=null;
-  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$250',25000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000],presenting:['Presenting Sponsor','$5,000',500000]};
+  var ITEMS={individual:['Individual ticket','$35',3500],couple:['Couple ticket','$60',6000],supporter:['Recovery Supporter','$100',10000],hope:['Hope Sponsor','$300',30000],changemaker:['Change Maker','$500',50000],champion:['Community Champion','$1,000',100000],partner:['Recovery Partner','$2,500+',250000],star1:['Light 1 starfish','$5',500],star5:['Light 5 starfish','$20',2000],presenting:['Presenting Sponsor','$5,000',500000]};
   function open(k){ if(ITEMS[k]&&!G.square[k]){ var sel=document.getElementById('s-tier'); if(sel&&[].some.call(sel.options,function(o){return o.value===k;})){ sel.value=k; if(sel.onchange) sel.onchange(); var fs=document.getElementById('f-sponsor'); if(fs) fs.scrollIntoView({behavior:'smooth',block:'start'}); } return; }
     if(!ITEMS[k]||!G.square[k]) return; cur=k; f.reset(); err.textContent='';
     document.getElementById('qb-title').textContent=ITEMS[k][0];

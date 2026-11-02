@@ -117,7 +117,7 @@ let DEMO=false, D=null, tab='todo';
 /* What each tier was promised — straight from the sponsor flyer. Cumulative. */
 const TIERS={
   supporter:{name:'Recovery Supporter',amt:100,tickets:0,ben:[['board','Name listed on sponsor board'],['social_thanks','Social media thank-you']]},
-  hope:{name:'Hope Sponsor',amt:250,tickets:2,ben:[['materials_logo','Business name/logo on event materials']]},
+  hope:{name:'Hope Sponsor',amt:300,tickets:2,ben:[['materials_logo','Business name/logo on event materials']]},
   changemaker:{name:'Change Maker',amt:500,tickets:4,ben:[['logo_display','Logo prominently displayed at event'],['social_spotlight','Social media spotlight']]},
   champion:{name:'Community Champion',amt:1000,tickets:6,ben:[['signage_large','Large logo on event signage'],['verbal','Verbal recognition during event'],['dedicated_post','Dedicated social media post']]},
   partner:{name:'Recovery Partner',amt:2500,tickets:8,ben:[['premier_logo','Premier logo placement'],['special_recognition','Special recognition during event'],['promo_items','Promotional materials/items for guests']]},
@@ -184,7 +184,7 @@ function render(){
   renderTodo(); renderSponsors(); renderGuests(); renderInkind(); renderAuction(); renderStars(); renderDrawing(); renderScript();
 }
 
-const PAYLINKS=[['Ticket $35','https://square.link/u/MhuK13bT'],['Couple $60','https://square.link/u/d1jsdFyc'],['Supporter $100','https://square.link/u/3wj1onye'],['Hope $250','https://square.link/u/3Ii8HU3Q'],['Change Maker $500','https://square.link/u/q4TJOo8u'],['Champion $1,000','https://square.link/u/YbHo3FMy'],['Partner $2,500','https://square.link/u/YW3KrESO'],['Event page','https://nextrighthing.com/masquerade/']];
+const PAYLINKS=[['Ticket $35','https://square.link/u/MhuK13bT'],['Couple $60','https://square.link/u/d1jsdFyc'],['Supporter $100','https://square.link/u/3wj1onye'],['Hope $300','https://square.link/u/3Ii8HU3Q'],['Change Maker $500','https://square.link/u/q4TJOo8u'],['Champion $1,000','https://square.link/u/YbHo3FMy'],['Partner $2,500','https://square.link/u/YW3KrESO'],['Event page','https://nextrighthing.com/masquerade/']];
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-copylink]');if(!b)return;navigator.clipboard.writeText(b.dataset.copylink).then(()=>toast('Copied: '+b.textContent));});
 function renderTodo(){
   const sp=D.sponsors.filter(s=>s.status!=='declined');
