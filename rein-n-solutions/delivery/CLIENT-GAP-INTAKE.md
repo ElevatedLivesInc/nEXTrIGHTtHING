@@ -6,7 +6,7 @@ Fill one block per prospect. This is the feed for Fiverr custom offers *and* dir
 
 ---
 
-### Prospect 1
+### Prospect 1: Dick's Construction
 - **Business / owner:**
 - **City / category:**
 - **Where they are now:** website? (none / slow / broken on phone / fine) · GBP? (missing / unverified / incomplete / solid) · reviews (#, avg, replied?)
@@ -17,23 +17,23 @@ Fill one block per prospect. This is the feed for Fiverr custom offers *and* dir
   3.
 - **Proof to show them:** (screenshot of their listing vs. a competitor's)
 - **Score:** gap _/5 · value _/5 · decider _/5 = _/15
-- **Offer:** Basic $150 / Standard $300 / Premium $600 / custom
+- **Offer:** $300 site + Google (+$50/mo optional)
 - **Channel:** Fiverr custom offer (review seed) or direct invoice
 - **Next step + date:**
 
-### Prospect 2
+### Prospect 2: D Silva
 (same block)
 
-### Prospect 3
+### Prospect 3: ELK Home Repair
 (same block)
 
-### Prospect 4
+### Prospect 4: Drago Family Enterprises
 (same block)
 
-### Prospect 5
+### Prospect 5: Apogee Custom Coatings
 (same block)
 
-### Prospect 6
+### Prospect 6: Really Good Construction
 (same block)
 
 ---

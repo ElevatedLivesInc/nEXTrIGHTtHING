@@ -14,29 +14,24 @@ Second gig: **Digital Marketing → Local SEO → Google Business Profile**
 ## Search tags (5)
 `google business profile` · `local seo` · `small business website` · `google my business` · `lead dashboard`
 
-## Packages
+## Package — one price, same for everybody
 
-| | Basic — **$150** | Standard — **$300** ★ | Premium — **$600** |
-|---|---|---|---|
-| Name (≤35) | Google Profile Tune-Up | Website + Google + Dashboard | Run It For Me, 30 Days |
-| Description (≤100) | Full Google Business Profile audit and fix, photos, services, review link + QR | 5-page fast website, Google Profile optimized, Mission Control Lite lead dashboard | Everything in Standard, plus 30 days of weekly Google posts, review replies and a Monday brief |
-| Delivery | 3 days | 7 days | 10 days |
-| Revisions | 1 | 2 | 3 |
-| Pages | 0 | 5 | 5 |
-| Responsive design | — | ✓ | ✓ |
-| Content upload | ✓ | ✓ | ✓ |
-| Contact form | — | ✓ | ✓ |
-| Dashboard | — | Mission Control Lite | Mission Control Lite + weekly brief |
+Per CLAUDE.md in `reinnsolutions-site`: **$300 once, $50/mo optional. Do not change it, do not add tiers.** Fiverr allows a single-package gig; use it.
 
-Why three tiers with $300 in the middle: buyers anchor on the extremes and most pick the middle (the "compromise effect", well-documented in pricing research — Simonson 1989; Huber, Payne & Puto 1982 on decoys). Basic exists to make $300 look like the sensible choice; Premium exists to make $300 look modest.
+| Field | Value |
+|---|---|
+| Name (≤35) | Site + Google, live in 48 hours |
+| Description (≤100) | One-page site, Google Business Profile claimed and filled in, quote form that texts you a photo |
+| Price | **$300** |
+| Delivery | 2 days (after Google access is granted) |
+| Revisions | 2 |
+| Pages | 1 |
 
-**Gig extras**
-- Extra fast delivery (Standard in 4 days): +$75
-- Additional page: +$35
-- Google Business Profile posts, 4-pack: +$60
-- Domain + email setup help (client pays the registrar): +$40
+**The $50/mo upkeep:** for a buyer who found you on Fiverr, it has to run through Fiverr too (a monthly custom offer or a gig subscription if your account has that option). Fiverr does not allow moving its buyers to outside payment. Warm clients you brought yourself pay through Melio as usual.
 
-Fiverr keeps 20%. $300 nets **$240**; $600 nets **$480**. The delivery SOP is built to land Standard in ~5 working hours so $240 is ~$48/hr. Do not discount below $300 for cold buyers.
+Fiverr keeps 20%, so $300 nets **$240**.
+
+Recovery-program Mission Control ($2,500 setup + $1,500/mo and up) does **not** go on Fiverr. It's sold direct from reinnsolutions.xyz.
 
 ## Description (≤1,200 chars)
 
@@ -45,16 +40,16 @@ Fiverr keeps 20%. $300 nets **$240**; $600 nets **$480**. The delivery SOP is bu
 > Most small businesses have one of three problems: no website, a website nobody finds, or a Google listing that's half filled out. We fix all three in one order.
 >
 > **What you get (Standard):**
-> ✔ A fast, mobile-first 5-page website on your domain (Home, Services, About, Reviews, Contact)
+> ✔ A fast, mobile-first one-page site on your domain
 > ✔ Your Google Business Profile fully optimized: categories, services, hours, service area, description, photos, Q&A, review link + QR code
-> ✔ A contact form that emails or texts you the moment someone reaches out
+> ✔ A quote form that texts you the customer's photo the moment they send it
 > ✔ **Mission Control Lite**: a private one-page dashboard showing new leads, how fast you answered, Google calls and reviews
 >
-> **How we work:** you fill one questionnaire (10 min). We build. You get a preview link on day 5, revisions, then launch.
+> **How we work:** you fill one questionnaire (10 min) and add us to your Google profile. Live in 48 hours.
 >
 > **Who we are:** a two-person Salt Lake City team who built and run a full operations dashboard for a licensed treatment and sober-living program. Same discipline, scaled to your business.
 >
-> No fake reviews, no keyword-stuffed business names, nothing that gets your listing suspended. Message us before ordering if you're unsure which tier fits.
+> No fake reviews, no keyword-stuffed business names, nothing that gets your listing suspended. $300 is the same for everybody. You own everything.
 
 (≈1,150 chars — paste, then check Fiverr's counter)
 

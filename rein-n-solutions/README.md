@@ -3,6 +3,8 @@
 The framework for Rein N' Solutions and Elevated Lives, extracted from the systems we built for NRT.
 First use: a Fiverr storefront selling the **$300 Website + Google Business Profile + Mission Control Lite** package. The same kit works for any SMB, on or off Fiverr.
 
+> **Prices follow `reinnsolutions-site/CLAUDE.md`: $300 once, $50/mo optional.** Some older notes in `fiverr/03`, `04` and `delivery/DELIVERY-SOP.md` still mention a 5-page, 7-day, three-tier version; the gig file and CLAUDE.md win.
+
 > ⚠️ **Do not merge this folder into `main` of nEXTrIGHTtHING.** This repo is public on GitHub and deploys to nextrighthing.com, so anything merged here is served on NRT's domain. Move it to a private Rein N' Solutions repo (e.g. `ElevatedLivesInc/reinnsolutions-oaas`, currently empty).
 
 | Folder | What | Use it when |
