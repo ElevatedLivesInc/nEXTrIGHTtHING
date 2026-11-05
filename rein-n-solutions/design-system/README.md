@@ -1,19 +1,8 @@
 # Rein N' Solutions design system
 
-The browsable system (tokens, type, components, cover) lives in the Design System artifact:
-https://claude.ai/artifact/SoKmuFfRcacV9qV4wySzta (private until shared from its Share menu).
+Browsable system: https://claude.ai/artifact/SoKmuFfRcacV9qV4wySzta (private until shared).
+`tokens.json` here is the same file, for client builds.
 
-`tokens.json` here is the same token file, kept in git so client builds can read it.
+**Source:** the live site `reinnsolutions-site` v2 (ember `#ff8a1f` / `#ffb54d` on warm black `#0d0a08`, Fraunces + Inter) and the logo (copper tree on charcoal `#2c2d2f`, sampled by eye). Mission Control components come from NRT's `mission-control.html`. NRT keeps its own navy/gold/lavender system.
 
-**Extracted from** this repo's Mission Control (`mission-control.html`), Fellowship Hall page (type trio) and `functions/_lib/tenant-config.js` (colors). Mapping:
-
-| NRT | Rein N' Solutions |
-|---|---|
-| navy `#1a2744` / navy-deep `#121c33` | `rein-navy #14233c` / `rein-navy-deep #0b1526` |
-| sand `#c9a96e` / sand-light `#e8d5b0` | `brass #d4a94f` / `brass-tint` (text: `brass-ink #7d5a14`) |
-| lavender `#c9b6f0` (walled clinical lane) | `iris` (walled lane + Elevated Lives) |
-| alert hot / warm / calm | `hot` / `warm` / `calm` with tints |
-| Cormorant Garamond + Raleway | Fraunces + Public Sans + DM Mono |
-| `.tile` / `.nums` / `.alert` / `.qa` / `.pill` | StatTile / Alert / Button quiet / Pill |
-
-NRT keeps its own palette. This system is for Rein N' Solutions, Elevated Lives and client deliverables.
+Open decision: the logo is copper, the site is orange. Until one leads, copper = the mark, ember = anything you click.
