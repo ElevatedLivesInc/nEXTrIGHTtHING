@@ -1,0 +1,44 @@
+# nextrighthing.com
+# Public pages are open. Staff systems and anything holding client data are not.
+
+User-agent: *
+
+# --- Staff systems: never index. These sit behind Cloudflare Access, but a
+# --- crawler should not be advertising the URLs either.
+Disallow: /mission-control
+Disallow: /housing
+Disallow: /funding
+Disallow: /intake-queue
+Disallow: /in-kind-report
+Disallow: /donations-report
+Disallow: /admin-issue
+Disallow: /carwash-report
+Disallow: /incident-log
+Disallow: /incident-report
+Disallow: /case-management
+Disallow: /client
+Disallow: /rounds
+Disallow: /work-signup
+Disallow: /signin
+Disallow: /whoami
+
+# --- Per-donor and per-resident documents: unique URLs, not for the index.
+Disallow: /in-kind-receipt
+Disallow: /verify
+Disallow: /thank-you
+Disallow: /carwash-confirmed
+
+# --- API and function routes.
+Disallow: /api/
+Disallow: /assistant/
+Disallow: /case/
+Disallow: /drawing/
+Disallow: /donation/
+Disallow: /incident/
+Disallow: /patrol/
+
+# --- Everything else is public and welcome:
+# /  /get-help  /payment-options  /speak-up  /fellowship-hall-meetings
+# /yard-sale  /carwash
+
+Sitemap: https://nextrighthing.com/sitemap.xml

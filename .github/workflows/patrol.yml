@@ -1,0 +1,24 @@
+# Runs the Patrol morning briefs every day.
+# Cloudflare Pages has no timer of its own, so GitHub calls the brief's address
+# once a morning with a secret key. Briefs only send when PATROL_ENABLED=true is
+# set in Cloudflare, so this file is harmless until that switch is on.
+# Needs one repository secret: PATROL_KEY (the same value as PATROL_KEY in Cloudflare).
+name: Patrol morning briefs
+on:
+  schedule:
+    - cron: '30 13 * * *'   # 7:30 AM Mountain (daylight time) / 6:30 AM standard time
+  workflow_dispatch: {}      # lets you run it by hand from the Actions tab
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Patrol
+        env:
+          PATROL_KEY: ${{ secrets.PATROL_KEY }}
+        run: |
+          if [ -z "$PATROL_KEY" ]; then echo "PATROL_KEY secret is not set"; exit 1; fi
+          # Call the .pages.dev address: the public domain's bot filter blocks GitHub (403) and www redirects.
+          OUT=$(curl -fsSL --max-time 60 "https://nrt-site.pages.dev/patrol/run?key=$PATROL_KEY" -H "Accept: application/json")
+          echo "$OUT" | head -c 2000
+          # Only go green if Patrol actually sent. A redirect page or "turned off" reply now fails loudly.
+          echo "$OUT" | grep -q '"ok": true' || { echo; echo "Patrol did not send - see the reply above."; exit 1; }
