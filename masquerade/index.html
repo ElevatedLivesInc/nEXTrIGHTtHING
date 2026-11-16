@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flannel to Formal Masquerade · Nov 13, 2026</title>
-<meta name="description" content="Flannel to Formal Masquerade Fundraiser — Friday, November 13, 2026, West Jordan, UT. Ribbon cutting at 5 PM, then dinner by Pat’s BBQ, a silent auction, the Starfish Wall and an open house, 6–10 PM. Benefits The Right Thing in Recovery, a nonprofit (EIN 93-4316358).">
-<meta property="og:title" content="Flannel to Formal Masquerade Fundraiser">
-<meta property="og:description" content="Fri Nov 13 · Ribbon cutting 5 PM · Doors 6 PM · 7669 S Redwood Rd, West Jordan. Dinner by Pat’s BBQ, silent auction and open house. $35 a seat.">
+<title>Thank You · Flannel to Formal Masquerade 2026</title>
+<meta name="description" content="Thank you to everyone who made the Flannel to Formal Masquerade Fundraiser on November 13, 2026 an unforgettable night. A few photos, and the businesses and families who made it possible. Benefits The Right Thing in Recovery, a nonprofit (EIN 93-4316358).">
+<meta property="og:title" content="Thank you from the Flannel to Formal Masquerade">
+<meta property="og:description" content="A few photos from November 13, and the businesses and families who made the night possible. Benefits The Right Thing in Recovery.">
 <meta property="og:image" content="https://nextrighthing.com/masquerade/share.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="https://nextrighthing.com/masquerade/"><meta property="og:type" content="website">
@@ -41,6 +41,33 @@ section{padding:64px 0;scroll-margin-top:60px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;backdrop-filter:blur(8px)}
 .grid{display:grid;gap:16px}
 @media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g5{grid-template-columns:repeat(5,1fr)}}
+/* ---- After the event (Nov 16, 2026) ----
+   The night is over, so the page leads with the thank-you and the sponsor wall.
+   Everything that sold a seat or a sponsorship is hidden, not deleted: take the
+   "after" class off the body tag and the whole event page is back for next year. */
+body.after #info,body.after #invite,body.after #runofshow,body.after #tickets,body.after #auction,body.after #sponsor,
+body.after #inkind,body.after #starfish,body.after #share,body.after #faq,body.after #mbar,body.after .tracker,
+body.after .hero .count,body.after .hero .cta,body.after .hero .chips,body.after .divider,body.after #sponsor-wall .cta,
+body.after .top nav a.pre,body.after .hero .when,body.after .hero .where,body.after .sw-pres.open{display:none!important}
+body:not(.after) #thanks,body:not(.after) .top nav a.post{display:none!important}
+body.after{padding-bottom:0!important}
+body.after .hero{padding-bottom:8px}
+#thanks{padding-top:26px}
+.ty-script{font-family:"Great Vibes",cursive;font-size:clamp(3.2rem,13vw,5.6rem);line-height:1.15;color:#f3d48a;text-shadow:0 0 34px rgba(185,167,232,.35)}
+.ty-lead{max-width:680px;margin:14px auto 0;color:var(--text);font-size:1.06rem}
+.ty-room{display:block;width:100%;height:auto;border-radius:20px;border:1px solid var(--line);box-shadow:0 22px 60px rgba(0,0,0,.5);margin:30px 0 14px}
+.ty-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(min-width:760px){.ty-grid{grid-template-columns:repeat(4,1fr)}}
+.ty-grid a{display:block;position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);aspect-ratio:1/1;background:var(--navy2);box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.ty-grid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.ty-grid a:hover img{transform:scale(1.05)}
+.ty-grid span{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:#fff;background:linear-gradient(transparent,rgba(7,11,31,.88))}
+.ty-pats{display:grid;gap:18px;align-items:center;margin-top:16px}
+@media(min-width:620px){.ty-pats{grid-template-columns:200px 1fr}}
+.ty-pats img{width:100%;max-width:200px;height:auto;border-radius:50%;border:2px solid var(--gold);display:block;margin:0 auto}
+.ty-pats h3{color:var(--gold2)}
+.ty-next{text-align:center;margin-top:34px}
+.ty-next p{color:var(--muted);max-width:620px;margin:0 auto 16px}
 .divider{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5;margin:0 auto;max-width:600px}
 
 /* top bar */
@@ -348,7 +375,7 @@ footer a,.info-card a{overflow-wrap:anywhere}
 })();
 </script>
 </head>
-<body>
+<body class="after">
 
 <!-- ======================= CONFIG — the only part staff ever edit ======================= -->
 <script>
@@ -385,13 +412,17 @@ window.GALA = {
     <span>Masquerade 2026</span>
   </a>
   <nav aria-label="Sections">
-    <a href="#info">Info</a>
-    <a href="#auction">Auction</a>
-    <a href="#tickets">Tickets</a>
-    <a href="#sponsor">Sponsor</a>
-    <a href="#inkind">Donate</a>
-    <a href="#starfish">Starfish Wall</a>
-    <a href="#share">Share</a>
+    <a class="pre" href="#info">Info</a>
+    <a class="pre" href="#auction">Auction</a>
+    <a class="pre" href="#tickets">Tickets</a>
+    <a class="pre" href="#sponsor">Sponsor</a>
+    <a class="pre" href="#inkind">Donate</a>
+    <a class="pre" href="#starfish">Starfish Wall</a>
+    <a class="pre" href="#share">Share</a>
+    <a class="post" href="#thanks">Thank you</a>
+    <a class="post" href="#photos">Photos</a>
+    <a class="post" href="#sponsor-wall">Sponsors</a>
+    <a class="post" href="/donate">Donate</a>
   </nav>
 </div></div>
 
@@ -413,6 +444,47 @@ window.GALA = {
     </div>
   </div>
 </header>
+
+<!-- ===== THANK YOU (added Nov 16, 2026, after the event) =====
+     Photos here show the room, the decor and the auction table only. Guests were asked
+     about photos when they reserved and some said no, so no guest photos are published. -->
+<section id="thanks"><div class="wrap">
+  <div style="text-align:center">
+    <span class="eyebrow">Friday, November 13, 2026</span>
+    <div class="ty-script">Thank You</div>
+    <p class="ty-lead">Flannel, formal, masks and all, you showed up. Thank you to every guest, bidder, volunteer, sponsor and local business who filled our new home on Redwood Road for dinner, a silent auction and a night for recovery.</p>
+    <p class="ty-lead" style="color:var(--muted);font-size:.98rem">Everything raised benefits <strong style="color:var(--text)">The Right Thing in Recovery</strong>, which provides recovery opportunities, sober activities, transportation, peer support and resources for people working to rebuild their lives.</p>
+  </div>
+
+  <div id="photos" style="scroll-margin-top:70px">
+    <img class="ty-room" src="thanks/the-room.jpg" alt="The event space draped in white and purple fabric and lit for the Masquerade" width="1400" height="539">
+    <div class="ty-grid">
+      <a href="thanks/auction-table.jpg" target="_blank" rel="noopener"><img src="thanks/auction-table.jpg" alt="Silent auction table covered in donated vouchers and gift certificates" width="1400" height="1049" loading="lazy"><span>Silent auction</span></a>
+      <a href="thanks/balloon-arch.jpg" target="_blank" rel="noopener"><img src="thanks/balloon-arch.jpg" alt="Blue and lavender balloon arch at the entrance" width="1050" height="1400" loading="lazy"><span>The entrance</span></a>
+      <a href="thanks/gift-basket.jpg" target="_blank" rel="noopener"><img src="thanks/gift-basket.jpg" alt="Wrapped gift basket and donated items on the auction table" width="1400" height="1050" loading="lazy"><span>Donated locally</span></a>
+      <a href="thanks/welcome-balloons.jpg" target="_blank" rel="noopener"><img src="thanks/welcome-balloons.jpg" alt="Lavender, silver and confetti balloons in the lobby" width="1050" height="1400" loading="lazy"><span>Our new home</span></a>
+    </div>
+  </div>
+
+  <div class="card ty-pats">
+    <img src="thanks/pats-bbq.jpg" alt="Pat's Barbecue logo" width="1400" height="1400" loading="lazy">
+    <div>
+      <span class="eyebrow">Dinner</span>
+      <h3>Served by Pat&rsquo;s BBQ</h3>
+      <p style="margin:.5em 0 0;color:var(--muted)">Thank you to <a href="https://www.patsbbq.com" target="_blank" rel="noopener">Pat&rsquo;s BBQ</a> for feeding the whole room, and to every business and family below who donated an auction item, a gift, or their time. Local support is what made this night happen.</p>
+    </div>
+  </div>
+
+  <div class="ty-next">
+    <h2 class="fancy" style="font-size:clamp(1.7rem,5vw,2.4rem)">Keep it going</h2>
+    <p>The night is over, but the work it pays for runs all year. A gift of any size helps.</p>
+    <div class="cta">
+      <a class="btn" href="/donate">Give to The Right Thing in Recovery</a>
+      <a class="btn ghost" href="#sponsor-wall">See who made it possible</a>
+    </div>
+    <p style="margin-top:18px;font-size:.9rem">Want to sponsor or donate to the next one? <a class="cname-mail"></a> · <a href="tel:+13852530538">(385) 253-0538</a></p>
+  </div>
+</div></section>
 
 <!-- live tracker: hidden Oct 29 per Cate until real ticket/cash numbers exist -->
 <div class="tracker" style="display:none"><div class="wrap">
@@ -468,7 +540,7 @@ window.GALA = {
 <div class="divider"></div>
 
 <!-- the evening -->
-<section><div class="wrap">
+<section id="runofshow"><div class="wrap">
   <div style="text-align:center;margin-bottom:26px"><span class="eyebrow">The evening</span><h2>Good food. Great company.<br>A brighter tomorrow.</h2></div>
   <ol class="ros" aria-label="Run of show">
     <li><b>5:00</b><span>Ribbon cutting at our new home</span></li>
@@ -615,7 +687,7 @@ window.GALA = {
   <div style="text-align:center;max-width:760px;margin:0 auto 22px">
     <span class="eyebrow">Sponsor wall</span>
     <h2 class="fancy"><span class="brush">Thank You to Our Sponsors</span></h2>
-    <p class="lead" style="margin:10px auto 0">The businesses and families making this night possible.</p>
+    <p class="lead" style="margin:10px auto 0">The businesses and families who made this night possible.</p>
   </div>
   <div id="sw-presenting"></div>
   <div id="sw-steward"></div>
