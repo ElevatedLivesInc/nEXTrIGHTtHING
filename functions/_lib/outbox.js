@@ -191,7 +191,7 @@ export async function sendGuestThanks(env, { id, who, origin, force }) {
       P((fn ? 'Dear ' + esc(fn) : 'Hello') + ',')
     + P('Thank you for being part of the ' + esc(EVENT) + '. Flannel, formal, masks and all, you helped fill the room for a good cause.')
     + P('Everything raised that night benefits ' + esc(ORG) + ', which provides ' + MISSION + '.')
-    + P('We also owe a thank-you to the local businesses and families who donated dinner, auction items and their time. You can see them, and a few photos from the night, here:')
+    + P('We also owe a thank-you to the local businesses and families who donated dinner, auction items and their time. You can see them all here, and professional photos from the night are on the way:')
     + BTN(origin + '/masquerade/', 'See the thank-you page')
     + P('If you would like to keep it going, a gift of any size helps: <a href="' + origin + '/donate" style="color:#96762f">nextrighthing.com/donate</a>.')
     + SIGN });
