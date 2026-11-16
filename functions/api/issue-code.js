@@ -43,6 +43,12 @@ export async function onRequestPost(context) {
     created_by: createdBy,
     status: 'issued'
   };
+  // Where the receipt gets emailed. Optional; only stored when it looks like an address.
+  const donor_email = (body.donor_email || '').trim().toLowerCase();
+  if (donor_email) {
+    if (!/^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(donor_email)) return json({ error: 'That email address does not look right.' }, 400);
+    record.donor_email = donor_email;
+  }
 
   // retry once on the rare code collision
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -62,6 +68,7 @@ export async function onRequestPost(context) {
       const rows = await res.json();
       const row = Array.isArray(rows) ? rows[0] : rows;
       return json({
+        id: row.id,
         code: row.code,
         donor_name: row.donor_name,
         description: row.description,

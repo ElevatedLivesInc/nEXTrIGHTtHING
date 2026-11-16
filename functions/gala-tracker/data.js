@@ -4,6 +4,7 @@
 // FAIL-CLOSED: refuses unless the request proves a staff identity through Cloudflare Access.
 import { getAuthedEmail } from '../_lib/auth.js';
 import { allowedFor } from '../_lib/roster.js';
+import { sentFor } from '../_lib/outbox.js';
 
 const SLUG = 'masquerade-2026';
 const TABLES = {
@@ -44,7 +45,9 @@ export async function onRequestGet({ request, env }) {
       sb(env, 'gala_event?slug=eq.' + SLUG), sb(env, 'gala_rsvps?' + q), sb(env, 'gala_sponsors?' + q), sb(env, 'gala_inkind?' + q), sb(env, 'gala_drawing?' + q),
       sb(env, 'gala_auction_items?event_slug=eq.' + SLUG + '&order=sort.asc,title.asc'), sb(env, 'gala_bids?event_slug=eq.' + SLUG + '&order=amount_cents.desc,created_at.asc'), sb(env, 'gala_stars?' + q),
     ]);
-    return json({ who: g.who, event: event[0] || null, rsvps, sponsors, inkind, drawing, auction, bids, stars });
+    // Which one-tap emails have gone out, so each row can say "Sent".
+    const sent = [].concat(...await Promise.all(['gala_rsvps', 'gala_sponsors', 'gala_inkind', 'gala_auction_items'].map(t => sentFor(env, t))));
+    return json({ who: g.who, event: event[0] || null, rsvps, sponsors, inkind, drawing, auction, bids, stars, sent });
   } catch (e) { return json({ error: 'load failed', detail: String(e.message || e) }, 500); }
 }
 

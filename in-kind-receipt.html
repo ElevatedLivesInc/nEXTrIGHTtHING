@@ -168,6 +168,12 @@
     }
   }
   document.getElementById('code').addEventListener('keydown',function(e){ if(e.key==='Enter') redeem(); });
+  // The emailed receipt link carries the code, so the donor lands on their
+  // receipt instead of a box asking for something they would have to copy over.
+  (function(){
+    var c=new URLSearchParams(location.search).get('code');
+    if(c){ document.getElementById('code').value=c; redeem(); }
+  })();
 </script>
 </body>
 </html>

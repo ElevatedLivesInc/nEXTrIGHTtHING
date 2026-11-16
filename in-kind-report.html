@@ -40,7 +40,19 @@
   .abtn{font-size:.58rem;letter-spacing:.05em;text-transform:uppercase;padding:.25rem .55rem;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:'Raleway',sans-serif;margin:.1rem .15rem .1rem 0;white-space:nowrap;}
   .abtn:hover{border-color:var(--sand);color:var(--sand-light);}
   .abtn.danger{border-color:rgba(224,120,120,.35);color:#f0b6b6;}
-  @media print{.bar,.abtn,.top .viewer{display:none!important;}body{background:#fff;color:#000;}td,th{color:#000!important;border-color:#ccc!important;}.top{background:#fff;color:#000;border-color:#999;}h1,h1 em{color:#000;}.tblwrap{border:none;background:#fff;}.stat{border-color:#999;}.stat .n,.stat .l{color:#000;}.stats .stat{background:#fff;}}
+  .mailrow{display:flex;gap:.35rem;margin-top:.45rem;flex-wrap:wrap;align-items:center;}
+  td.donor{min-width:230px;}
+  .mailrow input{flex:1;min-width:0;width:100%;padding:.5rem .6rem;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;font-family:'Raleway',sans-serif;font-size:16px;}
+  .sendbtn{padding:.55rem .9rem;border-radius:6px;border:1px solid var(--sand);background:linear-gradient(145deg,var(--sand-light),var(--sand));color:var(--navy);font-weight:700;font-size:.74rem;font-family:'Raleway',sans-serif;cursor:pointer;white-space:nowrap;min-height:40px;}
+  .sendbtn.again{background:transparent;color:var(--sand-light);font-weight:600;}
+  .sendbtn[disabled]{opacity:.55;cursor:wait;}
+  .sentline{font-size:.7rem;color:#a9e5c3;margin-top:.35rem;line-height:1.5;}
+  .mailerr{font-size:.7rem;color:#f0b6b6;margin-top:.35rem;line-height:1.5;}
+  .chip{display:inline-block;margin-top:.45rem;font-size:.64rem;letter-spacing:.04em;padding:.3rem .6rem;border-radius:50px;border:1px dashed rgba(201,182,240,.5);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:'Raleway',sans-serif;}
+  .chip.on{border-style:solid;background:rgba(201,182,240,.18);color:var(--lav);}
+  .howto{background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.3);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.2rem;font-size:.82rem;line-height:1.65;color:rgba(255,255,255,.8);}
+  .howto b{color:var(--sand-light);}
+  @media print{.bar,.abtn,.mailrow,.chip,.howto,.mailerr,.top .viewer{display:none!important;}body{background:#fff;color:#000;}td,th{color:#000!important;border-color:#ccc!important;}.top{background:#fff;color:#000;border-color:#999;}h1,h1 em{color:#000;}.tblwrap{border:none;background:#fff;}.stat{border-color:#999;}.stat .n,.stat .l{color:#000;}.stats .stat{background:#fff;}}
 </style>
 </head>
 <body>
@@ -56,6 +68,7 @@
     <div class="stat"><div class="n" id="sPending">0</div><div class="l">Awaiting Redemption</div></div>
     <div class="stat"><div class="n" id="sValue">$0</div><div class="l">Total Declared Value</div></div>
   </div>
+  <div class="howto" id="howto" style="display:none"><b>Email a receipt in one tap.</b> Type the donor&rsquo;s email once on their row and tap <b>Email receipt</b>. It generates their numbered receipt, sends it from Ryan&rsquo;s address with a thank-you, and remembers the email. Tap <b>Masquerade gift</b> first if the item was for the Masquerade, and the thank-you will say so.</div>
   <div class="bar" id="filters" style="display:none">
     <a class="fbtn" href="/admin-issue" style="text-decoration:none;background:rgba(201,169,110,.2);color:var(--sand-light);border-color:rgba(201,169,110,.6)">+ Issue New Code</a>
     <button class="fbtn active" data-f="all">All</button>
@@ -64,6 +77,7 @@
     <button class="fbtn" id="groupBtn" onclick="GROUP=!GROUP;this.classList.toggle('active',GROUP);render()">Monthly</button>
     <button class="fbtn" onclick="exportCSV()">Download CSV</button>
     <button class="fbtn" onclick="window.print()">Print Report</button>
+    <button class="fbtn" id="bulkBtn" onclick="bulkSend(this)" style="display:none;background:rgba(201,169,110,.2);color:var(--sand-light);border-color:rgba(201,169,110,.6)"></button>
     <input id="search" placeholder="Search donor or code…">
   </div>
   <div class="tblwrap" id="tblwrap" style="display:none">
@@ -124,7 +138,7 @@ function monthOf(r){
 }
 function exportCSV(){
   const rows=filteredRows();
-  const cols=['status','code','donor_name','donor_contact','description','donor_value','date_of_donation','serial','created_by'];
+  const cols=['status','code','donor_name','donor_contact','donor_email','description','donor_value','date_of_donation','serial','created_by'];
   const csvEsc=v=>{v=(v==null?'':v)+'';return '"'+v.replace(/"/g,'""')+'"';};
   const csv=[cols.join(',')].concat(rows.map(r=>cols.map(c=>csvEsc(r[c])).join(','))).join('\r\n');
   const a=document.createElement('a');
@@ -159,14 +173,13 @@ function rowHtml(r){
     return '<tr>'
       +'<td><span class="pill '+esc(st)+'">'+esc(st)+'</span></td>'
       +'<td class="code">'+esc(r.code)+'</td>'
-      +'<td><b>'+esc(r.donor_name)+'</b>'+(r.donor_contact?('<br>'+esc(r.donor_contact)):'')+'</td>'
+      +'<td class="donor"><b>'+esc(r.donor_name)+'</b>'+(r.donor_contact?('<br>'+esc(r.donor_contact)):'')+mailBlock(r,st)+'</td>'
       +'<td>'+esc(r.description)+'</td>'
       +'<td>'+money(r.donor_value)+'</td>'
       +'<td>'+fmtD(r.date_of_donation)+'</td>'
       +'<td>'+esc(r.serial||'—')+'</td>'
       +'<td>'+esc(r.created_by||'—')+'</td>'
       +'<td>'
-      +(hasEmail(r.donor_contact)?('<a class="abtn" style="text-decoration:none" href="'+thankMailto(r)+'">Thank</a>'):'')
       +(st==='void'
         ?'<button class="abtn" onclick="doAction(\''+r.id+'\',\'unvoid\',this)">Restore</button>'
         :'<button class="abtn" onclick="doAction(\''+r.id+'\',\'void\',this)">Void</button>')
@@ -174,12 +187,111 @@ function rowHtml(r){
       +'</td>'
       +'</tr>';
 }
-function hasEmail(c){return c&&(c+'').indexOf('@')>-1;}
-function thankMailto(r){
-  const em=((r.donor_contact||'').match(/[^\s,;]+@[^\s,;]+/)||[''])[0];
-  const sub=encodeURIComponent('Thank you for your donation — The Right Thing in Recovery');
-  const bod=encodeURIComponent('Dear '+(r.donor_name||'friend')+',\n\nThank you so much for your generous in-kind donation'+(r.description?(' of '+r.description):'')+'. Your support directly helps people rebuilding their lives in recovery.\n\nYour receipt'+(r.serial?(' (No. '+r.serial+')'):'')+' is available anytime at nextrighthing.com/verify.\n\nWith gratitude,\nThe Right Thing in Recovery');
-  return 'mailto:'+em+'?subject='+sub+'&body='+bod;
+/* ---- One-tap receipt email ----------------------------------------------
+   Ryan types a donor's email once; it is saved on the record. "Email receipt"
+   generates the numbered receipt and sends it from his address. SENT holds
+   what has already gone out so a row says so and a second tap cannot
+   double-send by accident. */
+let SENT={};
+const EMAIL_RE=/^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/;
+function emailOf(r){return (r.donor_email||((r.donor_contact||'').match(/[^\s,;<>]+@[^\s,;<>]+\.[^\s,;<>]+/)||[''])[0]||'').trim();}
+function shortD(d){try{return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'});}catch(_){return '';}}
+function mailBlock(r,st){
+  if(st==='void') return '';
+  const s=SENT[r.id], em=emailOf(r), masq=r.campaign==='masquerade-2026';
+  return '<div class="mailrow">'
+      +'<input type="email" inputmode="email" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="donor email" aria-label="Donor email for '+esc(r.donor_name)+'" value="'+esc(em)+'" data-email="'+r.id+'">'
+      +'<button class="sendbtn'+(s?' again':'')+'" data-send="'+r.id+'"'+(s?' data-force="1"':'')+'>'+(s?'Send again':'Email receipt')+'</button>'
+    +'</div>'
+    +(s?'<div class="sentline">&#10003; Receipt emailed '+esc(shortD(s.created_at))+' to '+esc(s.to_email)+'</div>':'')
+    +'<div class="mailerr" data-err="'+r.id+'"></div>'
+    +'<button class="chip'+(masq?' on':'')+'" data-tag="'+r.id+'" title="Changes the thank-you wording in the receipt email">'+(masq?'&#10003; Masquerade gift':'Masquerade gift?')+'</button>';
+}
+async function post(url,body){
+  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  let j={}; try{j=await res.json();}catch(_){}
+  return {status:res.status,j:j};
+}
+async function saveEmail(id,val){
+  const row=DATA.find(r=>r.id===id); if(!row) return true;
+  val=(val||'').trim().toLowerCase();
+  if(val===(row.donor_email||'')) return true;
+  if(val&&!EMAIL_RE.test(val)) return false;
+  const out=await post('/in-kind-report/update',{id:id,action:'email',value:val});
+  if(out.j&&out.j.ok){row.donor_email=val||null;updateBulk();return true;}
+  return false;
+}
+function setErr(id,msg){const e=document.querySelector('[data-err="'+id+'"]');if(e)e.textContent=msg||'';}
+async function sendOne(id,force){
+  const row=DATA.find(r=>r.id===id); if(!row) return {ok:false,error:'Record not found.'};
+  const inp=document.querySelector('[data-email="'+id+'"]');
+  const em=((inp&&inp.value)||emailOf(row)||'').trim().toLowerCase();
+  if(!EMAIL_RE.test(em)) return {ok:false,error:'Type the donor\u2019s email in the box first.'};
+  let out;
+  try{ out=await post('/in-kind-report/send',{id:id,email:em,force:!!force}); }
+  catch(_){ return {ok:false,error:'No connection. Nothing was sent. Try again.'}; }
+  const j=out.j||{};
+  if(j.ok){
+    row.donor_email=j.donor_email||em; row.status='redeemed'; if(j.serial) row.serial=j.serial;
+    SENT[id]={to_email:j.to||em,created_at:j.sent_at||new Date().toISOString()};
+    return {ok:true};
+  }
+  return {ok:false,error:j.error||('Could not send ('+out.status+').')};
+}
+function unsent(){return DATA.filter(r=>statusOf(r)!=='void'&&!SENT[r.id]&&EMAIL_RE.test(emailOf(r)));}
+function updateBulk(){
+  const b=document.getElementById('bulkBtn'); if(!b) return;
+  const n=unsent().length;
+  b.style.display=n>1?'':'none';
+  b.dataset.armed=''; b.textContent='Email all '+n+' unsent receipts';
+}
+async function bulkSend(btn){
+  const list=unsent(); if(!list.length) return;
+  if(!btn.dataset.armed){ btn.dataset.armed='1'; btn.textContent='Tap again to send '+list.length+' receipts'; setTimeout(()=>{ if(btn.dataset.armed==='1') updateBulk(); },6000); return; }
+  btn.dataset.armed='2'; btn.disabled=true; let ok=0,bad=0;
+  for(let i=0;i<list.length;i++){
+    btn.textContent='Sending '+(i+1)+' of '+list.length+'…';
+    const r=await sendOne(list[i].id,false); if(r.ok) ok++; else bad++;
+    await new Promise(z=>setTimeout(z,650));
+  }
+  btn.disabled=false; render(); refreshStats(); updateBulk();
+  if(bad){ btn.style.display=''; btn.textContent=ok+' sent, '+bad+' did not send. Check those rows.'; }
+}
+document.addEventListener('click',async function(e){
+  const sb=e.target.closest&&e.target.closest('[data-send]');
+  if(sb){
+    const id=sb.dataset.send;
+    if(sb.dataset.force&&!sb.dataset.armed){ sb.dataset.armed='1'; sb.textContent='Tap again to re-send'; setTimeout(()=>{ if(sb.isConnected&&sb.dataset.armed){ sb.dataset.armed=''; sb.textContent='Send again'; } },5000); return; }
+    sb.disabled=true; sb.textContent='Sending…'; setErr(id,'');
+    const r=await sendOne(id,!!sb.dataset.force);
+    if(r.ok){ render(); refreshStats(); updateBulk(); }
+    else{ sb.disabled=false; sb.dataset.armed=''; sb.textContent=sb.dataset.force?'Send again':'Email receipt'; setErr(id,r.error); }
+    return;
+  }
+  const tg=e.target.closest&&e.target.closest('[data-tag]');
+  if(tg){
+    const id=tg.dataset.tag, row=DATA.find(r=>r.id===id); if(!row) return;
+    const on=row.campaign!=='masquerade-2026';
+    const inp=document.querySelector('[data-email="'+id+'"]'); if(inp&&inp.value){ await saveEmail(id,inp.value); }
+    tg.textContent='…';
+    try{ const out=await post('/in-kind-report/update',{id:id,action:'tag',value:on}); if(out.j&&out.j.ok) row.campaign=out.j.campaign; }catch(_){}
+    render();
+  }
+});
+document.addEventListener('change',async function(e){
+  const inp=e.target.closest&&e.target.closest('[data-email]'); if(!inp) return;
+  const id=inp.dataset.email, ok=await saveEmail(id,inp.value);
+  setErr(id, ok?'':'That email does not look right, so it was not saved.');
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter') return;
+  const inp=e.target.closest&&e.target.closest('[data-email]'); if(!inp) return;
+  const b=document.querySelector('[data-send="'+inp.dataset.email+'"]'); if(b) b.click();
+});
+function refreshStats(){
+  const redeemed=DATA.filter(r=>statusOf(r)==='redeemed').length;
+  document.getElementById('sRedeemed').textContent=redeemed;
+  document.getElementById('sPending').textContent=DATA.filter(r=>statusOf(r)==='issued').length;
 }
 async function doAction(id,action,btn){
   if(action==='delete'&&!confirm('Permanently delete this record? Use Void instead if it was a real donation.'))return;
@@ -209,6 +321,7 @@ document.getElementById('search').addEventListener('input',e=>{Q=e.target.value.
     if(res.status===401||res.status===403){ showWelcome('the In-Kind Donations report', 'Every code issued, every receipt generated, and monthly grant-ready totals.', res.status); return; }
     const data=await res.json();
     if(data.error){note.textContent='Error: '+data.error;return;}
+    (data.sent||[]).forEach(s=>{ if(s.kind==='inkind_receipt'&&!SENT[s.ref_id]) SENT[s.ref_id]=s; });
     DATA=(data.records||[]).sort((a,b)=>((b.created_at||b.issued_at||''))<((a.created_at||a.issued_at||''))?-1:1);
     document.getElementById('viewer').textContent='Signed in as '+(data.viewer||'');
     const redeemed=DATA.filter(r=>statusOf(r)==='redeemed').length;
@@ -220,7 +333,8 @@ document.getElementById('search').addEventListener('input',e=>{Q=e.target.value.
     ['stats','filters','tblwrap'].forEach(id=>document.getElementById(id).style.display='');
     document.getElementById('stats').style.display='grid';
     document.getElementById('filters').style.display='flex';
-    render();
+    document.getElementById('howto').style.display='block';
+    render(); updateBulk();
   }catch(_){note.textContent='Could not load the report. Check your connection and reload.';}
 })();
 </script>

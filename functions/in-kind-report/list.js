@@ -3,6 +3,7 @@
 // Protect BOTH /in-kind-report and /api/inkind-list with the Cloudflare Access application.
 import { getAuthedEmail } from '../_lib/auth.js';
 import { allowedFor } from '../_lib/roster.js';
+import { sentFor } from '../_lib/outbox.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -23,5 +24,7 @@ export async function onRequestGet(context) {
   });
   if (!res.ok) { const detail = await res.text(); return json({ error: 'load failed', detail }, 500); }
   const rows = await res.json();
-  return json({ viewer: who, records: Array.isArray(rows) ? rows : [] });
+  // Which receipts have already been emailed, so the row can say so.
+  const sent = await sentFor(env, 'authorizations');
+  return json({ viewer: who, records: Array.isArray(rows) ? rows : [], sent });
 }

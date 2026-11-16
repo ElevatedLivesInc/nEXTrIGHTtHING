@@ -64,6 +64,12 @@ th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut
 .demo{background:#2a1f4a;border:1px solid var(--lav);border-radius:12px;padding:10px 14px;margin-top:12px;font-size:.88rem;display:none}
 .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#1d2a1f;border:1px solid var(--ok);padding:10px 16px;border-radius:999px;font-size:.88rem;display:none;z-index:50}
 .hidden{display:none!important}
+.mailbtn{padding:8px 13px;border-radius:999px;border:1px solid var(--gold);background:var(--gold);color:#1a1404;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;min-height:38px;white-space:nowrap}
+.mailbtn.again{background:transparent;color:var(--gold2);font-weight:600}
+.mailbtn[disabled]{opacity:.55;cursor:wait}
+.sentline{font-size:.78rem;color:var(--ok);margin-top:4px}
+.mailerr{font-size:.78rem;color:var(--err);margin-top:4px}
+.mailbox{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .winner{font-family:"Cormorant Garamond",serif;font-size:2rem;color:var(--gold2)}
 </style>
 </head>
@@ -139,6 +145,53 @@ async function save(table,id,patch){
   render();
 }
 
+/* ---- One-tap email --------------------------------------------------------
+   Every button with data-mail sends through /gala-tracker/send, from Ryan's
+   address as The Right Thing in Recovery. D.sent is the server's log of what
+   already went out, so a row says "Sent" and a stray second tap cannot
+   double-send. */
+const MAILAPI='/gala-tracker/send';
+const shortD=d=>{try{return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'})}catch(_){return ''}};
+const sentRow=(kind,id)=>(D.sent||[]).find(x=>x.kind===kind&&(x.ref_id===id||x.ref_id===id+':'+(topBidId(id)||'')));
+function topBidId(itemId){ const t=(D.bids||[]).filter(b=>!b.voided&&b.item_id===itemId).sort((a,b)=>b.amount_cents-a.amount_cents||a.created_at.localeCompare(b.created_at))[0]; return t?t.id:null; }
+function mailCtl(kind,id,label,canSend,why){
+  const s=sentRow(kind,id);
+  if(!canSend&&!s) return `<div class="meta" style="margin-top:6px">${esc(why||'No email on file')}</div>`;
+  return `<span><button class="mailbtn${s?' again':''}" data-mail="${kind}" data-mid="${id}" data-label="${esc(label)}"${s?' data-force="1"':''}>${s?'Send again':'✉ '+esc(label)}</button>`
+    +(s?`<div class="sentline">✓ Sent ${esc(shortD(s.created_at))} to ${esc(s.to_email)}</div>`:'')+`<div class="mailerr" data-merr="${kind}:${id}"></div></span>`;
+}
+async function mailOne(kind,id,force){
+  if(DEMO) { (D.sent=D.sent||[]).unshift({kind,ref_id:id,to_email:'preview@example.com',created_at:new Date().toISOString()}); return {ok:true}; }
+  let r,j={};
+  try{ r=await fetch(MAILAPI,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({kind:kind.replace(/^gala_/,''),id,force:!!force})}); j=await r.json().catch(()=>({})); }
+  catch(_){ return {ok:false,error:'No connection. Nothing was sent. Try again.'}; }
+  if(j.ok){
+    const ref=kind==='gala_auction_winner'?id+':'+(topBidId(id)||''):id;
+    if(!j.already||!sentRow(kind,id)) (D.sent=D.sent||[]).unshift({kind,ref_id:ref,to_email:j.to,created_at:j.sent_at||new Date().toISOString()});
+    if(kind==='gala_sponsor_receipt'&&j.benefits_done){ const sp=D.sponsors.find(x=>x.id===id); if(sp) sp.benefits_done=j.benefits_done; }
+    return {ok:true};
+  }
+  return {ok:false,error:j.error||('Could not send ('+(r&&r.status)+').')};
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest&&e.target.closest('[data-mail]'); if(!b) return;
+  const kind=b.dataset.mail, id=b.dataset.mid;
+  if(b.dataset.force&&!b.dataset.armed){ b.dataset.armed='1'; b.textContent='Tap again to re-send'; setTimeout(()=>{ if(b.isConnected&&b.dataset.armed){ b.dataset.armed=''; b.textContent='Send again'; } },5000); return; }
+  b.disabled=true; b.textContent='Sending…';
+  const r=await mailOne(kind,id,!!b.dataset.force);
+  if(r.ok){ toast('Email sent ✓'); render(); }
+  else{ b.disabled=false; b.dataset.armed=''; b.textContent=b.dataset.force?'Send again':'✉ '+b.dataset.label; const el=document.querySelector('[data-merr="'+kind+':'+id+'"]'); if(el) el.textContent=r.error; toast('Not sent'); }
+});
+/* Bulk: one button, one confirming tap, then each guest in turn. Skips anyone already thanked. */
+const guestsToThank=()=>D.rsvps.filter(r=>r.pay_status!=='cancelled'&&r.email&&!sentRow('gala_guest_thanks',r.id));
+async function thankAll(btn){
+  const list=guestsToThank(); if(!list.length) return toast('Everyone with an email has been thanked');
+  if(!btn.dataset.armed){ btn.dataset.armed='1'; btn.textContent='Tap again to email '+list.length+' guest'+(list.length>1?'s':''); setTimeout(()=>{ if(btn.isConnected&&btn.dataset.armed==='1') render(); },6000); return; }
+  btn.dataset.armed='2'; btn.disabled=true; let ok=0,bad=0;
+  for(let i=0;i<list.length;i++){ btn.textContent='Sending '+(i+1)+' of '+list.length+'…'; const r=await mailOne('gala_guest_thanks',list[i].id,false); r.ok?ok++:bad++; await new Promise(z=>setTimeout(z,650)); }
+  toast(bad?ok+' sent, '+bad+' did not send':ok+' thank-you'+(ok>1?'s':'')+' sent ✓'); render();
+}
+
 function sample(){
   const now=new Date().toISOString();
   return {who:'preview@example.com',event:{goal_cents:1500000,ticket_value_cents:3000},
@@ -156,7 +209,7 @@ function sample(){
 async function load(){
   try{ D=await call('GET'); if(!D) throw 0; $('#who').textContent='Signed in as '+D.who; }
   catch(e){
-    if(e.status===401||e.status===403||e.status===500){ $('#demo').style.display='block'; $('#demo').innerHTML='<b>'+(e.status===500?'Not connected yet.':'Sign-in needed.')+'</b> '+esc(e.message)+' <a href="/mission-control" style="color:var(--gold2)">Back to Mission Control</a>'; D={event:{},rsvps:[],sponsors:[],inkind:[],drawing:[]}; render(); return; }
+    if(e.status===401||e.status===403||e.status===500){ $('#demo').style.display='block'; $('#demo').innerHTML='<b>'+(e.status===500?'Not connected yet.':'Sign-in needed.')+'</b> '+esc(e.message)+' <a href="/mission-control" style="color:var(--gold2)">Back to Mission Control</a>'; D={event:{},rsvps:[],sponsors:[],inkind:[],drawing:[],sent:[]}; render(); return; }
     DEMO=true; D=sample(); $('#demo').style.display='block'; }
   render();
 }
@@ -197,7 +250,11 @@ function renderTodo(){
   const ikIn=D.inkind.filter(i=>i.status==='pledged'), ikR=D.inkind.filter(i=>i.status==='received');
   const unpaidG=D.rsvps.filter(r=>r.pay_status==='reserved');
   const li=(arr,f)=>arr.length?arr.map(f).join(''):'<li class="meta">All clear ✓</li>';
-  $('#tab-todo').innerHTML=`<div class="item" style="margin-bottom:14px"><b style="color:var(--gold2)">Payment links</b> <span class="meta">tap to copy, then text or email it to a guest or sponsor</span>
+  const gT=guestsToThank().length, sT=sp.filter(s=>s.email&&!sentRow('gala_sponsor_receipt',s.id)).length;
+  $('#tab-todo').innerHTML=`<div class="item" style="margin-bottom:14px;border-color:var(--gold)"><b style="color:var(--gold2)">After the event: thank-yous</b> <span class="meta">each one goes out from Ryan's address in one tap</span>
+   <div class="bar" style="margin:10px 0 0">${gT?`<button class="btn" id="thank-all-todo">✉ Thank all guests (${gT})</button>`:`<span class="sentline" style="margin:0">✓ Guests thanked</span>`}
+    <button class="btn g" data-goto="sponsors">Sponsor receipts${sT?` (${sT} to send)`:' ✓'}</button><button class="btn g" data-goto="auction">Auction winners</button><a class="btn g" href="/in-kind-report" style="text-decoration:none">In-kind receipts →</a></div></div>
+  <div class="item" style="margin-bottom:14px"><b style="color:var(--gold2)">Payment links</b> <span class="meta">tap to copy, then text or email it to a guest or sponsor</span>
    <div class="bar" style="margin:10px 0 0">${PAYLINKS.map(([n,u])=>`<button class="btn g" data-copylink="${u}">${n}</button>`).join('')}</div></div>
   <h2 style="color:var(--gold2)">What needs doing</h2><p class="meta">Every promise on the sponsor flyer, tracked until it's kept. That's what makes the next sponsorship easy to sell.</p>
   <div class="todo">
@@ -212,6 +269,10 @@ function renderTodo(){
   </div>${whoBlock()}`;
 }
 
+document.addEventListener('click',e=>{
+  const g=e.target.closest&&e.target.closest('[data-goto]'); if(g){ const b=document.querySelector('.tabs button[data-tab="'+g.dataset.goto+'"]'); if(b) b.click(); window.scrollTo(0,0); return; }
+  const t=e.target.closest&&e.target.closest('#thank-all-todo'); if(t) thankAll(t);
+});
 function whoBlock(){
   const m={}, add=(r,f)=>{ const k=r||'_'; m[k]=m[k]||{sp:0,spc:0,paid:0,g:0,ik:0,st:0}; f(m[k]); };
   D.sponsors.filter(s=>s.status!=='declined').forEach(s=>add(s.referred_by,o=>{o.sp++;o.spc+=s.amount_cents||0;o.paid+=s.paid_cents||0;}));
@@ -257,6 +318,7 @@ function renderSponsors(){
      </div>
      <div class="ben">${bl.map(([k,l])=>`<label class="${done[k]?'done':''}"><input type="checkbox" data-ben="${k}" ${done[k]?'checked':''}> ${esc(l)}</label>`).join('')}</div>
      ${s.paid_cents?`<div class="rcpt"><b>Receipt math:</b> paid ${$$$(s.paid_cents)} − benefits ${$$$(r.ben)} = <b>${$$$(r.ded)} net gift</b>. <a href="#" data-copy="${s.id}" style="color:var(--lav)">Copy receipt wording</a></div>`:''}
+     ${s.status!=='declined'?`<div class="mailbox">${mailCtl('gala_sponsor_receipt',s.id,s.paid_cents?'Email receipt + thank-you':'Email thank-you',!!s.email,'Add an email for this sponsor to send their receipt')}</div>`:''}
      <label style="display:grid;gap:3px;margin-top:10px;font-size:.75rem;color:var(--muted);font-weight:600">Staff notes<textarea data-f="staff_notes" rows="2">${esc(s.staff_notes||'')}</textarea></label>
     </div>`;}).join('')||'<p class="meta">No sponsors yet.</p>'}</div>`;
   wireItems('#tab-sponsors','gala_sponsors',D.sponsors);
@@ -269,7 +331,7 @@ function renderGuests(){
   const q=($('#g-q')||{}).value||'';
   const rows=D.rsvps.filter(r=>!q||JSON.stringify(r).toLowerCase().includes(q.toLowerCase()));
   const diet=D.rsvps.filter(r=>r.dietary&&r.pay_status!=='cancelled');
-  $('#tab-guests').innerHTML=`<div class="bar"><input id="g-q" placeholder="Search name, email, phone" value="${esc(q)}" style="flex:1;min-width:160px"><button class="btn g" data-add="guest">+ Walk-in / comp</button><button class="btn g" data-csv="rsvps">CSV</button><button class="btn g" id="kp-copy">Copy keep-posted emails</button></div>
+  $('#tab-guests').innerHTML=`<div class="bar"><input id="g-q" placeholder="Search name, email, phone" value="${esc(q)}" style="flex:1;min-width:160px"><button class="btn g" data-add="guest">+ Walk-in / comp</button><button class="btn g" data-csv="rsvps">CSV</button><button class="btn g" id="kp-copy">Copy keep-posted emails</button>${(()=>{const n=guestsToThank().length;return n?`<button class="btn" id="thank-all">✉ Thank all guests (${n})</button>`:`<span class="sentline" style="margin:0">✓ All guests with an email thanked</span>`})()}</div>
    ${(()=>{const np=D.rsvps.filter(r=>r.photo_consent===false&&r.pay_status!=='cancelled');return np.length?`<div class="item" style="margin-bottom:10px;border-color:#a33"><b>🚫 No photos — show this list to the photographer:</b> ${np.map(r=>esc(r.full_name)).join(' · ')}</div>`:''})()}
    ${diet.length?`<div class="item" style="margin-bottom:10px"><b>Kitchen notes:</b> ${diet.map(r=>`${esc(r.full_name)} (${guestsOf(r)}) — ${esc(r.dietary)}`).join(' · ')}</div>`:''}
    <div style="overflow-x:auto"><table><thead><tr><th>In</th><th>Name</th><th>Photos</th><th>Seats</th><th>Owes</th><th>Payment</th><th>Contact</th></tr></thead><tbody>
@@ -278,21 +340,26 @@ function renderGuests(){
     <td><select data-f="photo_consent" data-bool aria-label="Photo consent"><option value="" ${r.photo_consent==null?'selected':''}>Ask</option><option value="true" ${r.photo_consent===true?'selected':''}>Yes</option><option value="false" ${r.photo_consent===false?'selected':''}>No</option></select></td>
     <td>${guestsOf(r)}</td><td>${r.source==='web'?$$$(ticketCents(r)):'—'}</td>
     <td><select data-f="pay_status">${['reserved','paid','at_door','comp','cancelled'].map(o=>`<option ${r.pay_status===o?'selected':''}>${o}</option>`).join('')}</select></td>
-    <td class="meta">${r.email?`<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''} ${r.phone?`<a href="tel:${esc(r.phone)}">${esc(r.phone)}</a>`:''}</td></tr>`).join('')}
+    <td class="meta">${r.email?`<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''} ${r.phone?`<a href="tel:${esc(r.phone)}">${esc(r.phone)}</a>`:''}${r.pay_status!=='cancelled'?`<div style="margin-top:6px">${mailCtl('gala_guest_thanks',r.id,'Thank',!!r.email,'No email, call or text')}</div>`:''}</td></tr>`).join('')}
    </tbody></table></div>`;
   wireItems('#tab-guests','gala_rsvps',D.rsvps);
   $('#g-q').oninput=()=>{const p=$('#g-q').selectionStart;renderGuests();$('#g-q').focus();$('#g-q').setSelectionRange(p,p)};
+  const ta=$('#thank-all'); if(ta) ta.onclick=()=>thankAll(ta);
 }
 
+const STAFFMAIL=e=>/@nextrighthing\.com$/i.test(String(e||'').trim());
 function renderInkind(){
-  $('#tab-inkind').innerHTML=`<div class="bar"><button class="btn g" data-add="inkind">+ Add item</button><button class="btn g" data-csv="inkind">CSV</button></div>
+  $('#tab-inkind').innerHTML=`<div class="item" style="margin-bottom:12px"><b style="color:var(--gold2)">Numbered tax receipts</b> <span class="meta">are emailed in one tap from the In-Kind report, where each donated item is logged. The button here sends a thank-you only.</span>
+    <div class="bar" style="margin:10px 0 0"><a class="btn" href="/in-kind-report" style="text-decoration:none">Open In-Kind report →</a><a class="btn g" href="/admin-issue" style="text-decoration:none">+ Log a new gift</a></div></div>
+   <div class="bar"><button class="btn g" data-add="inkind">+ Add item</button><button class="btn g" data-csv="inkind">CSV</button></div>
    <div class="list">${D.inkind.map(i=>`<div class="item" data-id="${i.id}"><div class="hd"><div><h3>${esc(i.business_name||i.donor_name)} ${PC(i.photo_consent)}${KP(i.keep_posted)}</h3>
      <div class="meta">${esc(i.description)}${VIA(i)} · ${esc(i.category||'')} · ${esc(i.delivery||'')} ${i.email?`· <a href="mailto:${esc(i.email)}">${esc(i.email)}</a>`:''} ${i.phone?`· <a href="tel:${esc(i.phone)}">${esc(i.phone)}</a>`:''}</div></div><span class="pill p-${i.status}">${i.status}</span></div>
      <div class="fields"><label>Status<select data-f="status">${['pledged','received','receipted','used','declined'].map(o=>`<option ${i.status===o?'selected':''}>${o}</option>`).join('')}</select></label>
       <label>Est. value ($)<input type="number" inputmode="numeric" data-f="est_value_cents" data-money value="${i.est_value_cents==null?'':Math.round(i.est_value_cents/100)}"></label>
-      <label>Receipt #<input data-f="receipt_number" value="${esc(i.receipt_number||'')}"></label></div>
-     <label class="chk" style="margin-top:10px"><input type="checkbox" data-f="show_publicly" ${i.show_publicly?'checked':''}> Thank publicly (name only)</label></div>`).join('')||'<p class="meta">No in-kind pledges yet.</p>'}</div>
-   <p class="meta" style="margin-top:10px">Issue receipts through Ryan's existing serialized in-kind receipt system, then paste the receipt number here.</p>`;
+      <label>Receipt #<input data-f="receipt_number" value="${esc(i.receipt_number||'')}"></label>
+      <label>Donor's email<input type="email" inputmode="email" autocapitalize="off" data-f="email" value="${esc(STAFFMAIL(i.email)?'':(i.email||''))}" placeholder="their own address"></label></div>
+     <label class="chk" style="margin-top:10px"><input type="checkbox" data-f="show_publicly" ${i.show_publicly?'checked':''}> Thank publicly (name only)</label>
+     ${i.status!=='declined'?`<div class="mailbox">${mailCtl('gala_inkind_thanks',i.id,'Email thank-you',!!i.email&&!STAFFMAIL(i.email),'Add the donor\'s own email above to send a thank-you')}</div>`:''}</div>`).join('')||'<p class="meta">No in-kind pledges yet.</p>'}</div>`;
   wireItems('#tab-inkind','gala_inkind',D.inkind);
 }
 
@@ -307,7 +374,8 @@ function renderAuction(){
    <div class="list">${D.auction.map(i=>{const t=top(i.id), bs=D.bids.filter(b=>b.item_id===i.id);
      return `<div class="item" data-id="${i.id}"><div class="hd"><div><h3>${esc(i.icon||'')} ${esc(i.title)}</h3><div class="meta">${esc(i.donor||'')}${i.value_label?' · '+esc(i.value_label):''} · opens at ${$$$(i.start_bid_cents)}, +${$$$(i.increment_cents)}</div></div>
        <span class="pill ${t?(i.winner_paid?'p-paid':'p-reserved'):'p-declined'}">${t?(i.winner_paid?'Paid':$$$(t.amount_cents)):'No bids'}</span></div>
-       ${t?`<div class="meta" style="margin-top:6px"><b>Leader:</b> ${esc(t.bidder_name)} ${PC(t.photo_consent)} ${t.phone?`· <a href="tel:${esc(t.phone)}">${esc(t.phone)}</a>`:''} ${t.email?`· <a href="mailto:${esc(t.email)}?subject=${encodeURIComponent('Your Masquerade auction win: '+i.title)}">${esc(t.email)}</a>`:''}</div>`:''}
+       ${t?`<div class="meta" style="margin-top:6px"><b>Leader:</b> ${esc(t.bidder_name)} ${PC(t.photo_consent)} ${t.phone?`· <a href="tel:${esc(t.phone)}">${esc(t.phone)}</a>`:''} ${t.email?`· <a href="mailto:${esc(t.email)}?subject=${encodeURIComponent('Your Masquerade auction win: '+i.title)}">${esc(t.email)}</a>`:''}</div>
+       <div class="mailbox">${mailCtl('gala_auction_winner',i.id,'Email winner',!!t.email,'Winner left a phone number only. Call or text them.')}</div>`:''}
        <div class="fields"><label>Opening bid ($)<input type="number" inputmode="numeric" data-f="start_bid_cents" data-money value="${Math.round(i.start_bid_cents/100)}"></label>
         <label>Bid step ($)<input type="number" inputmode="numeric" data-f="increment_cents" data-money value="${Math.round(i.increment_cents/100)}"></label>
         <label>Value label<input data-f="value_label" value="${esc(i.value_label||'')}" placeholder="e.g. $300 value"></label></div>

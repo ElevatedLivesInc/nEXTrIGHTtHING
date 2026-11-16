@@ -46,7 +46,12 @@
       <p class="hint">Lock the agreed donation to a one-time code. Give the code to the donor; they redeem it on the site.</p>
 
       <label>Donor organization or individual</label>
-      <input id="donor_name" placeholder="e.g., Salt Lake Bees">
+      <input id="donor_name" placeholder="e.g., Salt Lake Bees" list="pastDonors" autocomplete="off">
+      <datalist id="pastDonors"></datalist>
+      <div class="hint" id="pastHint" style="display:none;margin:6px 0 0;font-size:12px"></div>
+
+      <label>Donor email <span class="opt">(type it once; it is remembered for next time)</span></label>
+      <input id="donor_email" type="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="e.g., jordan@slbees.com">
 
       <div class="row">
         <div><label>Contact name <span class="opt">(optional)</span></label><input id="donor_contact" placeholder="e.g., Jordan Smith"></div>
@@ -60,35 +65,69 @@
       <input id="donor_value" placeholder="e.g., 1000">
 
       <div class="err" id="err"></div>
-      <div class="actions"><button class="btn" id="go" onclick="issue()">Generate Code</button></div>
+      <div class="actions" style="flex-wrap:wrap;gap:12px">
+        <button class="btn" id="goSend" onclick="issue(true)">Issue &amp; Email Receipt</button>
+        <button class="btn ghost" id="go" onclick="issue(false)">Code only</button>
+      </div>
+      <p class="hint" style="margin-top:14px;font-size:12px"><b>Issue &amp; Email Receipt</b> creates the numbered receipt and emails it to the donor from Ryan&rsquo;s address, with a thank-you. <b>Code only</b> works the old way: you hand the donor the code yourself.</p>
     </div>
 
     <div id="out">
-      <div class="eyebrow">Give this code to the donor</div>
+      <div class="eyebrow" id="outEyebrow">Give this code to the donor</div>
       <div class="codebox" id="code"></div>
       <div class="script" id="script"></div>
       <div class="actions" style="gap:12px">
         <button class="btn" onclick="copyCode()">Copy Code</button>
         <button class="btn ghost" onclick="location.reload()">Issue Another</button>
+        <a class="btn ghost" href="/in-kind-report" style="text-decoration:none">In-Kind report</a>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  async function issue(){
-    const err=document.getElementById('err'), btn=document.getElementById('go');
+  // Donors already in the system, so a repeat donor is picked, not retyped.
+  var PAST={};
+  (async function(){
+    try{
+      var res=await fetch('/in-kind-report/list'); if(!res.ok) return;
+      var data=await res.json();
+      (data.records||[]).forEach(function(r){
+        var k=(r.donor_name||'').trim(); if(!k) return;
+        var cur=PAST[k.toLowerCase()];
+        if(!cur||(!cur.email&&r.donor_email)) PAST[k.toLowerCase()]={name:k,contact:r.donor_contact||'',email:r.donor_email||''};
+      });
+      document.getElementById('pastDonors').innerHTML=Object.keys(PAST).sort().map(function(k){
+        var o=document.createElement('option'); o.value=PAST[k].name; return o.outerHTML; }).join('');
+    }catch(_){}
+  })();
+  document.getElementById('donor_name').addEventListener('input',function(){
+    var p=PAST[this.value.trim().toLowerCase()], h=document.getElementById('pastHint');
+    if(!p){ h.style.display='none'; return; }
+    var c=document.getElementById('donor_contact'), e=document.getElementById('donor_email');
+    if(!c.value&&p.contact&&p.contact.indexOf('@')<0) c.value=p.contact;
+    if(!e.value&&p.email) e.value=p.email;
+    h.style.display='block'; h.textContent='Returning donor. Filled in what we already had'+(p.email?'.':' (no email on file yet).');
+  });
+
+  async function issue(andSend){
+    const err=document.getElementById('err'), btn=document.getElementById('go'), btnS=document.getElementById('goSend');
     const donor_name=document.getElementById('donor_name').value.trim();
     const description=document.getElementById('description').value.trim();
+    const donor_email=document.getElementById('donor_email').value.trim().toLowerCase();
     err.textContent='';
     if(!donor_name || !description){ err.textContent='Donor and description are required.'; return; }
-    btn.disabled=true; btn.textContent='Working...';
+    if(donor_email && !/^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(donor_email)){ err.textContent='That email does not look right.'; return; }
+    if(andSend && !donor_email){ err.textContent='Add the donor’s email to send the receipt, or tap Code only.'; return; }
+    btn.disabled=true; btnS.disabled=true; (andSend?btnS:btn).textContent='Working...';
+    const reset=function(){ btn.disabled=false; btnS.disabled=false; btn.textContent='Code only'; btnS.innerHTML='Issue &amp; Email Receipt'; };
     try{
       const res=await fetch('/api/issue-code',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
           donor_name,
           donor_contact:document.getElementById('donor_contact').value.trim(),
+          donor_email,
           description,
           donor_value:document.getElementById('donor_value').value.trim(),
           date_of_donation:document.getElementById('date_of_donation').value
@@ -97,15 +136,33 @@
       const data=await res.json();
       if(!res.ok) throw (data.error||'Could not create code.');
       document.getElementById('code').textContent=data.code;
-      document.getElementById('script').innerHTML=
-        'Thank you so much for your donation to The Right Thing in Recovery. '
+      const script=document.getElementById('script');
+      const manual='Thank you so much for your donation to The Right Thing in Recovery. '
         +'To get your tax receipt, go to <b>nextrighthing.com/in-kind-receipt</b> and enter this code: <b>'+data.code+'</b>. '
         +'Your official receipt will generate instantly.';
+      script.innerHTML=manual;
+      if(andSend && data.id){
+        let sent=null;
+        try{
+          const r2=await fetch('/in-kind-report/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:data.id,email:donor_email})});
+          sent=await r2.json();
+        }catch(_){ sent=null; }
+        if(sent && sent.ok){
+          document.getElementById('outEyebrow').textContent='Receipt emailed';
+          script.textContent='';
+          const b=document.createElement('b'); b.textContent='Receipt No. '+(sent.serial||'')+' was emailed to '+(sent.to||donor_email)+'.';
+          script.appendChild(b);
+          script.appendChild(document.createTextNode(' Nothing else to do. It also shows as sent on the In-Kind report.'));
+        } else {
+          document.getElementById('outEyebrow').textContent='Code created, but the email did not send';
+          script.innerHTML='<b style="color:#F1A7A7">'+((sent&&sent.error)||'The email did not go out.').replace(/[<>&]/g,'')+'</b><br><br>The code below is saved. Open the In-Kind report to send it again, or give the donor the code: '+manual;
+        }
+      }
       document.getElementById('form').style.display='none';
       document.getElementById('out').style.display='block';
     }catch(e){
       err.textContent=(typeof e==='string')?e:'Something went wrong.';
-      btn.disabled=false; btn.textContent='Generate Code';
+      reset();
     }
   }
   function copyCode(){ navigator.clipboard.writeText(document.getElementById('code').textContent); }
